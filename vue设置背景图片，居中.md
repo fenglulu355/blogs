@@ -8,3 +8,10 @@
             }"
 ```
 
+本地图片：
+
+```
+
+backgroundImage: 'url(' + require("@/assets/bg-black.png") + ')',
+```
+
