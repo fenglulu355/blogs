@@ -2,82 +2,73 @@
   <div class="shopshow">
     <banner></banner>
     <div class="shopbox">
-      <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav"></tabBar>
+      <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <div class="showmain">
         <ul class="shopshowlist">
           <li class="shopshowli" v-show="curindex === 0">
-            <div
-              class="showpic"
-              :style="{backgroundImage: 'url(' + shopshowinfo.bg+ ')',
+            <!-- swiper1 -->
+            <div class="galler-top" ref="swiperTop">
+              <div class="slide">
+                <div class="showbox">
+                  <div
+                    class="mainpic"
+                    :style="{backgroundImage: 'url(' + shopshowinfo.bg+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-            >
-              <div class="shopinfo">
-                <p class="shopname">{{shopshowinfo.shopname}}</p>
-                <p class="shopdes">
-                  主营产品：{{shopshowinfo.mainsell}}
-                  <span>/</span>
-                  地址：{{shopshowinfo.address}}
-                  <span>/</span>
-                  电话：{{shopshowinfo.tel}}
-                </p>
-              </div>
-            </div>
-            <div class="shopflash">
-              <div class="pgbtn prev">
-                <div
-                  class="btpic"
-                  @click="zuohua"
-                  :style="{backgroundImage: 'url(' +require('../assets/shopshow/left.png') + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-                ></div>
-              </div>
-
-              <div class="flash">
-                <ul
-                  class="warpper"
-                  :style="{'left':calleft + 'px'  ,'width': shopwidth+'px'}"
-                  v-on:mouseover="stopmove()"
-                  v-on:mouseout="move()"
-                >
-                  <li
-                    class="pic"
-                    v-for="(item, index) in shopinfo"
-                    :key="index"
-                    @click="showshop(index,item)"
                   >
-                    <div
-                      class="mainpic"
-                      :style="{backgroundImage: 'url(' +item.sbg + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-                    >
-                      <div class="pichover">
-                        <p>{{item.shopname}}</p>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <div class="pgbtn next">
-                <div
-                  class="btpic"
-                  @click="youhua"
-                  :style="{backgroundImage: 'url(' +require('../assets/shopshow/right.png') + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-                ></div>
+                    <!-- <img :src="shopshowinfo.bg" alt /> -->
+                  </div>
+                  <div class="shopinfo">
+                    <p class="shopname">{{shopshowinfo.shopname}}</p>
+                    <p class="shopdes">
+                      主营产品：{{shopshowinfo.mainsell}}
+                      <span>/</span>
+                      地址：{{shopshowinfo.address}}
+                      <span>/</span>
+                      电话：{{shopshowinfo.tel}}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
+            <!-- swiper2 Thumbs -->
+            <swiper :options="swiperOptionThumbs" class="gallery-thumbs" ref="swiperThumbs">
+              <swiper-slide class="slide" v-for="(item, index) in shopinfo" :key="index">
+                <div class="showbox" @click="swiper(index,item)" :data-id="index">
+                  <div
+                    class="mainpic"
+                    :style="{backgroundImage: 'url(' + item.sbg+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+                  ></div>
+                  <div class="pichover">
+                    <p>{{item.shopname}}</p>
+                  </div>
+                </div>
+              </swiper-slide>
+            </swiper>
+            <div
+              class="swiper-button-next swiper-button-white"
+              slot="button-next"
+              :style="{backgroundImage: 'url(' + require('../assets/shopshow/right.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+            ></div>
+            <div
+              class="swiper-button-prev swiper-button-white"
+              slot="button-prev"
+              :style="{backgroundImage: 'url(' + require('../assets/shopshow/left.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+            ></div>
           </li>
           <li class="shopshowli" v-show="curindex === 1">bbbbbbbbbbbbbbbbb</li>
         </ul>
@@ -88,6 +79,7 @@
 <script>
 import banner from "../components/homebanner";
 import tabBar from "../components/tabBar";
+import { swiper, swiperSlide } from "vue-awesome-swiper";
 export default {
   name: "shopshow",
   data() {
@@ -159,12 +151,23 @@ export default {
           tel: "028-87395760"
         }
       ],
-      shopwidth: null
+      shopwidth: null,
+      swiperOptionThumbs: {
+        // loop:true,
+        spaceBetween: 10,
+        touchRatio: 0.2,
+        slideToClickedSlide: true,
+        slidesPerView: 4,
+        watchSlidesVisibility: true /*避免出现bug*/,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
+        }
+      }
     };
   },
 
   created() {
-    // this.move();
     this.shopwidth = this.shopinfo.length * 245;
     this.shopshowinfo = this.shopinfo[0];
   },
@@ -177,88 +180,11 @@ export default {
     tonav(index) {
       this.curindex = index;
     },
-    //移动
-    move() {
-      this.timer = setInterval(this.starmove, 5000);
-    },
-    //开始移动
-    starmove() {
-      this.calleft -= 245;
-      if (this.calleft < -1225) {
-        this.calleft = 0;
-      }
-    },
-    //鼠标悬停时停止移动
-    stopmove() {
-      clearInterval(this.timer);
-    },
-    //点击按钮左移
-    zuohua() {
-      this.calleft -= 245;
-      if (this.calleft < -1225) {
-        this.calleft = 0;
-      }
-    },
-    //点击按钮右移
-    youhua() {
-      this.calleft += 245;
-      let a = this.shopwidth - 1225;
-      if (this.calleft > 0) {
-        this.calleft = -a;
-      }
+    swiper(index, item) {
+      this.shopshowinfo = item;
     }
-
-    //移动
-    // move() {
-    //   this.timer = setInterval(this.starmove, 20);
-    // },
-    //开始移动
-    // starmove() {
-    //   this.calleft--;
-    //   let a = this.shopwidth - 1225;
-    //   // console.log(a)
-    //   if (this.calleft < -a) {
-    //     this.calleft = 0;
-    //   }
-    // },
-    //鼠标悬停时停止移动
-    // stopmove() {
-    //   clearInterval(this.timer);
-    // },
-    //鼠标按下
-    // prevdown() {
-    //   clearInterval(this.timer);
-    //   this.stopmove();
-    //   this.timer = setInterval(this.starmove, 5);
-    //   let a = this.shopwidth - 1225;
-    //   if (this.calleft < -a) {
-    //     this.calleft = 0;
-    //   }
-    // },
-    // nextdown() {
-    //   this.stopmove();
-    //   this.timer = setInterval(this.rightadd, 5);
-    // },
-    //鼠标抬起
-    // prevup() {
-    //   clearInterval(this.timer);
-    //   this.move();
-    // },
-    // rightadd() {
-    //   this.calleft++;
-    //   let a = this.shopwidth - 1225;
-    //   if (this.calleft == 0) {
-    //     this.calleft = -a;
-    //   }
-    // },
-    // add() {
-    //   this.calleft++;
-    //   if (this.calleft == 0) {
-    //     clearInterval(this.timer);
-    //   }
-    // }
   },
-  components: { banner, tabBar }
+  components: { banner, tabBar, swiper, swiperSlide }
 };
 </script>
 
@@ -279,103 +205,110 @@ export default {
         margin: 0 auto;
         box-sizing: border-box;
         padding-top: 45px;
-        .shopshowli {
+        position: relative;
+        .swiper-button-white {
+          width: 44px;
+          position: absolute;
+          top: 827px;
+          height: 164px !important;
+        }
+        .swiper-button-prev {
+          left: 0;
+        }
+        .swiper-button-next {
+          right: 0;
+        }
+        .galler-top {
+          height: 750px;
           width: 100%;
-          .showpic {
+          .slide {
             width: 100%;
             height: 750px;
-            position: relative;
-            .shopinfo {
+            .showbox {
               width: 100%;
-              height: 100px;
-              background: rgba(0, 0, 0, 0.3);
-              border-radius: 0px 0px 10px 10px;
-              position: absolute;
-              bottom: 0;
-              box-sizing: border-box;
-              padding: 29px 0 0 39px;
-              color: rgba(255, 255, 255, 1);
-              font-weight: bold;
-              font-family: Microsoft YaHei;
-              line-height: 28px;
-              .shopname {
-                font-size: 18px;
-              }
-              .shopdes {
-                font-size: 16px;
-                span {
-                  margin: 0 10px;
-                }
-              }
-            }
-          }
-          .shopflash {
-            margin-top: 12px;
-            width: 100%;
-            position: relative;
-            display: flex;
-            .flash {
-              margin: 0px auto;
+              height: 100%;
               position: relative;
-              width: 1100px;
-              height: 164px;
-              overflow: hidden;
-              .warpper {
-                width: 1000px;
+              .mainpic {
+                width: 100%;
+                height: 100%;
+              }
+              .shopinfo {
+                width: 100%;
+                height: 100px;
+                background: rgba(0, 0, 0, 0.3);
+                border-radius: 0px 0px 10px 10px;
                 position: absolute;
-                left: 0px;
-                height: 164px;
-                margin: 0px auto;
-                li {
-                  cursor: pointer;
-                  box-sizing: border-box;
-                  display: inline-block;
-                  width: 245px;
-                  height: 164px;
-                  position: relative;
-                  .mainpic {
-                    width: 230px;
-                    height: 164px;
-                    border-radius: 10px;
-                  }
-                  .pichover {
-                    width: 230px;
-                    height: 164px;
-                    border-radius: 10px;
-                    position: absolute;
-                    p {
-                      width: 163px;
-                      font-size: 14px;
-                      text-align: center;
-                      font-weight: bold;
-                      color: rgba(255, 255, 255, 1);
-                      line-height: 28px;
-                      margin: 50px auto;
-                      // display: none;
-                    }
-                  }
-                  &:hover .pichover {
-                    display: block;
-                    background: rgba(0, 0, 0, 0.3);
-                    p {
-                      display: block;
-                    }
+                bottom: 0;
+                box-sizing: border-box;
+                padding: 29px 0 0 39px;
+                color: rgba(255, 255, 255, 1);
+                font-weight: bold;
+                font-family: Microsoft YaHei;
+                line-height: 28px;
+                .shopname {
+                  font-size: 18px;
+                }
+                .shopdes {
+                  font-size: 16px;
+                  span {
+                    margin: 0 10px;
                   }
                 }
-              }
-            }
-            .pgbtn {
-              cursor: pointer;
-              box-sizing: border-box;
-              width: 44px;
-              height: 164px;
-              .btpic {
-                width: 44px;
-                height: 164px;
               }
             }
           }
         }
+        .gallery-thumbs {
+          // background: olive;
+          width: 1100px;
+          height: 165px !important;
+          position: relative;
+          top: 10px;
+        }
+        .gallery-thumbs .swiper-slide {
+          width: 230px;
+          height: 164px;
+          border-radius: 10px;
+          position: relative;
+          cursor: pointer;
+          .mainpic {
+            border-radius: 10px;
+          }
+          .showbox {
+            width: 100%;
+            height: 100%;
+             position: relative;
+            .mainpic {
+              width: 100%;
+              height: 100%;
+            }
+            .pichover {
+              width:100%;
+              height: 164px;
+              border-radius: 10px;
+              position: absolute;
+              top: 0;
+              p {
+                width: 163px;
+                font-size: 14px;
+                text-align: center;
+                font-weight: bold;
+                color: rgba(255, 255, 255, 1);
+                line-height: 28px;
+                margin: 50px auto;
+                // display: none;
+              }
+            }
+            &:hover .pichover {
+              display: block;
+              background: rgba(0, 0, 0, 0.3);
+              p {
+                display: block;
+              }
+            }
+          }
+        }
+      
       }
     }
   }

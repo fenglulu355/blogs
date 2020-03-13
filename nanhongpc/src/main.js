@@ -7,6 +7,14 @@ import router from './router'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
+// swiper
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/dist/css/swiper.css'
+
+
+Vue.use(VueAwesomeSwiper, /* { default global options } */)
+
+
 import Vuex from 'vuex'
 import store from './store'
 
@@ -14,6 +22,7 @@ import store from './store'
 
 Vue.use(Vuex)
 Vue.use(ElementUI)
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

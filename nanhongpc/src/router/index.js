@@ -8,6 +8,7 @@ import product from '../pages/product.vue'
 import service from '../pages/service.vue'
 import shoppingmall from '../pages/shoppingCar.vue'
 import shopshow from '../pages/shopshow.vue'
+import detail from '../pages/recruit.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -20,6 +21,11 @@ export default new Router({
     name: 'about',
     component: about
   }, {
+    path: '/detail',
+    name: 'detail',
+    component: detail
+  },
+  , {
     path: '/cases',
     name: 'cases',
     component: cases

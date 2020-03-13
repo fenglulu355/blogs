@@ -3,8 +3,13 @@
     <!-- 头部轮播 -->
     <div class="bannerbox">
       <el-carousel height="650px">
-        <el-carousel-item v-for="(item, index) in slide" :key="index">
-          <img :src="item" alt />
+        <el-carousel-item v-for="(item, index) in slide" :key="index" arrow='none'>
+          <div class="mainpic"
+           :style="{backgroundImage: 'url(' + item+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"></div>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -16,8 +21,8 @@
       </div>
 
       <div class="vio fr">
-        <el-carousel height="50px" direction="vertical">
-          <el-carousel-item v-for="(item, index) in vioce" :key="index">
+        <el-carousel height="50px" direction="vertical" indicator-position='none'	>
+          <el-carousel-item v-for="(item, index) in vioce" :key="index" >
             <p>{{item}}</p>
           </el-carousel-item>
         </el-carousel>
@@ -48,10 +53,18 @@ export default {
 
 <style lang="less" scoped>
 .homebanner {
+  // background: palevioletred;
   width: 100%;
-//   padding-bottom: 92px;
+  min-width: 1200px;
+  .bannerbox{
+    width: 100%;
+    .mainpic{
+      width: 100%;
+      height: 650px;
+    }
+   
+  }
   .viocebox {
-    // background: pink;
     width: 100%;
     height: 50px;
     line-height: 50px;
@@ -63,15 +76,16 @@ export default {
     .viopic {
       width: 10%;
       text-align: right;
-      box-sizing: border-box;
-      padding-right: 15px;
+      position: relative;
+      left: -8px;
       img {
         box-sizing: border-box;
         padding-right: 5px;
       }
     }
     .vio {
-      width: 90%;
+      // background: pink;
+      width: 80%;
     }
   }
 }

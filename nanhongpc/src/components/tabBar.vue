@@ -13,7 +13,7 @@
         v-for="(item, index) in tabnav"
         :key="index"
         @click="tonav(index,$event)"
-        :class="curindex ==index?'shopsel':''"
+        :class="curi ==index?'shopsel':''"
       >{{item}}</li>
     </ul>
   </div>
@@ -24,8 +24,7 @@ export default {
   name: "tabBar",
   data() {
     return {
-      curindex: 0,
-      shopnavli: ["门店展示", "门店导航"]
+      // curindex: 0
     };
   },
   created() {
@@ -42,6 +41,10 @@ export default {
     tabnav: {
       type: Array,
       default: {}
+    },
+    curi:{
+       type: Number,
+      default: null
     }
   },
   methods: {
@@ -93,7 +96,8 @@ export default {
   .shopnavli {
     cursor: pointer;
     display: inline-block;
-    width: 186px;
+    // width: 186px;
+    padding: 0 20px;
     height: 45px;
     font-size: 18px;
     line-height: 45px;
@@ -101,7 +105,7 @@ export default {
     border: 1px solid rgba(36, 130, 200, 1);
     color: rgba(51, 51, 51, 1);
     border-radius: 10px;
-    margin: 0 24px;
+    margin: 0 .55%;
   }
   .shopsel {
     background: rgba(36, 130, 200, 1);
