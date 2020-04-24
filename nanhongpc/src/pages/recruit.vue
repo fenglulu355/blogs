@@ -3,6 +3,8 @@
     <!-- 根据路由传参判断显示校园还是社会招聘 -->
     <p class="title" v-if="isrecruit">校园招聘</p>
     <p class="title" v-if="iscase">工装项目</p>
+    <p class="title" v-if="isserv">安装流程</p>
+    <p class="title" v-if="isnews">公司新闻</p>
     <div class="cont">
       <!-- recruit -->
       <div class="recruit" v-if="isrecruit">
@@ -41,21 +43,30 @@
         <div class="caseinfo">
           <p class="time text">
             <span>【工程日期】</span>
-            {1{item.time}}年
+            <!-- {{item.time}} -->
+            8年
           </p>
           <p class="area text">
-            <span>【项目面积】</span>
-            {1{item.area}}
+            <span>【项目面积】</span>56775
+            <!-- {{item.area}} -->
           </p>
           <p class="type text">
-            <span>【使用机型】</span>
-            {1{item.type}}
+            <span>【使用机型】</span>567567
+            <!-- {{item.type}} -->
           </p>
           <p class="inro text">
-            <span>【项目简介】</span>
-            {1{item.type}}
+            <span>【项目简介】</span>678867
+            <!-- {{item.type}} -->
           </p>
         </div>
+      </div>
+      <div class="serv" v-if="isserv"></div>
+      <div class="case" v-if="isnews">
+        <p class="name">“燃爆三月 火力全开”活动，优惠不断，特价多</p>
+        <p class="time">更新时间：2019-02-26</p>
+        <div
+          class="caseinfo"
+        >内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</div>
       </div>
     </div>
   </div>
@@ -66,13 +77,21 @@ export default {
   data() {
     return {
       iscase: false,
-      isrecruit: false
+      isrecruit: false,
+      isserv: false,
+      isnews: false
     };
   },
   created() {
     let kind = this.$route.query.kind;
     if (kind == "case") {
       this.iscase = true;
+    } else if (kind == "serv") {
+      this.isserv = true;
+    } else if (kind == "recruit") {
+      this.isrecruit = true;
+    } else if (kind == "news") {
+      this.isnews = true;
     }
     console.log(kind);
   }
@@ -85,7 +104,7 @@ export default {
   box-sizing: border-box;
   padding: 60px 0 90px 0;
   border-top: 1px solid rgba(236, 236, 236, 1);
-   border-bottom: 1px solid rgba(236, 236, 236, 1);
+  border-bottom: 1px solid rgba(236, 236, 236, 1);
   color: rgba(51, 51, 51, 1);
   .title {
     width: 1200px;

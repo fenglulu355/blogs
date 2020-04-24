@@ -4,7 +4,7 @@
     <div class="newsbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <!-- 行业新闻 -->
-      <div class="hynews nbox" v-show="curindex === 0">
+      <div class="hynews nbox" v-show="curindex == 0">
         <div class="flash">
           <div
             class="mainpic"
@@ -103,7 +103,17 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+    let idx = sessionStorage.getItem("mnavindex");
+    if (!idx) {
+      this.curindex = 0;
+    } else {
+      this.curindex = Number(idx);
+    }
+  },
+  mounted() {
+    document.body.scrollTop = document.documentElement.scrollTop = 300;
+  },
   methods: {
     getList(page) {
       // this.requstKind(this.class_id, page);

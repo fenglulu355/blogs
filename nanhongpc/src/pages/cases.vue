@@ -111,7 +111,17 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+    let idx = sessionStorage.getItem("mnavindex");
+    if (!idx) {
+      this.curindex = 0;
+    } else {
+      this.curindex = Number(idx);
+    }
+  },
+  mounted() {
+    document.body.scrollTop = document.documentElement.scrollTop = 300;
+  },
   methods: {
     getList(page) {
       // this.requstKind(this.class_id, page);
@@ -129,9 +139,14 @@ export default {
       console.log(mindex, item);
     },
     toCaseDetail(index, item) {
-      this.$router.push({ path: "/detail", query: {id:index,kind:'case'} });
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.$router.push({
+        path: "/detail",
+        query: { id: index, kind: "case" }
+      });
     }
   },
+
   components: { banner, tabBar, moPagination, curinfo }
 };
 </script>

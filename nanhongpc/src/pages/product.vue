@@ -71,7 +71,17 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+    let idx = sessionStorage.getItem("mnavindex");
+    if (!idx) {
+      this.curindex = 0;
+    } else {
+      this.curindex = Number(idx);
+    }
+  },
+mounted() {
+    document.body.scrollTop = document.documentElement.scrollTop = 300;
+  },
   methods: {
     getList(page) {
       // this.requstKind(this.class_id, page);
@@ -89,6 +99,7 @@ export default {
       console.log(mindex, item);
     }
   },
+  
   components: { banner, tabBar, moPagination, curinfo }
 };
 </script>
@@ -141,11 +152,30 @@ export default {
       }
     }
   }
-   .mo-paging {
+  .mo-paging {
     width: 100%;
     text-align: center;
     box-sizing: border-box;
     padding-top: 53px;
   }
+}
+</style>
+
+<style lang="">
+  .el-checkbox-button {
+  cursor: pointer;
+  box-sizing: border-box;
+  padding: 5px 15px;
+}
+.el-checkbox-button__inner {
+  border: none;
+}
+.el-checkbox-button.is-checked .el-checkbox-button__inner {
+  background: rgba(36, 130, 200, 1);
+  color: white;
+}
+
+.distpicker-address-wrapper select {
+  font-size: 14px;
 }
 </style>

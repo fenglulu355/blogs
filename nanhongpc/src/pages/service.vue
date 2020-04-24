@@ -2,7 +2,7 @@
   <div class="service">
     <banner></banner>
     <div class="servisebox">
-      <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi='curindex'></tabBar>
+      <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <!-- show -->
       <div class="repair serv" v-show="curindex===null">
         <div class="repic">
@@ -61,7 +61,7 @@
               <p>以技为魂</p>
               <p>以管理为纽带</p>
             </div>
-            <p class="deshed">--------------------------------------</p>
+            <p class="deshed">------------------------------------</p>
             <div class="bottom">
               <p class="deshed">------</p>
               <p>认真对待每一个用户，带领全体员工共同努</p>
@@ -298,7 +298,17 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+    let idx = sessionStorage.getItem("mnavindex");
+    if (!idx) {
+      this.curindex = 0;
+    } else {
+      idx == 3 ? (this.curindex = 4) : (this.curindex = Number(idx));
+    }
+  },
+  mounted() {
+    document.body.scrollTop = document.documentElement.scrollTop = 300;
+  },
   methods: {
     // 分页
     getList(page) {
@@ -314,6 +324,7 @@ export default {
       this.curindex = index;
     }
   },
+
   components: { banner, tabBar, moPagination }
 };
 </script>

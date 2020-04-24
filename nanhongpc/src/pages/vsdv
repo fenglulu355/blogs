@@ -1,0 +1,14 @@
+
+
+
+ selectlist: [
+        { selects: "匹数", option: ["1.5", "2", "2.5"], id: 1 },
+        { selects: "价格", option: ["0-200", "200-1000", "1000-2000"], id: 2 },
+        { selects: "产品分类", option: ["彩电", "空调", "洗衣机"], id: 3 },
+        { selects: "产品类型", option: ["节能", "智能", "落地"], id: 4 },
+        { selects: "匹数", option: ["1.5", "2", "2.5"], id: 5 },
+        { selects: "匹数", option: ["1.5", "2", "2.5"], id: 1 },
+        { selects: "价格", option: ["0-200", "200-1000", "1000-2000"], id: 2 },
+        { selects: "产品分类", option: ["彩电", "空调", "洗衣机"], id: 3 },
+        { selects: "产品类型", option: ["节能", "智能", "落地"], id: 4 }
+      ]

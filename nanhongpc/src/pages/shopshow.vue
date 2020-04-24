@@ -82,6 +82,7 @@ import tabBar from "../components/tabBar";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 export default {
   name: "shopshow",
+  inject: ["reload"],
   data() {
     return {
       curindex: 0,
@@ -170,20 +171,41 @@ export default {
   created() {
     this.shopwidth = this.shopinfo.length * 245;
     this.shopshowinfo = this.shopinfo[0];
+    this.getrouter;
+    let idx = sessionStorage.getItem("mnavindex");
+    if (!idx) {
+      this.curindex = 0;
+    } else {
+      this.curindex = Number(idx);
+    }
   },
-  mounted() {},
+mounted() {
+    document.body.scrollTop = document.documentElement.scrollTop = 300;
+  },
   methods: {
+    getrouter() {
+      let i = this.$route.query.id;
+      console.log(i, "i.i");
+      // if (!i) {
+      //   return;
+      // } else {
+      //  return this.curindex = i;
+      // }
+      console.log(this.curindex, "this.curindex");
+    },
     showshop(index, item) {
       // console.log(item);
       this.shopshowinfo = item;
     },
     tonav(index) {
       this.curindex = index;
+      console.log("11111");
     },
     swiper(index, item) {
       this.shopshowinfo = item;
-    }
+    },
   },
+
   components: { banner, tabBar, swiper, swiperSlide }
 };
 </script>
@@ -199,7 +221,6 @@ export default {
     padding: 60px 0 100px 0;
     .showmain {
       width: 100%;
-
       .shopshowlist {
         width: 1200px;
         margin: 0 auto;
@@ -277,13 +298,13 @@ export default {
           .showbox {
             width: 100%;
             height: 100%;
-             position: relative;
+            position: relative;
             .mainpic {
               width: 100%;
               height: 100%;
             }
             .pichover {
-              width:100%;
+              width: 100%;
               height: 164px;
               border-radius: 10px;
               position: absolute;
@@ -308,7 +329,6 @@ export default {
             }
           }
         }
-      
       }
     }
   }

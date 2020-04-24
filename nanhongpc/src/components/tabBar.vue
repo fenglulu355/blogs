@@ -42,14 +42,14 @@ export default {
       type: Array,
       default: {}
     },
-    curi:{
-       type: Number,
+    curi: {
+      type: Number,
       default: null
     }
   },
   methods: {
     tonav(index, e) {
-        this.curindex = index;
+      this.curindex = index;
       this.$emit("change", index);
     }
   }
@@ -105,9 +105,11 @@ export default {
     border: 1px solid rgba(36, 130, 200, 1);
     color: rgba(51, 51, 51, 1);
     border-radius: 10px;
-    margin: 0 .55%;
+    margin: 0 0.55%;
+    background: rgba(36, 130, 200, 0);
   }
   .shopsel {
+    // transition: all 0.2s linear;
     background: rgba(36, 130, 200, 1);
     color: white;
   }

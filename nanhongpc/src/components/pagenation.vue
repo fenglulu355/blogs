@@ -170,6 +170,8 @@ export default {
     }
 
     &:hover {
+      transition: all .2s linear;
+      border: 1px solid rgba(36, 130, 200, 1);
       background-color: rgba(36, 130, 200, 1);
       color: white;
     }
@@ -178,6 +180,9 @@ export default {
       // background-color: #fff;
       color: rgba(36, 130, 200, 1);
       border: none;
+      background-color: #fff;
+      cursor: pointer;
+      color: rgba(36, 130, 200, 1);
     }
     /*//禁用*/
     &.paging-item--disabled {

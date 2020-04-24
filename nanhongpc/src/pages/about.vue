@@ -4,7 +4,7 @@
     <div class="aboutbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <!-- 公司简介 -->
-      <div class="cpintro pub" v-show="curindex === 0">
+      <div class="cpintro pub" v-show="curindex == 0">
         <div
           class="topimg"
           :style="{backgroundImage: 'url(' + require('../assets/about/top.png')+ ')',
@@ -39,7 +39,7 @@
         </ul>
       </div>
       <!-- 南宏理念 -->
-      <div class="ideabox pub" v-show="curindex === 1">
+      <div class="ideabox pub" v-show="curindex == 1">
         <div
           class="mainpic"
           :style="{backgroundImage: 'url(' + require('../assets/about/2-1.png')+ ')',
@@ -60,7 +60,7 @@
         </div>
       </div>
       <!-- 员工风采 -->
-      <div class="staffshow pub" v-show="curindex === 2">
+      <div class="staffshow pub" v-show="curindex == 2">
         <!-- swiper1 -->
         <div class="galler-top" ref="swiperTop">
           <div class="slide">
@@ -184,9 +184,73 @@
         </ul>-->
       </div>
       <!-- 荣誉 -->
-      <div class="Honor pub" v-show="curindex === 3"></div>
+      <div class="Honor pub" v-show="curindex == 3">
+        <ul class="honorlist">
+          <li class="honorli" v-for="(item, index) in honor" :key="index">
+            <div class="honorbox" v-if="index === 2 ||index === 3">
+              <div class="honorinfo">
+                <div class="text">
+                  <p class="year">
+                    {{item.year}}
+                    <img src="../assets/about/honorr.png" alt />
+                  </p>
+                  <p class="intro">{{item.des}}</p>
+                </div>
+              </div>
+              <div
+                class="mainpic"
+                :style="{backgroundImage: 'url(' + item.img+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+              ></div>
+            </div>
+            <div class="honorbox" v-else>
+              <div
+                class="mainpic"
+                :style="{backgroundImage: 'url(' + item.img+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+              ></div>
+              <div class="honorinfo">
+                <div class="text">
+                  <p class="year">
+                    <img src="../assets/about/honorl.png" alt />
+                    {{item.year}}
+                  </p>
+                  <p class="intro">{{item.des}}</p>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li
+            class="last-honorli"
+            :style="{backgroundImage: 'url(' + require('../assets/about/honorbg.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+          >
+            <p class="title">十数年来，我们获得了各种专业资质与荣誉</p>
+            <p
+              class="text"
+            >公司自成立以来，秉承“以创新求发展，以质量求生存，以诚信待客户”的企业精神，实行“质量第一，服务至上”的经营理念，南宏人从未停止过拼搏进取与努力奋斗。</p>
+          </li>
+        </ul>
+        <div
+          class="honorpic"
+          :style="{backgroundImage: 'url(' + require('../assets/about/honorbot.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+        ></div>
+      </div>
       <!-- 销售网络 -->
-      <div class="sale pub" v-show="curindex === 4">
+      <div class="sale pub" v-show="curindex == 4">
         <div
           class="topmainpic"
           :style="{backgroundImage: 'url(' + require('../assets/about/5-1.png')+ ')',
@@ -223,7 +287,7 @@
         </div>
       </div>
       <!-- 公司架构 -->
-      <div class="framework pub" v-show="curindex === 5">
+      <div class="framework pub" v-show="curindex == 5">
         <div
           class="mainpic"
           :style="{backgroundImage: 'url(' + require('../assets/about/6-1.png')+ ')',
@@ -234,7 +298,7 @@
         ></div>
       </div>
       <!-- 社招 -->
-      <div class="socia pub" v-show="curindex === 6">
+      <div class="socia pub" v-show="curindex == 6">
         <ul class="szlist recruitment">
           <li class="newsli" v-for="(item, index) in lb" :key="index">
             <div
@@ -262,7 +326,7 @@
         ></mo-pagination>
       </div>
       <!-- 校招 -->
-      <div class="school pub" v-show="curindex === 7">
+      <div class="school pub" v-show="curindex == 7">
         <ul class="szlist recruitment">
           <li class="newsli" v-for="(item, index) in lb" :key="index">
             <div
@@ -290,7 +354,7 @@
         ></mo-pagination>
       </div>
       <!-- 联系我们 -->
-      <div class="contact pub" v-show="curindex === 8">
+      <div class="contact pub" v-show="curindex == 8">
         <div class="contactbox">
           <h1>四川南宏机电工程安装有限公司</h1>
           <div class="warrper">
@@ -446,6 +510,38 @@ export default {
             " 岗位职责：1、本科及以上学历，国际贸易类、经济类等相关专业毕业；2、男性，有英语读写能力、有工作经验者优先。"
         }
       ],
+      honor: [
+        {
+          img: require("../assets/about/honor1.png"),
+          year: "2018",
+          left: true,
+          des: "品牌315诚信企业联盟单位"
+        },
+        {
+          img: require("../assets/about/honor2.png"),
+          year: "2018",
+          left: true,
+          des: "消费者点赞的诚信企业"
+        },
+        {
+          img: require("../assets/about/honor1.png"),
+          year: "2017",
+          left: true,
+          des: "品牌315诚信企业联盟单位"
+        },
+        {
+          img: require("../assets/about/honor2.png"),
+          year: "2015",
+          left: true,
+          des: "品牌315诚信企业联盟单位"
+        },
+        {
+          img: require("../assets/about/honor1.png"),
+          year: "2015",
+          left: true,
+          des: "品牌315诚信企业联盟单位"
+        }
+      ],
       swiperOptionThumbs: {
         // loop:true,
         spaceBetween: 10,
@@ -462,6 +558,29 @@ export default {
   },
   created() {
     this.shopshowinfo = this.ygfc[0];
+    let idx = sessionStorage.getItem("mnavindex");
+    if (!idx) {
+      this.curindex = 0;
+    } else {
+      if (idx == 1) {
+        this.curindex = 6;
+      }
+      if (idx == 2) {
+        this.curindex = 4;
+      }
+      if (idx == 4) {
+        this.curindex = 1;
+      }
+      if (idx == 5) {
+        this.curindex = 7;
+      }
+      if (idx == 8) {
+        this.curindex = 3;
+      }
+    }
+  },
+  mounted() {
+    document.body.scrollTop = document.documentElement.scrollTop = 300;
   },
   methods: {
     // 分页
@@ -486,9 +605,14 @@ export default {
     torecruit(index, item) {
       // 到时候根据社招校招分类传参
       console.log(item);
-      this.$router.push({ path: "/recruit" });
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.$router.push({
+        path: "/detail",
+        query: { id: index, kind: "recruit" }
+      });
     }
   },
+
   components: { banner, tabBar, moPagination, swiper, swiperSlide }
 };
 </script>
@@ -686,6 +810,69 @@ export default {
     }
 
     // 荣誉
+    .Honor {
+      width: 100%;
+      .honorlist {
+        width: 1200px;
+        margin: 0 auto;
+        height: 670px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 8px;
+        .honorli {
+          height: 218px;
+          .honorbox {
+            display: flex;
+            justify-content: space-between;
+            .mainpic {
+              width: 294px;
+              height: 218px;
+              background: RGBA(54, 105, 165, 1);
+              box-sizing: border-box;
+              padding: 5px 5px;
+            }
+            .honorinfo {
+              width: 294px;
+              height: 218px;
+              background: rgba(236, 236, 236, 1);
+              color: rgba(102, 102, 102, 1);
+              text-align: center;
+              .text {
+                box-sizing: border-box;
+                padding-top: 68px;
+                .year {
+                  font-family: Impact;
+                  font-size: 36px;
+                }
+                .intro {
+                  width: 50%;
+                  font-size: 18px;
+                  line-height: 30px;
+                  margin: 0 auto;
+                }
+              }
+            }
+          }
+        }
+        .last-honorli {
+          width: 596px;
+          height: 218px;
+          box-sizing: border-box;
+          padding: 58px 123px 45px 31px;
+          color: rgba(102, 102, 102, 1);
+          .title {
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 55px;
+          }
+        }
+      }
+      .honorpic {
+        width: 1200px;
+        margin: 34px auto;
+        height: 541px;
+      }
+    }
     // 销售网络
     .sale {
       .topmainpic {

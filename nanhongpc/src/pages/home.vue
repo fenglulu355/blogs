@@ -2,32 +2,46 @@
   <div class="home">
     <banner></banner>
     <!-- 简介 -->
-    <ul class="introlist">
-      <li class="introli" v-for="(item, index) in introlist" :key="index">
-        <div class="introbox">
-          <p class="large">{{item.large}}</p>
-          <div class="small">
-            <p>{{item.smalla}}</p>
-            <p>{{item.smallb}}</p>
-          </div>
-        </div>
-        <div
-          class="intro-hover"
-          :style="{backgroundImage: 'url(' + item.img+ ')',
+    <div class="introbox">
+      <ul class="introlist">
+        <li
+          class="introli"
+          v-for="(item, index) in introlist"
+          :key="index"
+          @mouseenter="mouseenter(index)"
+          @mouseout="mousemove(index)"
+        >
+          <transition name="a">
+            <div class="introbox" v-show="hoverindex!=index">
+              <p class="large">{{item.large}}</p>
+              <div class="small">
+                <p>{{item.smalla}}</p>
+                <p>{{item.smallb}}</p>
+              </div>
+            </div>
+          </transition>
+          <transition name="b">
+            <div
+              v-show="hoverindex ==index"
+              class="intro-hover"
+              :style="{backgroundImage: 'url(' + item.img+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-        >
-          <p class="large">{{item.large}}</p>
-          <div class="small">
-            <p>{{item.smalla}}</p>
-            <p>{{item.smallb}}</p>
-            <p class="more">了解更多</p>
-          </div>
-        </div>
-      </li>
-    </ul>
+            >
+              <p class="large">{{item.large}}</p>
+              <div class="small">
+                <p>{{item.smalla}}</p>
+                <p>{{item.smallb}}</p>
+                <p class="more">了解更多</p>
+              </div>
+            </div>
+          </transition>
+        </li>
+      </ul>
+    </div>
+
     <!-- 企业视频 -->
     <div class="videobox">
       <p class="titles">企业视频/CORPORATE VIDEO</p>
@@ -55,7 +69,12 @@
     <div class="newsbox">
       <p class="titles">新闻中心/NEWS CENTER</p>
       <ul class="newslist">
-        <li class="newsli" v-for="(item, index) in newslist" :key="index">
+        <li
+          class="newsli"
+          v-for="(item, index) in newslist"
+          :key="index"
+          @click="tonews(index,item)"
+        >
           <div
             class="mainpic"
             :style="{backgroundImage: 'url(' + item.img+ ')',
@@ -80,13 +99,14 @@ export default {
   name: "home",
   data() {
     return {
+      hoverindex: 1,
       introlist: [
         {
           class: "itroone",
           large: "一部旗舰的里程碑",
           smalla: "市场表现惊艳，",
           smallb: "媒体好评连连。",
-          img: require("../assets/home/intro.png")
+          img: require("../assets/home/intro2.jpg")
         },
         {
           class: "itrotwo",
@@ -100,7 +120,7 @@ export default {
           large: " 工程设计",
           smalla: "点击欣赏",
           smallb: "更多工程案例",
-          img: require("../assets/home/intro.png")
+          img: require("../assets/home/intro1.jpg")
         }
       ],
       videoPlay: false,
@@ -133,6 +153,20 @@ export default {
     },
     close() {
       this.videoPlay = false;
+    },
+    tonews(index, item) {
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.$router.push({
+        path: "/detail",
+        query: { id: index, kind: "news" }
+      });
+    },
+    mouseenter(index) {
+      this.hoverindex = index;
+      console.log(2);
+    },
+    mousemove() {
+      console.log(1);
     }
   },
   components: { banner }
@@ -140,6 +174,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.a-enter-active,
+.b-enter-active {
+  transition: all 0.5s ease-in-out;
+}
+.a-enter {
+  opacity: 0.8;
+}
+.a-enter-to {
+  opacity: 1;
+}
+.b-enter {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
 .home {
   width: 100%;
 
@@ -167,109 +215,110 @@ export default {
       width: 90%;
     }
   }
-  .introlist {
-    background: pink;
+  .introbox {
     width: 100%;
-    .introli {
-      cursor: pointer;
-      width: calc(100% / 3);
-      display: inline-block;
-      height: 924px;
-      position: relative;
-      .large {
-        font-size: 56px;
-        font-weight: 500;
-        color: rgba(255, 255, 255, 1);
-        box-sizing: border-box;
-        text-align: center;
-        line-height: 95px;
-        width: 300px;
-        height: 600px;
-        margin: 0 auto;
-        padding-top: 400px;
-      }
-      .small {
-        font-size: 24px;
-        font-weight: 400;
-        color: rgba(255, 255, 255, 1);
+    height: 924px;
+    .introlist {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      .introli {
+        overflow: hidden;
+        cursor: pointer;
+        width: calc(100% / 3);
+        height: 100%;
         position: relative;
-      }
-      .introbox {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          180deg,
-          rgba(102, 102, 102, 1),
-          rgba(170, 170, 170, 1)
-        );
-        .small {
-          // background: olive;
+        .large {
+          font-size: 56px;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 1);
           box-sizing: border-box;
-          width: 100%;
-          height: 324px;
-          margin: 0 auto;
-          padding-top: 200px;
           text-align: center;
-          &::after {
-            content: "";
-            width: 40px;
-            height: 4px;
-            background: white;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 150px;
+          line-height: 95px;
+          width: 300px;
+          height: 600px;
+          margin: 0 auto;
+          padding-top: 400px;
+        }
+        .small {
+          font-size: 24px;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 1);
+          position: relative;
+        }
+        .introbox {
+          width: 100%;
+          height: 924px;
+          background: linear-gradient(
+            180deg,
+            rgba(102, 102, 102, 1),
+            rgba(170, 170, 170, 1)
+          );
+          .small {
+            box-sizing: border-box;
+            width: 100%;
+            height: 324px;
+            margin: 0 auto;
+            padding-top: 200px;
+            text-align: center;
+            &::after {
+              content: "";
+              width: 40px;
+              height: 4px;
+              background: white;
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              bottom: 150px;
+            }
           }
         }
-      }
-      .intro-hover {
-        display: none;
-        position: absolute;
-        top: 0;
-        // z-index: 2;
-        width: 100%;
-        height: 100%;
-        .small {
-          // background: pink;
-          box-sizing: border-box;
+        .intro-hover {
+          height: 924px;
+          transition: all 0.5s linear;
           width: 100%;
-          height: 324px;
-          margin: 0 auto;
-          padding-top: 60px;
-          text-align: center;
-          &::after {
-            content: "";
-            width: 40px;
-            height: 4px;
-            background: white;
+          height: 100%;
+          .small {
+            // background: pink;
+            box-sizing: border-box;
+            width: 100%;
+            height: 324px;
+            margin: 0 auto;
+            padding-top: 60px;
+            text-align: center;
+            &::after {
+              content: "";
+              width: 40px;
+              height: 4px;
+              background: white;
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              top: 30px;
+            }
+          }
+          .more {
+            width: 180px;
+            height: 39px;
+            font-size: 18px;
+            text-align: center;
+            line-height: 39px;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 1);
+            border-radius: 20px;
             position: absolute;
+            bottom: 130px;
             left: 50%;
             transform: translateX(-50%);
-            top: 30px;
           }
         }
-        .more {
-          width: 180px;
-          height: 39px;
-          font-size: 18px;
-          text-align: center;
-          line-height: 39px;
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 1);
-          border-radius: 20px;
-          position: absolute;
-          bottom: 130px;
-          left: 50%;
-          transform: translateX(-50%);
-        }
-      }
-      &:hover .intro-hover {
-        display: block;
       }
     }
   }
 
   .videobox {
+    // background: red;
     width: 1200px;
     margin: 0 auto;
     .titles {
@@ -341,6 +390,7 @@ export default {
     }
     .newslist {
       .newsli {
+        cursor: pointer;
         height: 365px;
         display: flex;
         justify-content: flex-start;
@@ -366,6 +416,7 @@ export default {
             overflow: hidden;
           }
           .tonews {
+            transition: all 0.2s ease-in-out;
             cursor: pointer;
             width: 138px;
             height: 32px;
@@ -377,6 +428,9 @@ export default {
             line-height: 32px;
             margin-top: 84px;
           }
+        }
+        &:hover .tonews {
+          background: rgba(36, 130, 200, 1);
         }
       }
     }

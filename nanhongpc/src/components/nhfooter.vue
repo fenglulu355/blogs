@@ -16,7 +16,7 @@
       <div class="footer-center">
         <ul class="navlist">
           <li class="navli" v-for="(item, index) in navlist" :key="index" @click="tonav(index)">
-            <router-link :class="navindex ==index?'sel':''" :to="item.path">{{item.name}}</router-link>
+            <router-link :class="curindex ==index?'sel':''" :to="item.path">{{item.name}}</router-link>
           </li>
         </ul>
         <div class="footinfo">
@@ -71,9 +71,10 @@
 <script>
 export default {
   name: "nhfooter",
+  inject: ["reload"],
   data() {
     return {
-      navindex: 0,
+      curindex: 0,
       navlist: [
         { path: "/", name: "网站首页" },
         { path: "/product", name: "产品中心" },
@@ -86,10 +87,19 @@ export default {
       ]
     };
   },
-  created() {},
+  created() {
+    let navindex = sessionStorage.getItem("navindex");
+    if (navindex) {
+      this.curindex = navindex;
+    } else {
+      this.curindex = 0;
+    }
+  },
   methods: {
     tonav(index) {
-      this.navindex = index;
+      this.curindex = index;
+      sessionStorage.setItem("navindex", index);
+      this.reload();
     }
   }
 };
