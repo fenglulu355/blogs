@@ -1,0 +1,43 @@
+<!-- pages/home/home.wxml -->
+<view class="home">
+	<swiper
+	 class="swiper"
+	 indicator-dots="true"
+	 autoplay="true"
+	 interval="{{interval}}"
+	 duration="{{duration}}"
+	 circular="true"
+	>
+		<block wx:for="{{imgUrls}}" wx:key="{{index}}">
+			<swiper-item class="swiper_item">
+				<image class="mainpic" src="{{item}}" />
+			</swiper-item>
+		</block>
+	</swiper>
+	<view class="main">
+		<view class="showbox">
+			<view class="showlist">
+				<view
+				 class="showli"
+				 bindtap='toproduct'
+				 wx:for="{{showlist}}"
+				 wx:key="{{index}}"
+				>
+					<image class="mainpic" src="{{item.img}}" style="height:{{item.height}}rpx" />
+					<text class="eng">{{item.eng}}</text>
+					<text class="cns">{{item.cns}}</text>
+				</view>
+			</view>
+		</view>
+		<view class="productbox">
+			<view class="title">
+				<view class="h1">NEW ARRIVAL</view>
+				<view class="h5">新品上市</view>
+				<view class="eng">
+					Add an elegance to your home and add a calm heart to your heart.
+				</view>
+			</view>
+		</view>
+	</view>
+</view>
+

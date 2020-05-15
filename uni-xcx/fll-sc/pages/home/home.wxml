@@ -1,0 +1,22 @@
+<!--pages/home/home.wxml-->
+<view class="home" >
+    <swiper class="swiper" indicator-dots="true" autoplay="true" interval="{{interval}}" duration="{{duration}}" circular="true">
+        <block wx:for="{{imgUrls}}" wx:key="{{index}}">
+          <swiper-item class="swiper_item">
+			  <view   class="mainpic"
+            style="background-image: url({{item}})"></view>
+          </swiper-item>
+        </block>
+      </swiper>
+	  <view class="main">  <view class="showbox">
+		  <view class="showlist" >
+			  <view   class="showli"
+			  wx:for="{{showlist}}" wx:key="{{index}}">  
+			  <view   class="mainpic"
+             style="background-image: url({{item.img}});height:{{item.height}}px">
+			 </view>
+			  </view>
+		  </view>
+	  </view></view>
+	
+</view>

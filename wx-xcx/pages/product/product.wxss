@@ -1,0 +1,47 @@
+/* pages/product/product.wxss */
+.product {
+  width: 100%;
+}
+.product .banner {
+  width: 100%;
+}
+.product .banner image {
+  width: 100%;
+  height: 200rpx;
+}
+.product .main {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 25rpx;
+}
+.product .main .text {
+  text-align: center;
+  padding: 20rpx 0;
+}
+.product .main .text .h1 {
+  font-size: 60rpx;
+  font-family: Oswald;
+  color: rgba(0, 0, 0, 0.5);
+}
+.product .main .text .h5 {
+  font-size: 30rpx;
+}
+.product .main .prolist {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20rpx;
+}
+.product .main .prolist .proli {
+  width: 100%;
+}
+.product .main .prolist .proli .proinfo {
+  width: 100%;
+  text-align: center;
+  font-family: Oswald;
+  font-size: 26rpx;
+}
+.product .main .prolist .proli .proinfo .mainpic {
+  width: 100%;
+  height: 400rpx;
+}

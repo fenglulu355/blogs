@@ -1,0 +1,38 @@
+{
+  "pages":[ 
+    "pages/home/home",
+    "pages/product/product",
+    "pages/mine/mine",
+    "pages/index/index",
+    "pages/logs/logs"
+   
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "商城",
+    "navigationBarTextStyle":"black"
+  },
+  "tabBar":{
+    "color": "#b7b7b7",
+    "selectedColor": "#AB956D",
+    "borderStyle": "white",
+    "backgroundColor": "#f5f5f5",
+    "list":[
+      {
+        "pagePath":"pages/home/home",  
+         "iconPath": "image/12.png",
+        "selectedIconPath": "image/11.png",
+        "text":"主页"
+      },
+      {
+        "pagePath":"pages/mine/mine",
+        "iconPath": "image/22.png",
+        "selectedIconPath": "image/21.png",
+        "text":"个人中心"
+        }]
+
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

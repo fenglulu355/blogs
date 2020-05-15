@@ -1,0 +1,73 @@
+/* pages/home/home.wxss */
+.swiper {
+  height: 500rpx;
+}
+.swiper .swiper_item {
+  width: 100%;
+}
+.swiper .swiper_item .mainpic {
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.home {
+  width: 100%;
+}
+.home .main {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 25rpx;
+}
+.home .main .showbox {
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 20rpx;
+}
+.home .main .showbox .showlist {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20rpx;
+}
+.home .main .showbox .showlist .showli {
+  width: 100%;
+  text-align: center;
+  font-size: 24rpx;
+  color: rgba(0, 0, 0, 0.7);
+}
+.home .main .showbox .showlist .showli:last-child {
+  width: 200%;
+}
+.home .main .showbox .showlist .showli .mainpic {
+  width: 100%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.home .main .productbox {
+  width: 100%;
+  box-sizing: border-box;
+  padding-top: 40rpx;
+}
+.home .main .productbox .title {
+  text-align: center;
+  color: #333333;
+}
+.home .main .productbox .title .h1 {
+  font-weight: bold;
+  font-family: Oswald;
+  font-size: 50rpx;
+}
+.home .main .productbox .title .h5 {
+  font-size: 30rpx;
+}
+.home .main .productbox .title .eng {
+  width: 90%;
+  margin: 20rpx auto;
+  font-family: times new roman;
+  font-size: 28rpx;
+  color: rgba(0, 0, 0, 0.5);
+}

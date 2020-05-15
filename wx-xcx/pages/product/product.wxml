@@ -1,0 +1,21 @@
+<!-- pages/product/product.wxml -->
+<view class="product">
+    <view class="banner">
+        <image src="../../image/protop.png" mode="aspectFit|aspectFill|widthFix" lazy-load="true" binderror="" bindload=""></image>
+    </view>
+    <view class="main">
+        <view class="text">
+            <view class="h1">DECORATE YOUR OWN HOME</view>
+            <view class="h5">装饰你的家</view>
+        </view>
+        <view class="prolist">
+            <view class="proli" wx:for="{{proli}}" wx:key="{{index}}">
+                <view class="proinfo">
+                    <image class="mainpic" src="{{item.img}}" mode="aspectFit|aspectFill|widthFix" lazy-load="false" binderror="" bindload=""></image>
+                    <view class="title">{{item.name}}</view>
+                    <view class="price">￥{{item.price}}</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

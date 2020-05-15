@@ -1,0 +1,90 @@
+/* pages/home/home.wxss */
+.swiper {
+    height: 500rpx;
+
+    .swiper_item {
+        width: 100%;
+
+        .mainpic {
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    }
+}
+
+.home {
+    width: 100%;
+
+    .main {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 25rpx;
+
+        .showbox {
+            width: 100%;
+            box-sizing: border-box;
+            padding-top: 20rpx;
+
+            .showlist {
+                // background: royalblue;
+                width: 100%;
+                height: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                grid-gap: 20rpx;
+
+                .showli {
+                    width: 100%;
+                    text-align: center;
+                    font-size: 24rpx;
+                    color: rgba(0, 0, 0, .7);
+
+                    &:last-child {
+                        width: 200%;
+                        // background: salmon;/
+                    }
+
+                    .mainpic {
+                        width: 100%;
+                        background-position: center;
+                        background-size: cover;
+                        background-repeat: no-repeat;
+                    }
+
+                }
+
+            }
+        }
+
+        .productbox {
+            width: 100%;
+            box-sizing: border-box;
+            padding-top: 40rpx;
+
+            .title {
+                text-align: center;
+                color: #333333;
+
+                .h1 {
+                    font-weight: bold;
+                    font-family: Oswald;
+                    font-size: 50rpx;
+                }
+                .h5{
+                    font-size: 30rpx;
+                }
+                .eng{
+
+                    width: 90%;
+                    margin: 20rpx auto;
+                    font-family: times new roman;
+                    font-size: 28rpx;
+                    color: rgba(0, 0, 0, .5);
+                }
+            }
+        }
+    }
+}

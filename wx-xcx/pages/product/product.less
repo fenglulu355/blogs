@@ -1,0 +1,57 @@
+/* pages/product/product.wxss */
+.product {
+    width: 100%;
+
+    .banner {
+        width: 100%;
+
+        image {
+            width: 100%;
+            height: 200rpx;
+        }
+    }
+
+    .main {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 25rpx;
+
+        .text {
+            text-align: center;
+            padding: 20rpx 0;
+
+
+            .h1 {
+                font-size: 60rpx;
+                font-family: Oswald;
+                color: rgba(0, 0, 0, .5);
+            }
+
+            .h5 {
+                font-size: 30rpx;
+            }
+        }
+
+        .prolist {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 20rpx;
+
+            .proli {
+                width: 100%;
+
+                .proinfo {
+                    width: 100%;
+                    text-align: center;
+                    font-family: Oswald;
+                    font-size: 26rpx;
+                    .mainpic {
+                        width: 100%;
+                        height: 400rpx;
+                    }
+                }
+            }
+        }
+    }
+}
