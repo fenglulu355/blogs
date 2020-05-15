@@ -1,0 +1,39 @@
+<!--pages/detail/detail.wxml-->
+<view class="detail">
+    <view class="title">首页 / {{goods.class}} / {{goods.title}}</view>
+    <view class="main">
+        <!-- <view class="showpic">
+            <view class="mainpic">
+                <image class="mainpics" src="{{mainpic}}" mode="aspectFit|aspectFill|widthFix" lazy-load="false"
+                    binderror="" bindload="">
+                </image>
+            </view>
+            <view class="picbox">
+                <view class="piclist" wx:for="{{goods.imgs}}" wx:key="{{index}}">
+    
+                    <image class="pic" src='{{item}}'></image>
+                </view>
+            </view>
+    
+        </view> -->
+        <view class="titles">{{goods.title}}</view>
+        <view class="price">￥{{goods.price}}</view>
+        <view class="cont">
+            <view class="clear">是否拆洗：{{goods.clear}}</view>
+            <view class="brand">产品品牌：{{goods.brand}}</view>
+            <view class="size">产品尺寸：{{goods.size}}</view>
+            <view class="color">产品颜色:{{goods.color}}</view>
+            <view class="material">产品材质：{{goods.material}}</view>
+        </view>
+        <view class="bot">
+            <view class="addcar">加入购物车</view>
+            <view class="count">
+                <view class="but">-</view>
+                <view class="num">{{count}}</view>
+                <view class="but">+</view>
+            </view>
+        </view>
+        <view class="text">产品编号：{{goods.title}}</view>
+    
+    </view>
+    </view>

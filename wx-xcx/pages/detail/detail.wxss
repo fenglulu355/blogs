@@ -1,0 +1,95 @@
+.detail {
+  width: 100%;
+}
+.detail .title {
+  height: 50px;
+  background: #f5f6f8;
+  box-sizing: border-box;
+  padding: 0 25px;
+  font-size: 14px;
+  color: #595959;
+  line-height: 50px;
+}
+.detail .main {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 25rpx;
+}
+.detail .main .showpic {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 60rpx;
+}
+.detail .main .showpic .mainpic {
+  width: 100%;
+  height: 400rpx;
+}
+.detail .main .showpic .mainpic .mainpics {
+  width: 100%;
+  height: 100%;
+}
+.detail .main .showpic .picbox {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 30rpx 0;
+}
+.detail .main .showpic .picbox .piclist {
+  display: inline-block;
+  width: 25%;
+  height: 160rpx;
+  margin-right: 30rpx;
+}
+.detail .main .showpic .picbox .piclist .pic {
+  width: 100%;
+  height: 100%;
+}
+.detail .main .titles {
+  font-size: 60rpx;
+  box-sizing: border-box;
+  padding: 30rpx 0;
+  position: relative;
+}
+.detail .main .titles::after {
+  content: '';
+  width: 200rpx;
+  height: 6rpx;
+  background: #cecece;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.detail .main .price {
+  font-size: 60rpx;
+  box-sizing: border-box;
+  padding: 30rpx 0;
+}
+.detail .main .cont {
+  font-size: 30rpx;
+  color: #aaaaaa;
+  line-height: 60rpx;
+}
+.detail .main .bot {
+  display: flex;
+  justify-content: flex-start;
+}
+.detail .main .bot .addcar {
+  width: 280rpx;
+  height: 100rpx;
+  background: black;
+  color: white;
+  text-align: center;
+  line-height: 100rpx;
+}
+.detail .main .bot .count {
+  background: orange;
+  width: 200rpx;
+  margin-left: 20rpx;
+  display: flex;
+  justify-content: flex-start;
+}
+.detail .main .bot .count .but {
+  width: 33%;
+}
+.detail .main .bot .count .num {
+  width: 33%;
+}
