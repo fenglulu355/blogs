@@ -382,6 +382,7 @@ export default {
           box-sizing: border-box;
           margin-bottom: 25px;
           padding: 20px 20px;
+          font-size: 18px;
           &::placeholder {
             font-weight: 300;
             font-size: 18px;
@@ -395,6 +396,7 @@ export default {
           box-sizing: border-box;
           padding: 20px 20px;
           resize: none;
+          font-size: 18px;
           &::placeholder {
             font-family: 微软雅黑;
             font-weight: 300;

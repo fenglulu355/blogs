@@ -47,6 +47,12 @@ export default {
         this.nextid = res.data.data.next;
         this.requstprev();
         this.requstnext();
+        let pics = this.infos.article_pics;
+        let arr = [];
+
+      
+
+        console.log(pics);
       });
     },
     // 请求上一篇

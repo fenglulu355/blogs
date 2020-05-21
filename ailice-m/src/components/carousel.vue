@@ -1,45 +1,20 @@
 <template>
-  <div class="content" @mouseover="clearInv" @mouseout="runInv">
+  <div class="content">
     <div class="slide-show">
-      <div class="slide-img">
-        <div class="pic">
-          <transition-group name="slide-trans">
-            <img v-if="isShow" :src=" baseurl + `/public/` +slides[nowIndex]" :key="nowIndex" />
-          </transition-group>
-          <transition-group name="slide-trans-old">
-            <img v-if="!isShow" :src=" baseurl + `/public/` +slides[nowIndex]" :key="nowIndex" />
-          </transition-group>
-        </div>
-      </div>
-    </div>
-    <div class="pre-btn btn" @click="goto(preIndex)">
-      <div
-        class="mainpic"
-        :style="{backgroundImage: 'url(' + require('../assets/left.png')+ ')',
+     
+      <van-swipe :autoplay="3000" indicator-color="#fff">
+        <van-swipe-item v-for="(image, index) in slides" :key="index">
+          <div
+            class="mainpic"
+            :style="{backgroundImage: 'url(' + baseurl + `/public/`+image+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-      ></div>
+          ></div>
+        </van-swipe-item>
+      </van-swipe>
     </div>
-    <div class="next-btn btn" @click="goto(nextIndex)">
-      <div
-        class="mainpic"
-        :style="{backgroundImage: 'url(' + require('../assets/right.png')+ ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-      ></div>
-    </div>
-    <!-- <ul class="slide-page">
-      <li
-        v-for="(item, index) in slides"
-        :key="index"
-        :class="{on: index === nowIndex}"
-        @click="goto(index)"
-      ></li>
-    </ul>-->
   </div>
 </template>
 
@@ -57,10 +32,7 @@ export default {
   },
   props: {
     slides: {
-      type: Array,
-      default: function() {
-        return [];
-      }
+      type: Object
     }
   },
   data() {
@@ -69,46 +41,11 @@ export default {
       nowIndex: 0
     };
   },
-  computed: {
-    preIndex() {
-      if (this.nowIndex === 0) {
-        return this.slides.length - 1;
-      } else {
-        return this.nowIndex - 1;
-      }
-    },
-    nextIndex() {
-      if (this.nowIndex === this.slides.length - 1) {
-        return 0;
-      } else {
-        return this.nowIndex + 1;
-      }
-    }
-  },
   methods: {
-    goto(index) {
-      if (index !== this.nowIndex) {
-        this.isShow = false;
-        setTimeout(() => {
-          this.isShow = true;
-          this.nowIndex = index;
-        }, 10);
-      }
-    },
-    runInv() {
-      //   console.log("runInv");
 
-      this.invId = setInterval(() => {
-        this.goto(this.nextIndex);
-      }, 2000);
-    },
-    clearInv() {
-      //   console.log("clearInv");
-      clearInterval(this.invId);
-    }
   },
   mounted() {
-    this.runInv();
+
   }
 };
 </script>
@@ -120,11 +57,15 @@ export default {
   position: relative;
   .slide-show {
     position: relative;
-    width: 70%;
+    width: 90%;
     margin: 0 auto;
     box-sizing: border-box;
     height: 346px;
     overflow: hidden;
+    .mainpic {
+      width: 100%;
+      height: 346px;
+    }
     .slide-img {
       width: 70%;
       height: 100%;

@@ -59,7 +59,12 @@
           v-on:mouseover="stopmove()"
           v-on:mouseout="move()"
         >
-          <li class="pic" v-for="(item, index) in caseslide" :key="index">
+          <li
+            class="pic"
+            v-for="(item, index) in caseslide"
+            :key="index"
+            @click="tocasedetail(index,item)"
+          >
             <div class="pics">
               <!-- <img :src="baseurl+`/public/`+item.image_url" alt /> -->
               <div class="mainpicbox">
@@ -121,7 +126,7 @@
             class="tozx"
             target="_blank"
             href="http://wpa.qq.com/msgrd?v=3&uin=993506370&site=qq&menu=yes"
-          >立即咨询</a> -->
+          >立即咨询</a>-->
         </div>
       </div>
     </div>
@@ -412,6 +417,9 @@ export default {
       clearInterval(this.timer);
       clearInterval(this.timers);
     },
+    tocasedetail(index, item) {
+      this.$router.push({ path: "/detail", query: { id: item.article_id } });
+    },
     // 查看更多跳转
     tocase() {
       this.$router.push({ path: "/cases" });
@@ -509,8 +517,8 @@ export default {
       box-sizing: border-box;
       padding-bottom: 35px;
       text-align: center;
-      .icon{
-        img{
+      .icon {
+        img {
           width: 50px;
         }
       }

@@ -49,7 +49,9 @@
           <p class="submit" @click="send">提交留言</p>
         </div>
       </div>
+        <p class="copyright">{{this.infos.foot_content}}</p>
     </div>
+  
   </div>
 </template>
 
@@ -173,10 +175,9 @@ export default {
 <style lang="less" scoped>
 .footers {
   width: 100%;
-  height: 270px;
   background: rgba(50, 149, 43, 1);
-
   .footerbox {
+    background: rgba(50, 149, 43, 1);
     width: 1200px;
     margin: 0 auto;
     position: relative;
@@ -336,6 +337,13 @@ export default {
         }
       }
     }
+  }
+  .copyright {
+    // background: rgba(50, 149, 43, 1);
+    text-align: center;
+    color: white;
+    font-size: 14px;
+    padding: 30px 0 10px 0 ;
   }
 }
 </style>

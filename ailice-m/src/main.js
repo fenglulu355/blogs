@@ -8,6 +8,8 @@ import Axios from 'axios'
 import httpUrl from "../src/api/url.vue"
 import Vant from 'vant'
 import 'vant/lib/index.css'
+
+
 Vue.use(Vant)
 
 import VueTouch from 'vue-touch'

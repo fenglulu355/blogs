@@ -94,7 +94,7 @@ export default {
         .then(cases => {
           this.caseslide = cases.data.data.data;
           this.count = cases.data.data.total;
-          // console.log(this.count);
+          // console.log(this.caseslide);
         });
     },
     casechangenav(item, index) {

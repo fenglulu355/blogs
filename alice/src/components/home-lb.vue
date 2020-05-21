@@ -152,14 +152,17 @@ li {
   }
 }
 .bullet {
+  width: 100%;
   position: absolute;
   top: 660px;
   left: 20%;
   z-index: 10;
+  display: flex;
+  justify-content: flex-start;
 }
 .curbox {
   cursor: pointer;
-  display: inline-block;
+
   width: 160px;
   height: 78px;
   border: 1px solid rgba(255, 255, 255, 0.3);

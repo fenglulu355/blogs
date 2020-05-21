@@ -4,7 +4,7 @@
     <navbar :navbar="casenav" @changenav="casechangenav"></navbar>
     <ul class="caselist">
       <li class="pic" v-for="(item, index) in caseslide" :key="index">
-        <div class="pics" v-if="item" @click="playvideo">
+        <div class="pics" v-if="item" @click="playvideo(item,index)">
           <div
             class="mainpic"
             :style="{backgroundImage: 'url(' +baseurl+`/public/`+ item.image_url+ ')',
@@ -36,7 +36,6 @@
         <video
           :style="{'height':clientHeight+`px`,'width':clientWidth+`px`}"
           ref="video"
-          autoplay
           controls
           v-show="isvedio"
           :src="baseurl+`/public/`+videos.video_url"
@@ -62,7 +61,7 @@ export default {
       clientHeight: "",
       height: "",
       // 分页
-      pageSize: 6, // 每页显示20条数据
+      pageSize: 8, // 每页显示20条数据
       currentPage: 1, // 当前页码
       count: 1, // 总记录数,
       caseinfo: {
@@ -120,8 +119,8 @@ export default {
         })
         .then(res => {
           this.caseslide = res.data.data.data;
-          this.count = res.data.data.data.length;
-          console.log(this.caseslide, "video");
+          this.count = res.data.data.total;
+          // console.log(this.caseslide, "video");
         });
     },
 
@@ -129,7 +128,7 @@ export default {
       this.isvedio = true;
       this.palyvideos = item;
       // console.log(this.palyvideos, "aaaa");
-      this.requstvideo(this.curitem.class_id, 1, 6, this.keyword);
+      this.requstvideodetail(this.palyvideos.article_id);
       setTimeout(() => {
         this.isvedio = true;
       }, 200);
@@ -140,10 +139,10 @@ export default {
         this.videos = res.data.data;
         this.previd = res.data.data.prov;
         this.nextid = res.data.data.next;
-        this.requstprev();
-        this.requstnext();
+        // this.requstprev();
+        // this.requstnext();
         // this.$refs.video.src = res.data.data.video_url
-        //  / console.log(res, "videos");
+        // console.log(res, "videos");
       });
     },
 
@@ -223,6 +222,7 @@ export default {
   }
   .videobox {
     width: 100%;
+    height: 100%;
     background: RGBA(0, 0, 0, 0.8);
     position: fixed;
     left: 0;

@@ -2,8 +2,8 @@
   <div class="navagation">
     <div class="navbox">
       <div class="logo">
-        <img src="../assets/home/02.png" alt="">
-        <p  class="text">爱丽丝景观</p>
+        <img @click="tohome" src="../assets/home/02.png" alt />
+        <p @click="tohome" class="text">爱丽丝景观</p>
         <!-- <div
           class="mainpic"
           :style="{backgroundImage: 'url(' + require('../assets/home/01.png')+ ')',
@@ -11,7 +11,7 @@
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-        ></div> -->
+        ></div>-->
       </div>
       <ul class="navlist">
         <li class="navli" v-for="(item, index) in navli" :key="index" @click="changeindex(index)">
@@ -49,6 +49,9 @@ export default {
     }
   },
   methods: {
+    tohome() {
+      this.$router.push({ path: "/" });
+    },
     changeindex(index) {
       this.curindex = index;
       sessionStorage.setItem("navindex", index);
@@ -78,10 +81,12 @@ export default {
       box-sizing: border-box;
       padding-left: 40px;
       position: relative;
-      img{
+      img {
+        cursor: pointer;
         height: 80px;
       }
-      .text{
+      .text {
+        cursor: pointer;
         width: 150px;
         color: white;
         position: absolute;

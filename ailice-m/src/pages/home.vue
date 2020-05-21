@@ -7,7 +7,7 @@
       <div class="caseinfo">
         <v-touch @swipeleft="swipeleft">
           <ul class="warpper" :style="{'left':calleft + 'px'}" @click="stopmove()">
-            <li class="pic" v-for="(item, index) in caseslide" :key="index">
+            <li class="pic" v-for="(item, index) in caseslide" :key="index" @click="todetail(item, index)">
               <div class="pics">
                 <div
                   class="mainpic"
@@ -314,6 +314,9 @@ export default {
     stopmove() {
       clearInterval(this.timer);
       clearInterval(this.timers);
+    },
+    todetail(item, index) {
+      this.$router.push({ path: "/detail", query: { id: item.article_id } });
     },
     // 查看更多跳转
     tocase() {

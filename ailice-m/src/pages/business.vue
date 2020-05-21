@@ -88,7 +88,7 @@ export default {
         .then(cases => {
           this.caseslide = cases.data.data.data;
           this.count = cases.data.data.total.length;
-        // /  console.log(cases);
+        //  console.log(cases);
         });
     },
     getList(page) {

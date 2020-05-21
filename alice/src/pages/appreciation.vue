@@ -66,12 +66,12 @@
 
     <!-- paly -->
     <div class="videobox" :style="{'height':clientHeight+`px`}" v-show="isvedio">
-      <div class="main" :style="{'height':height+`px`}">
+      <div class="main" :style="{'height':height+`px`}" v-if="isreload">
         <p
           class="toptitle"
-        >所在位置：首页 > 视频赏析 > {{palyvideos.class_name}} > {{palyvideos.article_title}}</p>
+        >所在位置：首页 > 视频赏析 > {{videos.class_name}} > {{videos.article_title}}</p>
         <img src="../assets/appreciation/close.png" alt class="close" @click="closevideo" />
-        <p class="title">{{palyvideos.article_title}}</p>
+        <p class="title">{{videos.article_title}}</p>
         <div class="video" v-if="palyvideos.image_url">
           <div
             v-show="!play"
@@ -84,13 +84,7 @@
           >
             <img @click="plays" src="../assets/appreciation/02.png" alt />
           </div>
-          <video
-            ref="video"
-            autoplay
-            controls
-            v-show="play"
-            :src="baseurl+`/public/`+videos.video_url"
-          ></video>
+          <video ref="video" controls v-show="play" ></video>
         </div>
 
         <p class="prev-next">
@@ -108,8 +102,14 @@ import moPagination from "../components/pagenation";
 import httpUrl from "../api/url";
 export default {
   name: "appreciation",
+  provide() {
+    return {
+      reload: this.reload
+    };
+  },
   data() {
     return {
+      isreload: true,
       getProductClass: [],
       baseurl: "",
       play: false,
@@ -172,8 +172,8 @@ export default {
         })
         .then(res => {
           this.caseslide = res.data.data.data;
-          this.count = res.data.data.data.length;
-          // console.log(this.caseslide, "video");
+          this.count = res.data.data.total;
+          // console.log(res, "video");
         });
     },
     changecaseindex(index, item) {
@@ -197,27 +197,37 @@ export default {
         this.isvedio = true;
       }, 200);
     },
+    reload() {
+      let self = this;
+      self.isreload = false;
+      self.$nextTick(function() {
+        self.isreload = true;
+      });
+    },
     // 请求视频详情
     requstvideodetail(id) {
       this.$axios.post("/index/api/videoShow", { id: id }).then(res => {
+     
         this.videos = res.data.data;
         this.previd = res.data.data.prov;
         this.nextid = res.data.data.next;
         this.requstprev();
         this.requstnext();
-        // this.$refs.video.src = res.data.data.video_url
+          //  this.reload();
+          // :src="baseurl+`/public/`+videos.video_url"
+        this.$refs.video.src =this.baseurl+`/public/`+ res.data.data.video_url
         // console.log(res, "videos");
       });
     },
     prev(prev) {
-      this.requst(this.previd);
+      this.requstvideodetail(this.previd);
     },
     next(next) {
-      this.requst(this.nextid);
+      this.requstvideodetail(this.nextid);
     }, // 请求上一篇
     requstprev(previd) {
       this.$axios
-        .post("/index/api/getNewsShow", { id: this.previd })
+        .post("/index/api/videoShow", { id: this.previd })
         .then(res => {
           // console.log(res, "requstprev");
           this.prevtitle = res.data.data.article_title;
@@ -226,7 +236,7 @@ export default {
     // 请求下一篇
     requstnext(nextid) {
       this.$axios
-        .post("/index/api/getNewsShow", { id: this.nextid })
+        .post("/index/api/videoShow", { id: this.nextid })
         .then(res => {
           this.nexttitle = res.data.data.article_title;
         });
@@ -249,7 +259,8 @@ export default {
   .topbox {
     box-sizing: border-box;
     padding-bottom: 35px;
-    text-align: center;  .icon {
+    text-align: center;
+    .icon {
       img {
         width: 50px;
       }
@@ -446,6 +457,7 @@ export default {
   }
   .videobox {
     width: 100%;
+    // height: 2500px;
     background: RGBA(0, 0, 0, 0.8);
     position: fixed;
     top: 0;
@@ -453,7 +465,7 @@ export default {
     .main {
       background: white;
       width: 1200px;
-      margin: 30px auto;
+      margin: 40px auto;
       box-sizing: border-box;
       padding: 23px 43px;
       position: relative;
@@ -506,8 +518,8 @@ export default {
         display: flex;
         justify-content: space-between;
         box-sizing: border-box;
-        padding: 20px 0 0px 0;
-        margin-top: 35px;
+        padding: 20px 0 10px 0;
+        margin-top: 25px;
         color: rgba(153, 153, 153, 1);
         font-size: 14px;
         span {
