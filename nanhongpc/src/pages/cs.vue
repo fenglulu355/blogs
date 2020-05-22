@@ -1,65 +1,117 @@
 <template>
-  <div class="selectbox">
-    <div class="content">
-      <div class="warpper" v-for="(item, index) in selectlist" :key="index">
-        <select name :id="item.id">
-          <option :value="items" v-for="(items, index) in item.option" :key="index">{{items}}</option>
-        </select>
-      </div>
+  <div id="app">
+    <div v-if="books.length">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>书名</th>
+            <th>价格</th>
+            <th>购买数量</th>
+            <th>单个总价</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in books" :key="index">
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.price | showPrice}}</td>
+            <td>
+              <button @click="decrement(index)" :disabled="item.count <= 1">-</button>
+              {{ item.count }}
+              <button @click="increment(index)">+</button>
+            </td>
+            <td>￥{{item.price* item.count | showPrice}}</td>
+            <td>
+              <button @click="removeBook(index)">移除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <h2>共计：{{ totalPrice | showPrice }}</h2>
     </div>
+    <h2 v-else>购物车空空如也</h2>
+
   </div>
 </template>
+
 <script>
 export default {
-  name: "selectbox",
   data() {
     return {
-      selectlist: [
-        { selects: "匹数", option: ["1.5", "2", "2.5"], id: 1 },
-        { selects: "价格", option: ["0-200", "200-1000", "1000-2000"], id: 2 },
-        { selects: "产品分类", option: ["彩电", "空调", "洗衣机"], id: 3 },
-        { selects: "产品类型", option: ["节能", "智能", "落地"], id: 4 },
-        { selects: "匹数", option: ["1.5", "2", "2.5"], id: 5 },
-        { selects: "匹数", option: ["1.5", "2", "2.5"], id: 1 },
-        { selects: "价格", option: ["0-200", "200-1000", "1000-2000"], id: 2 },
-        { selects: "产品分类", option: ["彩电", "空调", "洗衣机"], id: 3 },
-        { selects: "产品类型", option: ["节能", "智能", "落地"], id: 4 }
+      books: [
+        {
+          id: 1,
+          name: "《计算机概述》",
+          price: 110.1,
+          count: 1
+        },
+        {
+          id: 2,
+          name: "《JavaScript》",
+          price: 89.02,
+          count: 1
+        },
+        {
+          id: 3,
+          name: "《Java从入门到精通》",
+          price: 65.1,
+          count: 1
+        },
+        {
+          id: 4,
+          name: "《代码大全》",
+          price: 120.02,
+          count: 1
+        }
       ]
     };
+  },
+  computed: {
+    totalPrice() {
+      return this.books.reduce(
+        (previousValue, item) => previousValue + item.count * item.price,
+        0
+      );
+    }
+  },
+  methods: {
+    decrement(index) {
+      this.books[index].count--;
+    },
+    increment(index) {
+      this.books[index].count++;
+    },
+    removeBook(index) {
+      this.books.splice(index, 1);
+    }
+  },
+  filters: {
+    showPrice(price) {
+      return "￥" + price.toFixed(2);
+    }
   }
 };
 </script>
-<style lang="less" scoped>
-.selectbox {
-  width: 100%;
-  background: rgba(245, 245, 245, 1);
-  .content {
-    width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    .warpper {
-      width: 145px;
-      select {
-        width: 100%;
-        height: 60px;
-        appearance: none;
-        border: none;
-        outline: none;
-        background: rgba(245, 245, 245, 1);
-        font-size: 16px;
-        color: rgba(51, 51, 51, 1);
-        text-align: center;
-        line-height: 60px;
-      }
-      option {
-        background: white;
-        &:hover {
-          background: rgba(236, 236, 236, 1);
-        }
-      }
-    }
-  }
+
+<style lang="less">
+table {
+  border: 1px solid #e9e9e9;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th,
+td {
+  padding: 8px 16px;
+  border: 1px solid #e9e9e9;
+  text-align: left;
+}
+
+th {
+  background-color: #e7e7e7;
+  color: #5c6b77;
+  font-weight: 600;
 }
 </style>

@@ -5,7 +5,7 @@
       <div class="eva-left fl padding">
         <div
           class="mainpic"
-          :style="{backgroundImage: 'url(' +goodsinfos.img+ ')',
+          :style="{backgroundImage: 'url(' +httpUrl+goodsinfos.img+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -16,9 +16,9 @@
       <div class="eva-right fr padding">
         <p class="cur-radio">
           <el-radio-group v-model="radio">
-            <el-radio :label="0" @change="change">好评(93%)</el-radio>
-            <el-radio :label="1" @change="change">中评(6%)</el-radio>
-            <el-radio :label="2" @change="change">差评(1%)</el-radio>
+            <el-radio :label="3" @change="change">好评(93%)</el-radio>
+            <el-radio :label="2" @change="change">中评(6%)</el-radio>
+            <el-radio :label="1" @change="change">差评(1%)</el-radio>
           </el-radio-group>
         </p>
         <textarea name="eva-text" id cols="30" rows="10" placeholder="亲，写点评价吧，你的评价对其他买家有很大帮助的。"></textarea>
@@ -76,7 +76,7 @@ export default {
       isshow: true,
       upload: "3",
       curradio: null,
-      radio: 0,
+      radio: 3,
       dialogImageUrl: "",
       dialogVisible: false,
       disabled: false

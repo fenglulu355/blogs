@@ -1,10 +1,10 @@
 <template>
   <div class="product">
-    <banner></banner>
+    <!-- <banner></banner> -->
     <div class="productbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <div class="content">
-        <curinfo :curinfo="curinfo" @change="tocurinfo"></curinfo>
+        <!-- <curinfo :curinfo="curinfo" @change="tocurinfo"></curinfo> -->
         <ul class="goodslist">
           <li
             class="goodsli"
@@ -14,17 +14,17 @@
           >
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.pic+ ')',
+              :style="{backgroundImage: 'url('+httpUrl +item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
             ></div>
             <div class="caseinfo">
-              <p class="name">{{item.name}}</p>
-              <p class="time text">工程日期：{{item.time}}年</p>
-              <p class="area text">项目面积：{{item.area}}</p>
-              <p class="type text">使用机型：{{item.type}}</p>
+              <p class="name">{{item.title}}</p>
+              <p class="time text">工程日期：{{item.riqi}}年</p>
+              <p class="area text">项目面积：{{item.mj}}</p>
+              <p class="type text">使用机型：{{item.syjx}}</p>
             </div>
           </li>
         </ul>
@@ -51,98 +51,56 @@ export default {
       // 分页
       pageSize: 6, // 每页显示20条数据
       currentPage: 1, // 当前页码
-      count: 300, // 总记录数,
+      count: 1, // 总记录数,
       curindex: 0,
       curinfoindex: 0,
       tabtitle: { a: "成功", b: "案例" },
-      tabnav: ["工程项目", "家装项目"],
-      curinfo: [
-        { name: "功率", info: ["不限", "1p", "1.5p", "2p", "3p", "5p"] },
-        { name: "种类", info: ["不限", "定频", "变频"] },
-        { name: "能效", info: ["不限", "一级", "二级", "三级"] },
-        {
-          name: "面积",
-          info: ["不限", "一居", "二居", "三居", "四居", "跃层", "别墅"]
-        }
-      ],
-      goodsinfo: [
-        {
-          pic: require("../assets/news/lb.png"),
-          name: "洗衣机",
-          time: "2017",
-          area: "30000",
-          type: "中央空调多联机"
-        },
-        {
-          pic: require("../assets/case/case1.png"),
-          name: "洗衣机",
-          time: "2017",
-          area: "30000",
-          type: "中央空调多联机"
-        },
-        {
-          pic: require("../assets/case/case1.png"),
-          name: "洗衣机",
-          time: "2017",
-          area: "30000",
-          type: "中央空调多联机"
-        },
-        {
-          pic: require("../assets/case/case1.png"),
-          name: "洗衣机",
-          time: "2017",
-          area: "30000",
-          type: "中央空调多联机"
-        },
-        {
-          pic: require("../assets/case/case1.png"),
-          name: "洗衣机",
-          time: "2017",
-          area: "30000",
-          type: "中央空调多联机"
-        },
-        {
-          pic: require("../assets/case/case1.png"),
-          name: "洗衣机",
-          time: "2017",
-          area: "30000",
-          type: "中央空调多联机"
-        }
-      ]
+      tabnav: [{ class_name: "工程项目" }, { class_name: "家装项目" }],
+      goodsinfo: []
     };
   },
   created() {
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
+      this.requst(0, 1, 6);
     } else {
       this.curindex = Number(idx);
+      this.requst(this.curindex, 1, 6);
     }
   },
   mounted() {
     document.body.scrollTop = document.documentElement.scrollTop = 300;
   },
   methods: {
+    requst(type, page, limit) {
+      this.$axios
+        .post("/index/api/cgalList", { type: type, page: page, limit: limit })
+        .then(res => {
+          // console.log(res, "res");
+          this.goodsinfo = res.data.data.data;
+          this.count = res.data.data.total;
+        });
+    },
     getList(page) {
-      // this.requstKind(this.class_id, page);
+      this.requst(this.curindex, page, 6);
     },
     pageChange(index) {
       this.currentPage = index;
-      // console.log( this.currentPage)
       this.getList(index);
     },
     tonav(index) {
-      console.log(index);
       this.curindex = index;
+      this.requst(this.curindex, 1, 6);
     },
-    tocurinfo(mindex, item, e) {
-      console.log(mindex, item);
-    },
+    // tocurinfo(mindex, item, e) {
+    //   console.log(mindex, item);
+    // },
     toCaseDetail(index, item) {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
       this.$router.push({
         path: "/detail",
-        query: { id: index, kind: "case" }
+        query: { id: item.id, kind: "case" }
       });
     }
   },
@@ -177,6 +135,7 @@ export default {
           box-sizing: border-box;
           margin-bottom: 50px;
           .mainpic {
+            transition: all 0.5s ease;
             width: 380px;
             height: 283px;
             border-radius: 10px;
@@ -202,6 +161,7 @@ export default {
             }
           }
           &:hover .caseinfo {
+            transition: background-color 0.5s ease;
             background: rgba(36, 130, 200, 1);
             color: white;
             .name {

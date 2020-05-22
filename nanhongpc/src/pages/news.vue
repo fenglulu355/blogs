@@ -1,10 +1,10 @@
 <template>
   <div class="news">
-    <banner></banner>
+    <!-- <banner></banner> -->
     <div class="newsbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <!-- 行业新闻 -->
-      <div class="hynews nbox" v-show="curindex == 0">
+      <div class="hynews nbox">
         <div class="flash">
           <div
             class="mainpic"
@@ -19,8 +19,8 @@
               <div class="infos">
                 <div class="ins-info">
                   <p class="title">{{item.title}}</p>
-                  <p class="time">{{item.time}}</p>
-                  <p class="intro">{{item.intro}}</p>
+                  <p class="time">{{item.created_time}}</p>
+                  <p class="intro">{{item.desc}}</p>
                   <p class="more">查看详情+</p>
                 </div>
               </div>
@@ -28,10 +28,10 @@
           </el-carousel>
         </div>
         <ul class="newslist">
-          <li class="newsli" v-for="(item, index) in lb" :key="index">
+          <li class="newsli" v-for="(item, index) in newsinfo" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.img + ')',
+              :style="{backgroundImage: 'url(' +httpUrl+item.image_url + ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -39,8 +39,8 @@
             ></div>
             <div class="ins-info">
               <p class="title">{{item.title}}</p>
-              <p class="time">{{item.time}}</p>
-              <p class="intro">{{item.intro}}</p>
+              <p class="time">{{item.created_time}}</p>
+              <p class="intro">{{item.desc}}</p>
               <p class="more">查看详情+</p>
             </div>
           </li>
@@ -65,12 +65,12 @@ export default {
   data() {
     return {
       // 分页
-      pageSize: 24, // 每页显示20条数据
+      pageSize: 8, // 每页显示20条数据
       currentPage: 1, // 当前页码
-      count: 300, // 总记录数,
+      count: 1, // 总记录数,
       curindex: 0,
       tabtitle: { a: "新闻", b: "中心" },
-      tabnav: ["行业新闻", "企业新闻"],
+      tabnav: [{ class_name: "行业新闻" }, { class_name: "企业新闻" }],
       lb: [
         {
           img: require("../assets/news/lb.png"),
@@ -100,10 +100,13 @@ export default {
           intro:
             "阳春三月，万物复苏，盛夏即将来临，为了避开盛夏涨价，销售、安装高峰，大山坪美的生活馆联袂美的集团8大品类聚焦全屋家电。一站购齐，我们提倡有智者，慧生活……"
         }
-      ]
+      ],
+      newsinfo: [],
+      curid: 0
     };
   },
   created() {
+    this.requst(0, 1, 8);
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
@@ -115,17 +118,28 @@ export default {
     document.body.scrollTop = document.documentElement.scrollTop = 300;
   },
   methods: {
+    requst(type, page, limit) {
+      this.$axios
+        .post("/index/api/newsList", { type: type, page: page, limit: limit })
+        .then(res => {
+          this.lb = res.data.data.data.splice(0, 3);
+          this.newsinfo = res.data.data.data.splice(4, 7);
+          this.count = res.data.data.total;
+          // console.log(res.data, "rrr");、
+        });
+    },
     getList(page) {
-      // this.requstKind(this.class_id, page);
+      this.requst(this.curid, page, 8);
     },
     pageChange(index) {
       this.currentPage = index;
-      // console.log( this.currentPage)
       this.getList(index);
     },
     tonav(index) {
-      //  console.log(index)
+      console.log(index);
       this.curindex = index;
+      this.curid = index;
+      this.requst(index, 1, 8);
     }
   },
   components: { banner, tabBar, moPagination }

@@ -25,16 +25,25 @@ export default new Router({
   routes: [{
       path: '/',
       name: 'home',
-      component: home
-    }, {
+      component: home,
+      meta: {
+        islb: true
+      }
+    },
+    {
       path: '/about',
       name: 'about',
-      component: about
-    }, {
+      component: about,
+      meta: {
+        islb: true
+      }
+    },
+    {
       path: '/payment',
       name: 'payment',
       component: payment,
       meta: {
+        isbanner: true,
         requireLogin: true
       }
     },
@@ -43,6 +52,7 @@ export default new Router({
       name: 'commoditydetails',
       component: commoditydetails,
       meta: {
+        isbanner: true,
         requireLogin: true
       }
     }, {
@@ -50,12 +60,12 @@ export default new Router({
       name: 'cs',
       component: cs
     },
-
     {
       path: '/orderlist',
       name: 'orderlist',
       component: orderlist,
       meta: {
+        isbanner: true,
         requireLogin: true
       }
     },
@@ -64,6 +74,7 @@ export default new Router({
       name: 'minecenter',
       component: minecenter,
       meta: {
+        isbanner: true,
         requireLogin: true
       }
     }, {
@@ -71,6 +82,7 @@ export default new Router({
       name: 'shoppingcar',
       component: shoppingcar,
       meta: {
+        isbanner: true,
         requireLogin: true
       }
     }, {
@@ -82,6 +94,7 @@ export default new Router({
       name: 'order',
       component: order,
       meta: {
+        isbanner: true,
         requireLogin: true
       }
     }, {
@@ -89,6 +102,7 @@ export default new Router({
       name: 'mine',
       component: mine,
       meta: {
+        isbanner: true,
         requireLogin: true
       }
     }, {
@@ -98,27 +112,46 @@ export default new Router({
     }, {
       path: '/cases',
       name: 'cases',
-      component: cases
+      component: cases,
+      meta: {
+        islb: true
+      }
     }, {
       path: '/news',
       name: 'news',
-      component: news
+      component: news,
+      meta: {
+        islb: true
+      }
     }, {
       path: '/product',
       name: 'product',
-      component: product
+      component: product,
+      meta: {
+        islb: true
+      }
     }, {
       path: '/service',
       name: 'service',
-      component: service
+      component: service,
+      meta: {
+        islb: true
+      }
     }, {
       path: '/shoppingmall',
       name: 'shoppingmall',
-      component: shoppingmall
+      component: shoppingmall,
+      meta: {
+        isbanner: true,
+        islb: true
+      }
     }, {
       path: '/shopshow',
       name: 'shopshow',
-      component: shopshow
+      component: shopshow,
+      meta: {
+        islb: true
+      }
     }
   ]
 })

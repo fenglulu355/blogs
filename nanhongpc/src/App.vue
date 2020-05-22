@@ -1,12 +1,14 @@
 <template>
-  <div id="app" v-if="isAlive" :class="isbanshow==true?'paddinga':'paddingb'">
-    <navgation></navgation>
-    <router-view />
-    <nhfooter></nhfooter>
+  <div id="app" :class="isbanshow==true?'paddinga':'paddingb'">
+    <navgation v-if="isAlive"></navgation>
+    <banner v-if="islb"></banner>
+    <router-view v-if="isAlive" />
+    <nhfooter v-if="isAlive"></nhfooter>
   </div>
 </template>
 
 <script>
+import banner from "./components/homebanner";
 import navgation from "./components/navagation.vue";
 import nhfooter from "./components/nhfooter.vue";
 import normalized from "./assets/normalized.css";
@@ -24,7 +26,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["isbanshow"])
+    ...mapState(["isbanshow", "islb"])
   },
   mounted() {
     if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
@@ -41,7 +43,7 @@ export default {
       });
     }
   },
-  components: { navgation, nhfooter }
+  components: { navgation, nhfooter, banner }
 };
 </script>
 
@@ -63,7 +65,7 @@ export default {
   padding: 93px 0 0 0;
 }
 .navgation {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   z-index: 111;
@@ -83,6 +85,9 @@ export default {
 .el-checkbox-button.is-checked .el-checkbox-button__inner {
   border-radius: 7px !important;
   background: rgba(36, 130, 200, 1) !important;
+}
+.el-checkbox-button.is-checked .el-checkbox-button__inner .curs {
+  padding: 0 0 !important;
 }
 .el-carousel__indicator.is-active button {
   border-radius: 7px !important;
@@ -117,7 +122,7 @@ export default {
   left: -7px !important;
 }
 .shoppingmall .el-input {
-  width: 75% !important;
+  width: 100% !important;
 }
 </style>
 

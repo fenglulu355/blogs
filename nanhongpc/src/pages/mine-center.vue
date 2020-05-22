@@ -91,21 +91,28 @@
                 class="dds"
                 type="text"
                 placeholder="请输入如道路、门牌号、小区、楼栋号、单元等信息"
-                v-model="detaildress"
+                v-model="address.dress"
               />
             </section>
             <section>
               <span class="text">收货人姓名：</span>
-              <input class="consignee" type="text" placeholder="长度不超过25个字符" v-model="consignee" />
+              <input class="consignee" type="text" placeholder="长度不超过25个字符" v-model="address.name" />
             </section>
             <section class="tel">
               <span class="text">手机号码：</span>
               <span class="border">中国大陆 +86</span>
-              <input class="telipt" type="text" placeholder="电话号码、手机号码必须填一项" v-model="tel" />
+              <input
+                class="telipt"
+                @blur="regphone(address.tel)"
+                type="text"
+                maxlength="11"
+                placeholder="电话号码、手机号码必须填一项"
+                v-model="address.tel"
+              />
             </section>
           </div>
           <!-- 保存设置 -->
-          <div class="save">
+          <div class="save" @click="savedress">
             <p>保存设置</p>
           </div>
         </div>
@@ -115,23 +122,23 @@
             <span class="tochange">优惠券</span>
           </p>
           <ul class="intlist">
-            <li class="intli" v-for="(item, index) in intinfo" :key="index">
+            <li class="intli" v-for="(item, index) in mineyhq" :key="index">
               <div class="couponinfo curbg">
                 <div class="top">
                   <div class="tleft">
-                    <p class="tltop">满减券</p>
-                    <p class="tlbot">满{{item.aprice}}可使用</p>
+                    <p class="tltop">{{item.title}}</p>
+                    <p class="tlbot">{{item.desc}}</p>
                   </div>
                   <p class="cut">
                     <span>￥</span>
-                    {{item.num}}
+                    {{item.price}}
                   </p>
                 </div>
                 <div class="bot">
                   <p class="brd">积分兑换·超值满减券</p>
-                  <p class="time">{{item.starttime}}-{{item.closetime}}</p>
-                  <p class="needint" v-show="item.isexchange==false">立即领取</p>
-                  <p class="needint" v-show="item.isexchange==true">已领取</p>
+                  <p class="time">{{item.start_time}}-{{item.end_time}}</p>
+
+                  <p class="needint">已领取</p>
                 </div>
               </div>
             </li>
@@ -142,26 +149,32 @@
           <p class="inttitle">
             <span class="tochange">积分兑换</span>
             <span>我的积分：</span>
-            <span class="num">2080</span>
+            <span class="num">{{userinfo.points}}</span>
           </p>
           <ul class="intlist">
-            <li class="intli" v-for="(item, index) in intinfo" :key="index">
-              <div class="couponinfo" :class="item.isexchange==false?'curbg':'exchange'">
+            <li
+              class="intli"
+              v-for="(item, index) in intinfo"
+              :key="index"
+              @click="changePoints(item)"
+            >
+              <div class="couponinfo curbg">
+                <!-- :class="item.isexchange==false?'curbg':'exchange'" -->
                 <div class="top">
                   <div class="tleft">
-                    <p class="tltop">满减券</p>
-                    <p class="tlbot">满{{item.aprice}}可使用</p>
+                    <p class="tltop">{{item.title}}</p>
+                    <p class="tlbot">{{item.desc}}</p>
                   </div>
                   <p class="cut">
                     <span>￥</span>
-                    {{item.num}}
+                    {{item.price}}
                   </p>
                 </div>
                 <div class="bot">
                   <p class="brd">积分兑换·超值满减券</p>
-                  <p class="time">{{item.starttime}}-{{item.closetime}}</p>
-                  <p class="needint" v-show="item.isexchange==false">{{item.need}}积分兑换</p>
-                  <p class="needint" v-show="item.isexchange==true">已兑换</p>
+                  <p class="time">{{item.start_time}}-{{item.end_time}}</p>
+                  <p class="needint">{{item.points}}积分兑换</p>
+                  <!-- <p class="needint" v-show="item.isexchange==true">已兑换</p> -->
                 </div>
               </div>
             </li>
@@ -197,8 +210,10 @@
 <script>
 import VDistpicker from "v-distpicker";
 import editdress from "../components/editdress";
+import { mapState } from "vuex";
 export default {
   name: "minecenter",
+  inject: ["reload"],
   data() {
     return {
       edititem: "",
@@ -217,9 +232,9 @@ export default {
         name: "",
         tel: "",
         dress: "",
-        province: "",
-        city: "",
-        county: ""
+        province: "四川省",
+        city: "成都市",
+        county: "武侯区"
       },
       mineli: ["个人信息", "我的地址", "我的优惠", "我的积分", "修改密码"],
       dressinfo: [
@@ -241,46 +256,117 @@ export default {
           county: "通川区"
         }
       ],
-      intinfo: [
-        {
-          aprice: "1000.00",
-          num: 200,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 1000,
-          isexchange: false
-        },
-        {
-          aprice: "1000.00",
-          num: 200,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 1000,
-          isexchange: false
-        },
-        {
-          aprice: "1000.00",
-          num: 400,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 2000,
-          isexchange: false
-        },
-        {
-          aprice: "1000.00",
-          num: 200,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 1000,
-          isexchange: true
-        }
-      ]
+      mineyhq: [],
+      intinfo: [],
+      points: "",
+      userinfo: []
     };
   },
   created() {
     this.selmcli = this.$route.query.tag;
+    this.requstmine();
+    if (this.selmcli == 3) {
+      this.requstyhq();
+    }
+  },
+  computed: {
+    ...mapState(["userid"])
   },
   methods: {
+    //
+    requstmine() {
+      this.$axios
+        .post("/index/user/userInfo", { userId: this.userid })
+        .then(res => {
+          this.userinfo = res.data.data;
+          console.log(res);
+        });
+    },
+    // 获取优惠券
+    getyhq() {
+      this.$axios
+        .post("/index/coupon/userCoupon", { userId: this.userid })
+        .then(res => {
+          console.log(res);
+          this.mineyhq = res.data.data;
+        });
+    },
+    // 请求优惠券
+    requstyhq() {
+      this.$axios.post("/index/coupon/coupon").then(res => {
+        console.log(res);
+        this.intinfo = res.data.data;
+      });
+    },
+    // 兑换
+    changePoints(item) {
+      console.log(item);
+      if (
+        this.userinfo.points > item.points ||
+        this.userinfo.points == item.points
+      ) {
+        this.$confirm("您有积分" + this.points + "确定要兑换此券吗", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        })
+          .then(() => {
+            // 领取优惠券
+            this.$axios
+              .post("/index/coupon/addcoupon", {
+                userId: this.userid,
+                couponId: item.id
+              })
+              .then(res => {
+                console.log(res);
+                if (res.data.code == 200) {
+                  // 请求个人信息更新积分
+                  this.requstmine();
+                  this.$message({
+                    message: "领取成功",
+                    type: "success"
+                  });
+                  this.$forceUpdate();
+                } else {
+                  this.$message.error("领取失败");
+                }
+              });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消兑换"
+            });
+          });
+      } else {
+        this.$message.error("对不起！您的积分不足，不能兑换！");
+      }
+    },
+    savedress() {
+      console.log(this.address);
+      this.$axios
+        .post("/index/user/addaddress", {
+          userId: this.userid,
+          address_name: this.address.name,
+          address_phone: this.address.tel,
+          address_province: this.address.province,
+          address_city: this.address.city,
+          address_area: this.address.county,
+          address_info: this.address.dress
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.code == 200) {
+            this.$message({
+              message: "添加成功",
+              type: "success"
+            });
+          } else {
+            this.$message.error("添加失败");
+          }
+          this.reload();
+        });
+    },
     //   上传头像
     handleRemove(file, fileList) {
       console.log(file, fileList);
@@ -321,6 +407,23 @@ export default {
     },
     tonav(index, item) {
       this.selmcli = index;
+      if (index == 2) {
+        // 获取优惠券
+        this.getyhq();
+      }
+    },
+    // 正则判断手机号
+    regphone(tel) {
+      let regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/;
+      if (!regPhone.test(tel)) {
+        this.$message.error("手机号码格式错误");
+        setTimeout(() => {
+          this.tel = "";
+        }, 200);
+      } else {
+        this.tel = tel;
+        console.log(this.tel);
+      }
     }
   },
   components: { VDistpicker, editdress }
@@ -499,10 +602,9 @@ export default {
           }
           input {
             line-height: 40px;
-              &:focus {
-            border: 1px solid RGBA(140, 139, 142, 1);
-          }
-            
+            &:focus {
+              border: 1px solid RGBA(140, 139, 142, 1);
+            }
           }
         }
         .ds {

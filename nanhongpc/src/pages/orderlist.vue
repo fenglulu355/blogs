@@ -125,6 +125,7 @@
 <script>
 import evaluate from "../components/evaluate";
 import logistics from "../components/logistics";
+import { mapState } from "vuex";
 export default {
   name: "orderlist",
   data() {
@@ -481,8 +482,19 @@ export default {
   components: { evaluate, logistics },
   created() {
     this.orderinfos = this.orderinfo;
+    this.requst();
+  },
+  computed: {
+    ...mapState(["userid"])
   },
   methods: {
+    requst() {
+      this.$axios
+        .post("/index/user/orders", { userId: this.userid })
+        .then(res => {
+          console.log(res);
+        });
+    },
     changeOrderNav(index) {
       this.ordernav = index;
       console.log(index);

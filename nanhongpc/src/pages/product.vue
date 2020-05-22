@@ -1,21 +1,21 @@
 <template>
-  <div class="product">
-    <banner></banner>
+  <div class="product" v-loading.fullscreen.lock="fullscreenLoading">
+    <!-- <banner></banner> -->
     <div class="productbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <div class="content">
-        <curinfo :curinfo="curinfo" @change="tocurinfo"></curinfo>
+        <curinfo :curinfo="curinfo" @change="tocurinfo" v-if="iscurinfo"></curinfo>
         <ul class="goodslist">
           <li class="goodsli" v-for="(item, index) in goodsinfo" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.pic+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl+item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
             ></div>
-            <p class="name">{{item.name}}</p>
+            <p class="name">{{item.article_title}}</p>
           </li>
         </ul>
         <!-- 分页 -->
@@ -36,42 +36,32 @@ import curinfo from "../components/curinfo";
 import moPagination from "../components/pagenation";
 export default {
   name: "product",
+  provide() {
+    return {
+      reloadcur: this.reloadcur
+    };
+  },
   data() {
     return {
+      fullscreenLoading: false,
       // 分页
       pageSize: 6, // 每页显示20条数据
       currentPage: 1, // 当前页码
-      count: 300, // 总记录数,
+      count: 1, // 总记录数,
+      iscurinfo: true,
       curindex: 0,
-      curinfoindex: 0,
       tabtitle: { a: "产品", b: "中心" },
-      tabnav: [
-        "冰箱",
-        "洗衣机",
-        "小家电",
-        "空调",
-        "中央空调",
-        "地暖",
-        "净水",
-        "新风",
-        "电视"
-      ],
-      curinfo: [
-        { name: "功率", info: ["不限", "1p", "1.5p", "2p", "3p", "5p"] },
-        { name: "种类", info: ["不限", "定频", "变频"] },
-        { name: "能效", info: ["不限", "一级", "二级", "三级"] }
-      ],
-      goodsinfo: [
-        { pic: require("../assets/news/lb.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" }
-      ]
+      tabnav: [],
+      classid: "",
+      curinfo: [],
+      arr: [],
+      keyword: [],
+      goodsinfo: []
     };
   },
   created() {
+    this.classid = this.$route.query.classid;
+    this.requst();
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
@@ -79,27 +69,96 @@ export default {
       this.curindex = Number(idx);
     }
   },
-mounted() {
+  mounted() {
     document.body.scrollTop = document.documentElement.scrollTop = 300;
   },
   methods: {
+    // 获取分类id、
+    requst(classid) {
+      this.$axios.post("/index/api/productClass").then(res => {
+        this.tabnav = res.data.data;
+        let tavnav = JSON.stringify(this.tabnav);
+        sessionStorage.setItem("tabnav", tavnav);
+        if (this.classid) {
+          this.requstclass(this.classid);
+          this.requstlist("", this.classid, 1, 6);
+        } else {
+          this.classid = this.tabnav[0].class_id;
+          this.requstclass(this.classid);
+          this.requstlist("", this.classid, 1, 6);
+        }
+      });
+    },
+    // 获取种类分类
+    requstclass(classid) {
+      this.$axios.post("/index/api/productAttr", { id: classid }).then(res => {
+        this.curinfo = res.data.data;
+        for (let i = 0; i < this.curinfo.length; i++) {
+          this.arr.push([]);
+        }
+      });
+    },
+    // 获取列表
+    requstlist(keyword, id, page, limit) {
+      this.$axios
+        .post("/index/api/productList", {
+          keyword: keyword,
+          id: id,
+          page: page,
+          limit: limit
+        })
+        .then(res => {
+          this.fullscreenLoading = true;
+          if (this.goodsinfo) {
+            this.fullscreenLoading = false;
+          }
+          this.goodsinfo = res.data.data.data;
+          this.count = res.data.data.total;
+
+          console.log(this.count, this.goodsinfo, "this.keyword");
+        });
+    }, // 大分类列表搜索
+    tonav(index, item) {
+      this.curindex = index;
+      this.classid = item.class_id;
+      this.requstclass(this.classid);
+      this.requstlist("", this.classid, 1, 6);
+      this.reloadcur();
+    },
     getList(page) {
       // this.requstKind(this.class_id, page);
     },
     pageChange(index) {
       this.currentPage = index;
-      // console.log( this.currentPage)
       this.getList(index);
     },
-    tonav(index) {
-      //  console.log(index)
-      this.curindex = index;
+
+    tocurinfo(mindex, index, item, items, e) {
+      if (this.arr[index].indexOf(items) == -1) {
+        this.arr[index].push(items);
+      } else {
+        this.arr[index].splice(this.arr[index].indexOf(items), 1);
+      }
+      let b = this.encodeArray2D(this.arr);
+      this.requstlist(b, this.classid, 1, 6);
+      console.log(b, "a");
     },
-    tocurinfo(mindex, item, e) {
-      console.log(mindex, item);
+    encodeArray2D(obj) {
+      var array = [];
+      for (var i = 0; i < obj.length; i++) {
+        array[i] = obj[i].join("|");
+      }
+      return array.join(",");
+    },
+    reloadcur() {
+      let self = this;
+      self.iscurinfo = false;
+      self.$nextTick(function() {
+        self.iscurinfo = true;
+      });
     }
   },
-  
+
   components: { banner, tabBar, moPagination, curinfo }
 };
 </script>
@@ -119,9 +178,8 @@ mounted() {
       .goodslist {
         box-sizing: border-box;
         padding-top: 50px;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         .goodsli {
           cursor: pointer;
           display: inline-block;
@@ -134,6 +192,7 @@ mounted() {
           padding: 50px 0 0 0px;
           margin-bottom: 15px;
           .mainpic {
+            transition: all 0.3s ease;
             width: 288px;
             height: 288px;
             margin: 0 auto;
@@ -161,8 +220,8 @@ mounted() {
 }
 </style>
 
-<style lang="">
-  .el-checkbox-button {
+<style lang="" >
+.el-checkbox-button {
   cursor: pointer;
   box-sizing: border-box;
   padding: 5px 15px;

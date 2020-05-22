@@ -45,9 +45,13 @@ export default {
   data() {
     return {
       ispay: false,
-      ordernum: 26548498498,
-      money: 2087.0
+      ordernum: null,
+      money: null
     };
+  },
+  created() {
+    this.ordernum = this.$route.query.ordernum;
+    this.money = this.$route.query.price;
   },
   methods: {
     tobank() {
@@ -55,11 +59,11 @@ export default {
     },
     toshop() {
       this.ispay = false;
-      this.$router.push({path:'/shoppingmall'})
+      this.$router.push({ path: "/shoppingmall" });
     },
     toorder() {
       this.ispay = false;
-        this.$router.push({path:'/orderlist'})
+      this.$router.push({ path: "/orderlist" });
     }
   }
 };

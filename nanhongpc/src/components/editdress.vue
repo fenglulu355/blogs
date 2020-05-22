@@ -7,16 +7,28 @@
       </section>
       <section>
         <span class="text">详细地址：</span>
-        <input class="dds" type="text" placeholder="请输入如道路、门牌号、小区、楼栋号、单元等信息" v-model="detaildress" />
+        <input
+          class="dds"
+          type="text"
+          placeholder="请输入如道路、门牌号、小区、楼栋号、单元等信息"
+          v-model="address.dress"
+        />
       </section>
       <section>
         <span class="text">收货人姓名：</span>
-        <input class="consignee" type="text" placeholder="长度不超过25个字符" v-model="consignee" />
+        <input class="consignee" type="text" placeholder="长度不超过25个字符" v-model="address.name" />
       </section>
       <section class="tel">
         <span class="text">手机号码：</span>
         <span class="border">中国大陆 +86</span>
-        <input class="telipt" type="text" placeholder="电话号码、手机号码必须填一项" v-model="tel" />
+        <input
+          class="telipt"
+          @blur="regphone(address.tel)"
+          maxlength="11"
+          type="text"
+          placeholder="电话号码、手机号码必须填一项"
+          v-model="address.tel"
+        />
       </section>
       <p class="send" @click="send">确认</p>
     </div>
@@ -31,9 +43,14 @@ export default {
       detaildress: "", //详细地址
       consignee: "", //收货人姓名
       tel: "", //收货人电话
-      regtel: "", //注册账户手机号
-      code: "", //验证码
-      address: { province: "", city: "", county: "" }
+      address: {
+        name: "",
+        tel: "",
+        dress: "",
+        province: "四川省",
+        city: "成都市",
+        county: "武侯区"
+      }
     };
   },
   props: {
@@ -47,8 +64,8 @@ export default {
   },
   created() {
     this.detaildress = this.edititem.dress;
-    this.consignee=this.edititem.name
-     this.tel=this.edititem.tel
+    this.consignee = this.edititem.name;
+    this.tel = this.edititem.tel;
   },
   methods: {
     // city
@@ -58,7 +75,29 @@ export default {
       this.address.county = data.area.value;
     },
     send() {
-      this.$emit("close", false);
+      if (
+        this.address.name == "" ||
+        this.address.tel == "" ||
+        this.address.dress == ""
+      ) {
+        this.$message.error("请完善信息");
+      } else {
+        this.$emit("close", false, this.address);
+      }
+      //
+    },
+    // 正则判断手机号
+    regphone(tel) {
+      let regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/;
+      if (!regPhone.test(tel)) {
+        this.$message.error("手机号码格式错误");
+        setTimeout(() => {
+          this.tel = "";
+        }, 200);
+      } else {
+        this.tel = tel;
+        console.log(this.tel);
+      }
     }
   },
   components: { VDistpicker }

@@ -1,16 +1,18 @@
 <template>
   <div class="curinfo">
     <ul class="cilist">
+      <!--  -->
       <li class="cili" v-for="(item, i) in curinfo" :key="i">
-        <span>{{item.name}}：</span>
-
-        <el-checkbox-button
-          v-for="(items, mindex) in item.info"
-          :label="item.info"
-          :key="mindex"
-          @change="tocurinfo(mindex,item,$event)"
-        >{{items}}</el-checkbox-button>
+        <span>{{item.class_name}}：</span>
+        <!-- <el-checkbox-group v-model="curinfo"> -->
+          <el-checkbox-button
+            v-for="(items, mindex) in item.child"
+            :key="mindex"
+            @change="tocurinfo(mindex,i,items,item,$event)"
+          >{{items}}</el-checkbox-button>
+        <!-- </el-checkbox-group> -->
       </li>
+      <!-- -->
     </ul>
   </div>
 </template>
@@ -20,26 +22,26 @@ export default {
   name: "tabBar",
   data() {
     return {
+      truelabel: [],
+      arr: []
       // curindex: 0
     };
   },
   created() {
-    //   console.log(this.tabBarlist)
+    // console.log(this.curinfo);
   },
   props: {
     curinfo: {
       type: Array,
       default: {}
-    },
-    curinfoindex: {
-      type: Number,
-      default: null
     }
   },
+  mounted() {
+    // console.log(this.curinfo);
+  },
   methods: {
-    tocurinfo(mindex,item, e) {
-    //   this.curinfoindex = mindex;
-      this.$emit("change", mindex,item);
+    tocurinfo(mindex, index, items, item, e) {
+      this.$emit("change", mindex, index, item, items, e);
     }
   }
 };
@@ -51,15 +53,16 @@ export default {
   border-radius: 10px;
   box-sizing: border-box;
   margin-top: 20px;
-  padding: 23px 23px;
+  padding: 35px 23px;
   .cilist {
     color: rgba(51, 51, 51, 1);
     font-size: 16px;
     .cili {
       border-bottom: 1px solid rgba(204, 204, 204, 1);
-      &:last-child{
-          border: none;
+      &:last-child {
+        border: none;
       }
+
       .mcili {
         cursor: pointer;
         line-height: 45px;

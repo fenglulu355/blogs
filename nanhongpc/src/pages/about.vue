@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <banner></banner>
+    <!-- <banner></banner> -->
     <div class="aboutbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <!-- 公司简介 -->
@@ -29,7 +29,7 @@
           <li class="cpshowli" v-for="(item, index) in cpshowli" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' + item+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -67,7 +67,7 @@
             <div class="showbox">
               <div
                 class="mainpic"
-                :style="{backgroundImage: 'url(' + shopshowinfo.bg+ ')',
+                :style="{backgroundImage: 'url(' +httpUrl+ shopshowinfo.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -75,7 +75,7 @@
               >
                 <!-- <img :src="shopshowinfo.bg" alt /> -->
               </div>
-              <p class="text">{{shopshowinfo.shopname}}</p>
+              <p class="text">{{shopshowinfo.title}}</p>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@
             <div class="showbox" @click="swiper(index,item)" :data-id="index">
               <div
                 class="mainpic"
-                :style="{backgroundImage: 'url(' + item.sbg+ ')',
+                :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -115,73 +115,6 @@
             backgroundPosition:'center'
             }"
         ></div>
-        <!-- <ul class="shopshowlist">
-          <div
-            class="showpic"
-            :style="{backgroundImage: 'url(' + shopshowinfo.bg+ ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-          >
-            <div class="shopinfo">
-              <p class="shopname">{{shopshowinfo.shopname}}</p>
-            </div>
-          </div>
-          <div class="shopflash">
-            <div class="pgbtn prev">
-              <div
-                class="btpic"
-                @click="zuohua"
-                :style="{backgroundImage: 'url(' +require('../assets/shopshow/left.png') + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-              ></div>
-            </div>
-
-            <div class="flash">
-              <ul
-                class="warpper"
-                :style="{'left':calleft + 'px'  ,'width': shopwidth+'px'}"
-                v-on:mouseover="stopmove()"
-                v-on:mouseout="move()"
-              >
-                <li
-                  class="pic"
-                  v-for="(item, index) in shopinfo"
-                  :key="index"
-                  @click="showshop(index,item)"
-                >
-                  <div
-                    class="mainpic"
-                    :style="{backgroundImage: 'url(' +item.sbg + ')',
-                      backgroundSize:'cover',
-                     backgroundRepeat: 'no-repeat',
-                    backgroundPosition:'center'
-                     }"
-                  >
-                    <div class="pichover">
-                      <p>旅游时光</p>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="pgbtn next">
-              <div
-                class="btpic"
-                @click="youhua"
-                :style="{backgroundImage: 'url(' +require('../assets/shopshow/right.png') + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-              ></div>
-            </div>
-          </div>
-        </ul>-->
       </div>
       <!-- 荣誉 -->
       <div class="Honor pub" v-show="curindex == 3">
@@ -194,12 +127,12 @@
                     {{item.year}}
                     <img src="../assets/about/honorr.png" alt />
                   </p>
-                  <p class="intro">{{item.des}}</p>
+                  <p class="intro">{{item.title}}</p>
                 </div>
               </div>
               <div
                 class="mainpic"
-                :style="{backgroundImage: 'url(' + item.img+ ')',
+                :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -209,7 +142,7 @@
             <div class="honorbox" v-else>
               <div
                 class="mainpic"
-                :style="{backgroundImage: 'url(' + item.img+ ')',
+                :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+  ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -221,7 +154,7 @@
                     <img src="../assets/about/honorl.png" alt />
                     {{item.year}}
                   </p>
-                  <p class="intro">{{item.des}}</p>
+                  <p class="intro">{{item.title}}</p>
                 </div>
               </div>
             </div>
@@ -298,12 +231,12 @@
         ></div>
       </div>
       <!-- 社招 -->
-      <div class="socia pub" v-show="curindex == 6">
+      <div class="socia pub" v-show="curindex == 6 || curindex == 7">
         <ul class="szlist recruitment">
           <li class="newsli" v-for="(item, index) in lb" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.img + ')',
+              :style="{backgroundImage: 'url(' +require('../assets/about/7-1.png') + ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -311,8 +244,8 @@
             ></div>
             <div class="ins-info">
               <p class="title">{{item.title}}</p>
-              <p class="time">{{item.time}}</p>
-              <p class="intro">{{item.intro}}</p>
+              <p class="time">{{item.created_time}}</p>
+              <p class="intro">{{item.desc}}</p>
               <p class="more" @click="torecruit(index,item)">我要应聘</p>
             </div>
           </li>
@@ -326,37 +259,10 @@
         ></mo-pagination>
       </div>
       <!-- 校招 -->
-      <div class="school pub" v-show="curindex == 7">
-        <ul class="szlist recruitment">
-          <li class="newsli" v-for="(item, index) in lb" :key="index">
-            <div
-              class="mainpic"
-              :style="{backgroundImage: 'url(' +item.img + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-            ></div>
-            <div class="ins-info">
-              <p class="title">{{item.title}}</p>
-              <p class="time">{{item.time}}</p>
-              <p class="intro">{{item.intro}}</p>
-              <p class="more" @click="torecruit(index,item)">我要应聘</p>
-            </div>
-          </li>
-        </ul>
-        <!-- 分页 -->
-        <mo-pagination
-          :page-index="currentPage"
-          :total="count"
-          :page-size="pageSize"
-          @change="pageChange"
-        ></mo-pagination>
-      </div>
       <!-- 联系我们 -->
       <div class="contact pub" v-show="curindex == 8">
-        <div class="contactbox">
-          <h1>四川南宏机电工程安装有限公司</h1>
+        <div class="contactbox" v-html="lxwm">
+          <!-- <h1>四川南宏机电工程安装有限公司</h1>
           <div class="warrper">
             <div class="telinfo">
               <p class="contacts">联系人：李经理，陈经理</p>
@@ -382,7 +288,7 @@
             <span class="slant">/</span> Q Q：2073376722
             <span class="slant">/</span> 邮箱：20008345@qq.com
           </p>
-          <div class="map"></div>
+          <div class="map"></div>-->
         </div>
       </div>
     </div>
@@ -398,9 +304,9 @@ export default {
   data() {
     return {
       // 分页
-      pageSize: 24, // 每页显示20条数据
+      pageSize: 3, // 每页显示20条数据
       currentPage: 1, // 当前页码
-      count: 300, // 总记录数,
+      count: 1, // 总记录数,
       curindex: 0,
       shopshowinfo: [],
       tabtitle: {
@@ -408,65 +314,18 @@ export default {
         b: "我们"
       },
       tabnav: [
-        "公司介绍",
-        "南宏理念",
-        "员工风采",
-        "荣誉资质",
-        "销售网络",
-        "公司架构",
-        "社会招聘",
-        "校园招聘",
-        "联系我们"
+        { class_name: "公司介绍" },
+        { class_name: "南宏理念" },
+        { class_name: "员工风采" },
+        { class_name: "荣誉资质" },
+        { class_name: "销售网络" },
+        { class_name: "公司架构" },
+        { class_name: "社会招聘" },
+        { class_name: "校园招聘" },
+        { class_name: "联系我们" }
       ],
-      cpshowli: [
-        require("../assets/about/1-1.png"),
-        require("../assets/about/1-2.png"),
-        require("../assets/about/1-3.png"),
-        require("../assets/about/1-4.png")
-      ],
-      ygfc: [
-        {
-          bg: require("../assets/about/3-1.png"),
-          sbg: require("../assets/about/1-1.png"),
-          shopname:
-            "一个人的旅游，是孤独；两个人的旅游，是甜蜜；一群人的旅游，是温馨。共同奋斗，共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        },
-        {
-          bg: require("../assets/about/1-2.png"),
-          sbg: require("../assets/about/1-2.png"),
-          shopname:
-            "er共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        },
-        {
-          bg: require("../assets/about/3-1.png"),
-          sbg: require("../assets/about/1-3.png"),
-          shopname:
-            "san个人的旅游，是孤独；两个人的旅游，是甜蜜；一群人的旅游，是温馨。共同奋斗，共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        },
-        {
-          bg: require("../assets/about/3-1.png"),
-          sbg: require("../assets/about/1-4.png"),
-          shopname:
-            "si个人的旅游，是孤独；两个人的旅游，是甜蜜；一群人的旅游，是温馨。共同奋斗，共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        },
-        {
-          bg: require("../assets/about/3-1.png"),
-          sbg: require("../assets/about/1-1.png"),
-          shopname:
-            "wu个人的旅游，是孤独；两个人的旅游，是甜蜜；一群人的旅游，是温馨。共同奋斗，共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        },
-        {
-          bg: require("../assets/about/3-1.png"),
-          sbg: require("../assets/about/1-2.png"),
-          shopname:
-            "6个人的旅游，是孤独；两个人的旅游，是甜蜜；一群人的旅游，是温馨。共同奋斗，共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        },
-        {
-          bg: require("../assets/about/3-1.png"),
-          sbg: require("../assets/about/1-2.png"),
-          shopname: "77777"
-        }
-      ],
+      cpshowli: [],
+      ygfc: [],
       branchlist: [
         {
           img: require("../assets/about/3-1.png"),
@@ -487,61 +346,8 @@ export default {
           tel: "000-000000"
         }
       ],
-      lb: [
-        {
-          img: require("../assets/about/7-1.png"),
-          title: "国际贸易专员",
-          time: "2010.8.03",
-          intro:
-            " 岗位职责：1、本科及以上学历，国际贸易类、经济类等相关专业毕业；2、男性，有英语读写能力、有工作经验者优先。"
-        },
-        {
-          img: require("../assets/about/7-1.png"),
-          title: "国际贸易专员",
-          time: "2010.8.03",
-          intro:
-            " 岗位职责：1、本科及以上学历，国际贸易类、经济类等相关专业毕业；2、男性，有英语读写能力、有工作经验者优先。"
-        },
-        {
-          img: require("../assets/about/7-1.png"),
-          title: "国际贸易专员",
-          time: "2010.8.03",
-          intro:
-            " 岗位职责：1、本科及以上学历，国际贸易类、经济类等相关专业毕业；2、男性，有英语读写能力、有工作经验者优先。"
-        }
-      ],
-      honor: [
-        {
-          img: require("../assets/about/honor1.png"),
-          year: "2018",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        },
-        {
-          img: require("../assets/about/honor2.png"),
-          year: "2018",
-          left: true,
-          des: "消费者点赞的诚信企业"
-        },
-        {
-          img: require("../assets/about/honor1.png"),
-          year: "2017",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        },
-        {
-          img: require("../assets/about/honor2.png"),
-          year: "2015",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        },
-        {
-          img: require("../assets/about/honor1.png"),
-          year: "2015",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        }
-      ],
+      lb: [],
+      honor: [],
       swiperOptionThumbs: {
         // loop:true,
         spaceBetween: 10,
@@ -553,17 +359,22 @@ export default {
           nextEl: ".swiper-button-next",
           prevEl: ".swiper-button-prev"
         }
-      }
+      },
+      lxwm: [],
+      zptype: 0
     };
   },
   created() {
-    this.shopshowinfo = this.ygfc[0];
+    this.requst();
+
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
     } else {
       if (idx == 1) {
         this.curindex = 6;
+        this.requstzp(0, 1, 3);
+        // console.log(6);
       }
       if (idx == 2) {
         this.curindex = 4;
@@ -573,6 +384,8 @@ export default {
       }
       if (idx == 5) {
         this.curindex = 7;
+        this.requstzp(1, 1, 3);
+        // console.log(7);
       }
       if (idx == 8) {
         this.curindex = 3;
@@ -583,18 +396,45 @@ export default {
     document.body.scrollTop = document.documentElement.scrollTop = 300;
   },
   methods: {
+    requst(id) {
+      this.$axios.post("/index/api/about", { id: id }).then(res => {
+        this.cpshowli = res.data.data.child;
+        this.ygfc = res.data.data.team;
+        this.shopshowinfo = this.ygfc[0];
+        this.honor = res.data.data.honor;
+        this.lxwm = res.data.data.lxwm.content;
+        // console.log(this.shopshowinfo);
+        // console.log(res.data, "rrr");
+      });
+    },
     // 分页
     getList(page) {
-      // this.requstKind(this.class_id, page);
+      this.requstzp(this.zptype, page, 3);
     },
     pageChange(index) {
       this.currentPage = index;
-      // console.log( this.currentPage)
       this.getList(index);
     },
     tonav(index) {
       //  console.log(index)
       this.curindex = index;
+      if (index == 6) {
+        this.zptype = 0;
+        this.requstzp(0, 1, 3);
+      }
+      if (index == 7) {
+        this.zptype = 1;
+        this.requstzp(1, 1, 3);
+      }
+    },
+    requstzp(type, page, limit) {
+      this.$axios
+        .post("/index/api/jobList", { type: type, page: page, limit: limit })
+        .then(res => {
+          this.lb = res.data.data.data;
+          this.count = res.data.data.total;
+          // console.log(res.data.data, "a");
+        });
     },
     swiper(index, item) {
       this.shopshowinfo = item;
@@ -608,7 +448,7 @@ export default {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
       this.$router.push({
         path: "/detail",
-        query: { id: index, kind: "recruit" }
+        query: { id: item.id, kind: "recruit" }
       });
     }
   },

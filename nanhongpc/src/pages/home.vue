@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <banner></banner>
+    <!-- <banner></banner> -->
     <!-- 简介 -->
     <div class="introbox">
       <ul class="introlist">
@@ -11,33 +11,35 @@
           @mouseenter="mouseenter(index)"
           @mouseout="mousemove(index)"
         >
-          <transition name="a">
-            <div class="introbox" v-show="hoverindex!=index">
-              <p class="large">{{item.large}}</p>
-              <div class="small">
-                <p>{{item.smalla}}</p>
-                <p>{{item.smallb}}</p>
-              </div>
-            </div>
-          </transition>
-          <transition name="b">
-            <div
-              v-show="hoverindex ==index"
-              class="intro-hover"
-              :style="{backgroundImage: 'url(' + item.img+ ')',
+          <div class="box">
+            <transition name="b">
+              <div
+                v-show="hoverindex ==index"
+                class="bgbox"
+                :style="{backgroundImage: 'url(' + item.img+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-            >
-              <p class="large">{{item.large}}</p>
-              <div class="small">
-                <p>{{item.smalla}}</p>
-                <p>{{item.smallb}}</p>
-                <p class="more">了解更多</p>
+              >
+                <p class="top large">{{item.large}}</p>
+                <div class="center small">
+                  <p class="cta">{{item.smalla}}</p>
+                  <p class="ctb">{{item.smallb}}</p>
+                </div>
+                <p class="tomore">了解更多</p>
               </div>
-            </div>
-          </transition>
+            </transition>
+            <transition name="a">
+              <div class="nobgbox" v-show="hoverindex!=index">
+                <p class="top large">{{item.large}}</p>
+                <div class="center small">
+                  <p class="cta">{{item.smalla}}</p>
+                  <p class="ctb">{{item.smallb}}</p>
+                </div>
+              </div>
+            </transition>
+          </div>
         </li>
       </ul>
     </div>
@@ -77,7 +79,7 @@
         >
           <div
             class="mainpic"
-            :style="{backgroundImage: 'url(' + item.img+ ')',
+            :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -85,7 +87,7 @@
           ></div>
           <div class="newsinfo">
             <p class="newstitle">{{item.title}}</p>
-            <p class="newsdes">{{item.dec}}</p>
+            <p class="newsdes">{{item.content}}</p>
             <p class="tonews">查看详情</p>
           </div>
         </li>
@@ -99,6 +101,7 @@ export default {
   name: "home",
   data() {
     return {
+      slides: [],
       hoverindex: 1,
       introlist: [
         {
@@ -124,30 +127,18 @@ export default {
         }
       ],
       videoPlay: false,
-      newslist: [
-        {
-          img: require("../assets/home/news1.png"),
-          title: "新闻大标题新闻大标题新闻大标题新闻大标题",
-          dec:
-            "7月25日，南宏机电副总经理南宏机电副总经理南宏机电副总经理带领南宏品牌及营销团队负责人一行进行商务洽谈，受到了公司……"
-        },
-        {
-          img: require("../assets/home/news2.png"),
-          title: "新闻大标题新闻大标题新闻大标题新闻大标题",
-          dec:
-            "7月25日，南宏机电副总经理南宏机电副总经理南宏机电副总经理带领南宏品牌及营销团队负责人一行进行商务洽谈，受到了公司……"
-        },
-        {
-          img: require("../assets/home/news3.png"),
-          title: "新闻大标题新闻大标题新闻大标题新闻大标题",
-          dec:
-            "7月25日，南宏机电副总经理南宏机电副总经理南宏机电副总经理带领南宏品牌及营销团队负责人一行进行商务洽谈，受到了公司……"
-        }
-      ]
+      newslist: []
     };
   },
-  created() {},
+  created() {
+    this.requst();
+  },
   methods: {
+    requst() {
+      this.$axios.post("/index/api/home").then(res => {
+        this.newslist = res.data.data.news;
+      });
+    },
     play() {
       this.videoPlay = true;
     },
@@ -158,24 +149,23 @@ export default {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
       this.$router.push({
         path: "/detail",
-        query: { id: index, kind: "news" }
+        query: { id: item.id, kind: "news" }
       });
     },
     mouseenter(index) {
       this.hoverindex = index;
-      console.log(2);
     },
-    mousemove() {
-      console.log(1);
-    }
+    mousemove() {}
   },
   components: { banner }
 };
 </script>
 
 <style lang="less" scoped>
-.a-enter-active,
 .b-enter-active {
+  transition: all 0.5s ease-in-out;
+}
+.a-enter-active {
   transition: all 0.5s ease-in-out;
 }
 .a-enter {
@@ -187,6 +177,10 @@ export default {
 .b-enter {
   opacity: 0.8;
   transform: scale(1.1);
+}
+.b-enter-to {
+  opacity: 1;
+  transform: scale(1);
 }
 .home {
   width: 100%;
@@ -219,35 +213,35 @@ export default {
     width: 100%;
     height: 924px;
     .introlist {
-      height: 100%;
+      height: 924px;
       width: 100%;
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       .introli {
         overflow: hidden;
         cursor: pointer;
-        width: calc(100% / 3);
-        height: 100%;
+        width: 100%;
+        height: 924px;
         position: relative;
         .large {
+          width: 60%;
           font-size: 56px;
           font-weight: 500;
           color: rgba(255, 255, 255, 1);
           box-sizing: border-box;
-          text-align: center;
           line-height: 95px;
-          width: 300px;
-          height: 600px;
-          margin: 0 auto;
-          padding-top: 400px;
+          text-align: center;
+          position: absolute;
+          top: 350px;
+          left: 50%;
+          transform: translateX(-50%);
         }
         .small {
           font-size: 24px;
           font-weight: 400;
           color: rgba(255, 255, 255, 1);
-          position: relative;
         }
-        .introbox {
+        .box {
           width: 100%;
           height: 924px;
           background: linear-gradient(
@@ -255,62 +249,77 @@ export default {
             rgba(102, 102, 102, 1),
             rgba(170, 170, 170, 1)
           );
-          .small {
-            box-sizing: border-box;
+          .bgbox {
+            // transition: all 0.5s linear;
             width: 100%;
-            height: 324px;
-            margin: 0 auto;
-            padding-top: 200px;
-            text-align: center;
-            &::after {
-              content: "";
-              width: 40px;
-              height: 4px;
-              background: white;
+            height: 924px;
+            position: relative;
+            .center {
+              width: 60%;
+              text-align: center;
               position: absolute;
+              top: 610px;
               left: 50%;
               transform: translateX(-50%);
-              bottom: 150px;
+              .cta {
+                box-sizing: border-box;
+                padding-bottom: 20px;
+                position: relative;
+                &::after {
+                  content: "";
+                  width: 40px;
+                  height: 4px;
+                  background: white;
+                  position: absolute;
+                  left: 50%;
+                  transform: translateX(-50%);
+                  top: -40px;
+                }
+              }
             }
-          }
-        }
-        .intro-hover {
-          height: 924px;
-          transition: all 0.5s linear;
-          width: 100%;
-          height: 100%;
-          .small {
-            // background: pink;
-            box-sizing: border-box;
-            width: 100%;
-            height: 324px;
-            margin: 0 auto;
-            padding-top: 60px;
-            text-align: center;
-            &::after {
-              content: "";
-              width: 40px;
-              height: 4px;
-              background: white;
+            .tomore {
+              width: 180px;
+              height: 39px;
+              font-size: 18px;
+              text-align: center;
+              line-height: 39px;
+              color: white;
+              border: 1px solid rgba(255, 255, 255, 1);
+              border-radius: 20px;
               position: absolute;
+              bottom: 130px;
               left: 50%;
               transform: translateX(-50%);
-              top: 30px;
             }
           }
-          .more {
-            width: 180px;
-            height: 39px;
-            font-size: 18px;
-            text-align: center;
-            line-height: 39px;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 1);
-            border-radius: 20px;
-            position: absolute;
-            bottom: 130px;
-            left: 50%;
-            transform: translateX(-50%);
+          .nobgbox {
+            // transition: color 0.5s ease;
+            width: 100%;
+            height: 924px;
+            background: linear-gradient(
+              180deg,
+              rgba(102, 102, 102, 1),
+              rgba(170, 170, 170, 1)
+            );
+            .center {
+              text-align: center;
+              width: 60%;
+              position: absolute;
+              top: 740px;
+              left: 50%;
+              transform: translateX(-50%);
+              position: relative;
+              &::after {
+                content: "";
+                width: 40px;
+                height: 4px;
+                background: white;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                top: -30px;
+              }
+            }
           }
         }
       }

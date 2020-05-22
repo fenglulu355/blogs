@@ -3,6 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Axios from 'axios'
+
+import httpUrl from "../src/api/url.vue"
 // element
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -22,44 +25,43 @@ Vue.component('v-distpicker', Distpicker)
 
 
 // api
-// Axios.defaults.baseURL = "http://nhjd.public.5151fw.com/";
-// Axios.defaults.headers["Content-type"] = "application/json";
+Vue.prototype.$axios = Axios
+
+Vue.prototype.httpUrl = httpUrl.httpUrl;
+Axios.defaults.baseURL = "http://nhjd.public.5151fw.com/";
+// Axios.defaults.baseURL = "http://nhjd.com/";
+Axios.defaults.headers["Content-type"] = "application/json";
 
 Vue.use(Vuex)
 
+
 // 导航守卫前置
 router.beforeEach((to, from, next) => {
-  // to and from are both route objects. must call `next`.
   console.log(to, 'to');
   console.log(from, 'from');
-  // console.log(next, 'next');
+  // 控制轮播
+  to.meta.islb ? store.state.islb = true : store.state.islb = false
   // 控制banner的走马灯显示
-  to.name == 'shoppingmall' || to.name == 'mine' || to.name == 'commoditydetails' || to.name == 'payment' ||
-    to.name == 'minecenter' || to.name == 'shoppingcar' || to.name == 'orderlist' ||
-    to.name == 'order' ? store.state.isbanshow = false : store.state.isbanshow = true;
+  to.meta.isbanner ? store.state.isbanshow = false : store.state.isbanshow = true;
+  // 判断是否登录
   if (to.meta.requireLogin) {
-    console.log(1)
     let islogin = store.state.islogin
     if (islogin == false) {
-      confirm("请登录")
+      // confirm("请登录")
       if (confirm("请登录") == true) {
         next("/shoppingmall")
         store.state.logreg = true
       } else {
+        // next("/shoppingmall")
+        store.state.logreg = false
         return
       }
-
     } else {
       next()
     }
-
   } else {
-
     next()
   }
-
-
-
 })
 
 

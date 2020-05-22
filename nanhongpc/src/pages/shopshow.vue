@@ -1,6 +1,6 @@
 <template>
   <div class="shopshow">
-    <banner></banner>
+    <!-- <banner></banner> -->
     <div class="shopbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <div class="showmain">
@@ -12,7 +12,7 @@
                 <div class="showbox">
                   <div
                     class="mainpic"
-                    :style="{backgroundImage: 'url(' + shopshowinfo.bg+ ')',
+                    :style="{backgroundImage: 'url(' +httpUrl+  shopshowinfo.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -23,11 +23,11 @@
                   <div class="shopinfo">
                     <p class="shopname">{{shopshowinfo.shopname}}</p>
                     <p class="shopdes">
-                      主营产品：{{shopshowinfo.mainsell}}
-                      <span>/</span>
-                      地址：{{shopshowinfo.address}}
-                      <span>/</span>
-                      电话：{{shopshowinfo.tel}}
+                      <span class="text desc">主营产品：{{shopshowinfo.content}}</span>
+                      <span class="sx">/</span>
+                      <span class="text">地址：{{shopshowinfo.address}}</span>
+                      <span class="sx">/</span>
+                      <span class="text">电话：{{shopshowinfo.tel}}</span>
                     </p>
                   </div>
                 </div>
@@ -39,14 +39,14 @@
                 <div class="showbox" @click="swiper(index,item)" :data-id="index">
                   <div
                     class="mainpic"
-                    :style="{backgroundImage: 'url(' + item.sbg+ ')',
+                    :style="{backgroundImage: 'url('+ httpUrl+ item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
                   ></div>
                   <div class="pichover">
-                    <p>{{item.shopname}}</p>
+                    <p>{{item.title}}</p>
                   </div>
                 </div>
               </swiper-slide>
@@ -93,7 +93,7 @@ export default {
         a: "门店",
         b: "展示"
       },
-      tabnav: ["门店展示", "门店导航"],
+      tabnav: [{ class_name: "门店展示" }, { class_name: "门店导航" }],
       shopinfo: [
         {
           bg: require("../assets/shopshow/sbg.png"),
@@ -169,8 +169,8 @@ export default {
   },
 
   created() {
+    this.requst();
     this.shopwidth = this.shopinfo.length * 245;
-    this.shopshowinfo = this.shopinfo[0];
     this.getrouter;
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
@@ -179,10 +179,17 @@ export default {
       this.curindex = Number(idx);
     }
   },
-mounted() {
+  mounted() {
     document.body.scrollTop = document.documentElement.scrollTop = 300;
   },
   methods: {
+    requst() {
+      this.$axios.post("/index/api/mdzsList").then(res => {
+        console.log(res.data.data);
+        this.shopinfo = res.data.data;
+        this.shopshowinfo = this.shopinfo[0];
+      });
+    },
     getrouter() {
       let i = this.$route.query.id;
       console.log(i, "i.i");
@@ -203,7 +210,7 @@ mounted() {
     },
     swiper(index, item) {
       this.shopshowinfo = item;
-    },
+    }
   },
 
   components: { banner, tabBar, swiper, swiperSlide }
@@ -270,8 +277,16 @@ mounted() {
                   font-size: 18px;
                 }
                 .shopdes {
-                  font-size: 16px;
-                  span {
+                  .desc {
+                    // display: inline-block;
+                    // width: 80%;
+                    // overflow: hidden;
+                    // white-space: nowrap;
+                    // text-overflow: ellipsis;
+
+                    font-size: 16px;
+                  }
+                  .sx {
                     margin: 0 10px;
                   }
                 }

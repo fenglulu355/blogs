@@ -6,10 +6,13 @@
     <div class="ltitle">
       <span
         class="lt"
-        @click="curpath(item,index)"
+        @click.stop="curpath(item,index)"
         v-for="(item, index) in ltitle"
         :key="index"
-      >{{item}}</span>
+      >
+        <span v-if="item.class_name">{{item.class_name}}</span>
+        <span v-else>{{item}}</span>
+      </span>
     </div>
   </div>
 </template>
@@ -35,6 +38,10 @@ export default {
       type: Array,
       default: {}
     },
+    navindex: {
+      type: Number,
+      default: 0
+    },
     path: {
       type: String,
       default: ""
@@ -46,10 +53,18 @@ export default {
       this.$emit("change", index);
     },
     curpath(item, index) {
+      sessionStorage.setItem("navindex", this.navindex);
+      if (this.path == "/product") {
+        this.$router.push({
+          path: this.path,
+          query: { classid: item.class_id }
+        });
+      } else {
+        this.$router.push({ path: this.path });
+      }
+
       sessionStorage.setItem("mnavindex", index);
       this.reload();
-      document.body.scrollTop = document.documentElement.scrollTop = 0;
-      this.$router.push({ path: this.path });
     }
   }
 };
@@ -72,8 +87,10 @@ export default {
     }
   }
   .ltitle {
+    // background: brown;
     cursor: pointer;
     width: 100%;
+    height: 90px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     span {
@@ -82,7 +99,10 @@ export default {
       font-size: 12px;
       line-height: 30px;
       // background: pink;
-      padding: 0 30px 0 0;
+      padding: 0 10px 0 0;
+      &:hover {
+        color: #2482c8;
+      }
     }
   }
 }

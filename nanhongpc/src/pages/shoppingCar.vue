@@ -6,24 +6,28 @@
         <li class="goodsli" v-for="(item, index) in goodsinfo" :key="index">
           <div
             class="mainpic"
-            :style="{backgroundImage: 'url(' + item.img+ ')',
+            :style="{backgroundImage: 'url(' +httpUrl+ item.goods_image+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
           ></div>
           <!-- 商品名 -->
-          <p class="name">{{item.name}}</p>
+          <div class="names">
+            <p class="name">{{item.goods_name}}</p>
+            <p class="format">{{item.format_ids}}</p>
+          </div>
+
           <!-- 单价 -->
-          <p class="price">￥{{item.price}}</p>
+          <p class="price">￥{{item.goods_price}}</p>
           <div class="accountbox">
-            <button @click="decrement(index)" :disabled="item.count <= 1">-</button>
-            {{ item.count }}
-            <button @click="increment(index)">+</button>
+            <button @click="decrement(item,index)" :disabled="item.cart_num <= 1">-</button>
+            {{ item.cart_num }}
+            <button @click="increment(item,index)">+</button>
           </div>
           <!-- 单个总价 -->
-          <p class="allprice">{{item.price* item.count | showPrice}}</p>
-          <p class="del" @click="del(index)">删除</p>
+          <p class="allprice">{{item.goods_price* item.cart_num | showPrice}}</p>
+          <p class="del" @click="del(index,item)">删除</p>
         </li>
       </ul>
       <div class="account">
@@ -50,75 +54,108 @@
 </template>
 
 <script>
+import { mapActions, mapMutations, mapState } from "vuex";
 export default {
+  inject: ["reload"],
   name: "shoppingcar",
   data() {
     return {
       dgzj: [],
       aprice: "",
       num: [],
-      goodsinfo: [
-        {
-          img: require("../assets/product/goods1.png"),
-          name:
-            "格力净静滚筒洗衣机格力净静滚筒洗衣机格力净静滚筒洗衣机格力净静滚筒洗衣机",
-          price: 1500.0,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1.2,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        }
-      ]
+      goodsinfo: []
     };
   },
-  created() {},
+  created() {
+    this.requst();
+  },
   computed: {
     totalPrice() {
       return this.goodsinfo.reduce(
-        (previousValue, item) => previousValue + item.count * item.price,
+        (previousValue, item) =>
+          previousValue + item.cart_num * item.goods_price,
         0
       );
     }
   },
   methods: {
+    ...mapMutations(["setorderlist"]),
+    requst() {
+      let userid = JSON.parse(sessionStorage.getItem("vuex")).userid;
+      this.$axios
+        .post("/index/shop/getCartData", { userId: userid, cartId: "" })
+        .then(res => {
+          this.goodsinfo = res.data.cart_data;
+          console.log(res);
+        });
+    },
     //   数量-
-    decrement(index) {
-      this.goodsinfo[index].count--;
+    decrement(item, index) {
+      this.goodsinfo[index].cart_num--;
+      let num = this.goodsinfo[index].cart_num;
+      // num--;
+      // this.$forceUpdate();
+      console.log(num);
+      this.requstaddcar(item.user_id, item.goods_id, num, item.format_ids);
     },
     // 数量+
-    increment(index) {
-      this.goodsinfo[index].count++;
+    increment(item, index) {
+      this.goodsinfo[index].cart_num ++;
+      let num = this.goodsinfo[index].cart_num;
+      // num++;
+      // this.$forceUpdate();
+      console.log(num);
+      // this.requstaddcar(item.user_id, item.goods_id, num, item.format_ids);
     },
     // 删除
-    del(index) {
-      this.goodsinfo.splice(index, 1);
+    del(index, item) {
+      this.$confirm("您确定要删除这件宝贝吗", "提示", {
+        confirmButtonText: "忍痛删除",
+        cancelButtonText: "再想一会儿",
+        type: "warning"
+      })
+        .then(() => {
+          this.cardel(item.cart_id);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除"
+          });
+        });
+    },
+    // 加入购物车
+    requstaddcar(userid, gid, num, fids) {
+      this.$axios
+        .post("/index/shop/addShoppingCart", {
+          userId: userid,
+          gid: gid,
+          num: num,
+          fids: fids
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.data.code == 1) {
+            this.$message({
+              message: "操作成功",
+              type: "success"
+            });
+          } else {
+            this.$message.error("操作失败");
+          }
+        });
+    },
+    cardel(cartId) {
+      this.$axios
+        .post("/index/shop/delShoppingCart", { cartId: cartId })
+        .then(res => {
+          this.reload();
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+          console.log(res, "aa");
+        });
     },
     // 返回商城
     toshop() {
@@ -126,9 +163,11 @@ export default {
     },
     // 去结算
     toorder() {
+      this.setorderlist(this.goodsinfo);
       this.$router.push({ path: "/order" });
     }
-  }, // 保留两位小数
+  },
+  // 保留两位小数
   filters: {
     showPrice(price) {
       return "￥" + price.toFixed(2);
@@ -172,10 +211,16 @@ export default {
           height: 90px;
           border-radius: 10px;
         }
-        .name {
+        .names {
           // background: beige;
           width: 400px;
           align-self: center;
+          .format {
+            box-sizing: border-box;
+            padding-top: 20px;
+            font-size: 12px;
+            color: #cccccc;
+          }
         }
         .price {
           width: 100px;
@@ -234,6 +279,7 @@ export default {
         .btn {
           cursor: pointer;
           width: 203px;
+          height: 55px;
           font-size: 18px;
           line-height: 55px;
           text-align: center;

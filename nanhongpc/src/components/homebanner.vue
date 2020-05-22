@@ -3,10 +3,10 @@
     <!-- 头部轮播 -->
     <div class="bannerbox">
       <el-carousel height="650px">
-        <el-carousel-item v-for="(item, index) in slide" :key="index" arrow="none">
+        <el-carousel-item v-for="(item, index) in slides" :key="index" arrow="none">
           <div
             class="mainpic"
-            :style="{backgroundImage: 'url(' + item+ ')',
+            :style="{backgroundImage: 'url(' + httpUrl+item.image_url +')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -34,25 +34,31 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapState } from "vuex";
 export default {
   name: "homebanner",
   data() {
     return {
-      slide: [
-        require("../assets/home/homebanner.png"),
-        require("../assets/home/homebanner.png"),
-        require("../assets/home/homebanner.png"),
-        require("../assets/home/homebanner.png")
-      ],
+      slides: [],
       vioce: [
         "消息通知1消息通知1消息通知1消息通知1消息通知1消息通知1消息通知1消息通知1",
         "消息通知2消息通知2消息通知2消息通知2消息通知2消息通知2"
       ]
     };
   },
-  computed:{
-    ...mapState(['isbanshow'])
+  created() {
+    this.requst();
+    // console.log(this.httpUrl);
+  },
+  methods: {
+    requst() {
+      this.$axios.post("/index/api/home").then(res => {
+        this.slides = res.data.data.banner;
+      });
+    }
+  },
+  computed: {
+    ...mapState(["isbanshow"])
   }
 };
 </script>

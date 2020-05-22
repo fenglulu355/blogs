@@ -37,72 +37,37 @@
           </li>
         </ul>
         <!-- 官网nav -->
-        <ul class="navlist" v-show="isbanshow">
-          <li class="navli" value="0" @click="tonav($event)">
+        <ul class="navlist" v-show="isbanshow " @mouseenter="isbg=true" @mouseleave="isbg=false">
+          <li class="navli" value="0" @click.stop="tonav($event)">
             <router-link to="/" :class="navindex ==0?'sel':''">网站首页</router-link>
+            <mnav :btitle="bhome" :ltitle="lhome" :path="'/'" :navindex="0"></mnav>
           </li>
-          <li
-            class="navli"
-            @mouseenter="isbg=true"
-            @mouseleave="isbg=false"
-            value="1"
-            @click="tonav($event)"
-          >
+          <li class="navli" value="1" @click.stop="tonav($event)">
             <router-link to="/product" :class="navindex ==1?'sel':''">产品中心</router-link>
-            <mnav :btitle="bpro" :ltitle="lpro" :path="'/product'"></mnav>
+            <mnav :btitle="bpro" :ltitle="lpro" :path="'/product'" :navindex="1"></mnav>
           </li>
-          <li
-            class="navli"
-            @mouseenter="isbg=true"
-            @mouseleave="isbg=false"
-            value="2"
-            @click="tonav($event)"
-          >
+          <li class="navli" value="2" @click.stop="tonav($event)">
             <router-link to="/shopshow" :class="navindex ==2?'sel':''">门店展示</router-link>
-            <mnav :btitle="bshop" :ltitle="lshop" :path="'/shopshow'"></mnav>
+            <mnav :btitle="bshop" :ltitle="lshop" :path="'/shopshow'" :navindex="2"></mnav>
           </li>
-          <li
-            class="navli"
-            @mouseenter="isbg=true"
-            @mouseleave="isbg=false"
-            value="3"
-            @click="tonav($event)"
-          >
+          <li class="navli" value="3" @click.stop="tonav($event)">
             <router-link to="/cases" :class="navindex ==3?'sel':''">成功案例</router-link>
-            <mnav :btitle="bcase" :ltitle="lcase" :path="'/cases'"></mnav>
+            <mnav :btitle="bcase" :ltitle="lcase" :path="'/cases'" :navindex="3"></mnav>
           </li>
-          <li
-            class="navli"
-            @mouseenter="isbg=true"
-            @mouseleave="isbg=false"
-            value="4"
-            @click="tonav($event)"
-          >
+          <li class="navli" value="4" @click.stop="tonav($event)">
             <router-link to="/service" :class="navindex ==4?'sel':''">服务与支持</router-link>
-            <mnav :btitle="bsrv" :ltitle="lsrv" :path="'/service'"></mnav>
+            <mnav :btitle="bsrv" :ltitle="lsrv" :path="'/service'" :navindex="4"></mnav>
           </li>
-          <li
-            class="navli"
-            @mouseenter="isbg=true"
-            @mouseleave="isbg=false"
-            value="5"
-            @click="tonav($event)"
-          >
+          <li class="navli" value="5" @click.stop="tonav($event)">
             <router-link to="/news" :class="navindex ==5?'sel':''">新闻中心</router-link>
-            <mnav :btitle="bnews" :ltitle="lnews" :path="'/news'"></mnav>
+            <mnav :btitle="bnews" :ltitle="lnews" :path="'/news'" :navindex="5"></mnav>
           </li>
-          <li
-            class="navli"
-            @mouseenter="isbg=true"
-            @mouseleave="isbg=false"
-            value="6"
-            @click="tonav($event)"
-          >
+          <li class="navli" value="6" @click.stop="tonav($event)">
             <router-link to="/about" :class="navindex ==6?'sel':''">关于我们</router-link>
-            <mnav :btitle="babout" :ltitle="labout" :path="'/about'"></mnav>
+            <mnav :btitle="babout" :ltitle="labout" :path="'/about'" :navindex="6"></mnav>
           </li>
-          <li class="navli" value="7" @click="tonav($event)">
-            <router-link to="/shoppingmall" :class="navindex ==7?'sel':''">南宏商城</router-link>
+          <li class="navli" value="7" @click.stop="tonav($event)">
+            <router-link to="/shoppingmall" :class="navindex ==7?'sel':''" :navindex="7">南宏商城</router-link>
           </li>
         </ul>
         <div class="searchbox" v-show="isbanshow">
@@ -177,7 +142,7 @@ export default {
         {
           img: require("../assets/navgation/pay.png"),
           name: "我的订单",
-          path: "/order"
+          path: "/orderlist"
         },
         {
           img: require("../assets/navgation/mine.png"),
@@ -185,23 +150,15 @@ export default {
           path: "/mine"
         }
       ],
+      bhome: [""],
       bpro: ["产品中心"],
       bshop: ["门店展示"],
       bcase: ["成功案例"],
       bsrv: ["售后服务"],
       bnews: ["新闻中心"],
       babout: ["南宏信息", "加入我们", "联系我们", "公司架构"],
-      lpro: [
-        "冰箱",
-        "洗衣机",
-        "小家电",
-        "空调",
-        "中央空调",
-        "地暖",
-        "净水",
-        "新风",
-        "电视"
-      ],
+      lhome: [""],
+      lpro: [],
       lshop: ["门店展示", "门店导航"],
       lcase: ["工装项目", "家装项目"],
       lsrv: ["团队展示", "服务流程", "安装流程", "服务条款"],
@@ -224,6 +181,11 @@ export default {
   },
   created() {
     let navidx = sessionStorage.getItem("navindex");
+    let a = sessionStorage.getItem("tabnav");
+    a = JSON.parse(a);
+    this.lpro = a;
+    // console.log(a);
+
     if (navidx) {
       this.navindex = navidx;
     } else {
@@ -250,6 +212,12 @@ export default {
     tonav(e) {
       this.navindex = e.currentTarget.value;
       sessionStorage.setItem("navindex", e.currentTarget.value);
+      if (this.navindex == 4) {
+        sessionStorage.removeItem("mnavindex");
+      } else {
+        sessionStorage.setItem("mnavindex", 0);
+      }
+
       this.reload();
     },
     toshapingmall() {
@@ -264,9 +232,8 @@ export default {
       this.reload();
       this.$router.push({ path: "/" });
     },
-    // 去car。mine，order
+    // 去car。mine，orderlist
     topath(index, item) {
-      console.log(item);
       if (this.islogin == false) {
         this.$confirm("您还未登录，前往登录", "提示", {
           confirmButtonText: "确定",
@@ -280,6 +247,7 @@ export default {
           })
           .catch(() => {
             this.islogreg = false;
+            this.getlogreg(false);
           });
       } else {
         this.$router.push({ path: item.path });
@@ -288,6 +256,7 @@ export default {
     close(e) {
       console.log(e);
       this.islogreg = e;
+      this.getlogreg(e);
     },
     tocurpage(e) {
       console.log(e);
@@ -330,8 +299,8 @@ export default {
           position: relative;
           .ewm {
             position: absolute;
-            z-index: 1;
-            left: 350px;
+            z-index: -1;
+            left: -52px;
             top: 30px;
             width: 129px;
             height: 144px;
@@ -341,15 +310,16 @@ export default {
             background-position: center;
             background-size: cover;
             background-repeat: no-repeat;
-            //  display: none;
+            opacity: 0;
             img {
               width: 105px;
               height: 105px;
             }
           }
           &:hover .ewm {
-            transition: all 0.2s ease-in-out;
-            left: -55px;
+            transition: all 0.2s ease;
+            z-index: 1;
+            opacity: 1;
           }
         }
       }
@@ -421,6 +391,7 @@ export default {
         width: 100%;
         height: 90px;
         text-align: right;
+        // position: relative;
         .navli {
           display: inline-block;
           text-align: center;
@@ -436,17 +407,22 @@ export default {
             font-weight: 400;
           }
           .sel {
+            transition: color 0.5s ease;
             border-bottom: 3px solid #5b5b5b;
           }
           .minnav {
-            display: none;
+            opacity: 0;
           }
           &:hover a {
             border-bottom: 3px solid #5b5b5b;
           }
+
           &:hover .minnav {
+            // display: block;
             transition: all 0.5s linear;
-            display: block;
+            // transform: scale(1.1);
+            z-index: 11;
+            opacity: 1;
           }
         }
       }
@@ -473,12 +449,14 @@ export default {
         width: 100%;
         position: absolute;
         height: 185px;
-        background: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.5);
       }
       .topa {
+        transition: all 0.5s ease;
         top: 123px;
       }
       .topb {
+        transition: all 0.5s ease;
         top: 93px;
       }
     }

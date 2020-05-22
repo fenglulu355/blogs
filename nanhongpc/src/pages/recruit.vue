@@ -60,13 +60,14 @@
           </p>
         </div>
       </div>
-      <div class="serv" v-if="isserv"></div>
+      <div class="serv" v-if="isserv">
+        <p class="name">{{servinfo.title}}</p>
+        <div class="content" v-html="servinfo.content"></div>
+      </div>
       <div class="case" v-if="isnews">
-        <p class="name">“燃爆三月 火力全开”活动，优惠不断，特价多</p>
-        <p class="time">更新时间：2019-02-26</p>
-        <div
-          class="caseinfo"
-        >内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容内容</div>
+        <p class="name">{{newsinfo.title }}</p>
+        <p class="time">更新时间：{{newsinfo.created_time}}</p>
+        <div class="caseinfo" v-html="newsinfo.content"></div>
       </div>
     </div>
   </div>
@@ -79,21 +80,56 @@ export default {
       iscase: false,
       isrecruit: false,
       isserv: false,
-      isnews: false
+      isnews: false,
+      newsinfo: [],
+      caseinfo: [],
+      servinfo: [],
+      zpinfo: []
     };
   },
   created() {
-    let kind = this.$route.query.kind;
+    let kind = this.$route.query.kind,
+      id = this.$route.query.id;
     if (kind == "case") {
+      this.requstcase(id);
       this.iscase = true;
     } else if (kind == "serv") {
+      this.requstserv(id);
       this.isserv = true;
     } else if (kind == "recruit") {
+      this.requstzp(id);
       this.isrecruit = true;
     } else if (kind == "news") {
+      this.requstnews(id);
       this.isnews = true;
     }
     console.log(kind);
+  },
+  methods: {
+    requstnews(id) {
+      this.$axios.post("/index/api/newsDetail", { id: id }).then(res => {
+        this.newsinfo = res.data.data;
+        console.log(this.newsinfo, "this.newsinfo");
+      });
+    },
+    requstcase(id) {
+      this.$axios.post("/index/api/cgalDetail", { id: id }).then(res => {
+        this.caseinfo = res.data.data;
+        console.log(this.caseinfo, "this.newsinfo");
+      });
+    },
+    requstserv(id) {
+      this.$axios.post("/index/api/azlcDetail", { id: id }).then(res => {
+        this.servinfo = res.data.data;
+        console.log(this.servinfo, "this.servinfo");
+      });
+    },
+    requstzp(id) {
+      this.$axios.post("/index/api/jobDetail", { id: id }).then(res => {
+        this.zpinfo = res.data.data;
+        console.log(this.zpinfo, "this.servinfo");
+      });
+    }
   }
 };
 </script>

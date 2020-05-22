@@ -12,9 +12,9 @@
         class="shopnavli"
         v-for="(item, index) in tabnav"
         :key="index"
-        @click="tonav(index,$event)"
+        @click="tonav(index,item)"
         :class="curi ==index?'shopsel':''"
-      >{{item}}</li>
+      >{{item.class_name}}</li>
     </ul>
   </div>
 </template>
@@ -28,7 +28,7 @@ export default {
     };
   },
   created() {
-    //   console.log(this.tabBarlist)
+    console.log(this.curi,'curi');
   },
   props: {
     tabinfo: {
@@ -44,13 +44,14 @@ export default {
     },
     curi: {
       type: Number,
-      default: null
+      default: 0
     }
   },
   methods: {
-    tonav(index, e) {
+    tonav(index, item) {
       this.curindex = index;
-      this.$emit("change", index);
+      sessionStorage.setItem("tabbar", index);
+      this.$emit("change", index, item);
     }
   }
 };
@@ -109,7 +110,7 @@ export default {
     background: rgba(36, 130, 200, 0);
   }
   .shopsel {
-    // transition: all 0.2s linear;
+    transition:background-color 0.2s linear;
     background: rgba(36, 130, 200, 1);
     color: white;
   }

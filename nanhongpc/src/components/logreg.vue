@@ -8,14 +8,14 @@
         <span class="img">
           <img src="../assets/navgation/log-tel.png" alt />
         </span>
-        <input type="tel" placeholder="登录账户手机号" maxlength="11" v-model="tel" />
+        <input type="tel" id="logtel" placeholder="登录账户手机号" maxlength="11" v-model="tel" />
         <img class="clear" src="../assets/navgation/log-x.png" alt />
       </div>
       <div class="intbox">
         <span class="img">
           <img src="../assets/navgation/log-pw.png" alt />
         </span>
-        <input type="password" placeholder="输入密码" v-model="password" />
+        <input type="password" id="logpsw" placeholder="输入密码" v-model="password" />
         <img class="clear" src="../assets/navgation/log-x.png" alt />
       </div>
       <p class="forget" @click="topaw">忘记密码</p>
@@ -43,10 +43,26 @@
             <img src="../assets/navgation/log-b.png" alt />
           </span>
         </p>
-        <input type="tel" placeholder="建议使用常用手机号" maxlength="11" v-model="tel" />
+        <input
+          type="tel"
+          id="regtel"
+          placeholder="建议使用常用手机号"
+          maxlength="11"
+          v-model="tel"
+          @blur="regtel(tel)"
+        />
+      </div>
+      <div class="intbox">
+        <input
+          type="password"
+          id="regpsw"
+          placeholder="输入密码"
+          v-model="password"
+          @blur="regpsw(password)"
+        />
       </div>
       <div class="intbox codebox">
-        <input placeholder="输入验证码" v-model="code" />
+        <input placeholder="输入验证码" id="regcode" v-model="code" @blur="regcode(code)" />
         <p @click="sendCode" class="code" :class="cancode ? 'cantchoose':''">{{codetime}}</p>
       </div>
       <p class="login" @click="reging">注册</p>
@@ -57,17 +73,17 @@
 
       <p class="title">找回密码</p>
       <div class="intbox telbox">
-        <input type="tel" maxlength="11" v-model="tel" placeholder="注册账户手机号" />
+        <input type="tel" id="gettel" maxlength="11" v-model="tel" placeholder="注册账户手机号" />
       </div>
       <div class="intbox codebox">
-        <input placeholder="输入验证码" v-model="code" />
+        <input placeholder="输入验证码" id="getcode" v-model="code" />
         <p class="code" @click="sendCode" :class="cancode ? 'cantchoose':''">{{codetime}}</p>
       </div>
       <div class="intbox telbox">
-        <input type="password" placeholder="请输入新密码" v-model="password" />
+        <input type="password" id="getnpsw" placeholder="请输入新密码" v-model="password" />
       </div>
       <div class="intbox telbox">
-        <input type="password" placeholder="请再次输入密码" v-model="confirmPsw" />
+        <input type="password" id="getnpsws" placeholder="请再次输入密码" v-model="confirmPsw" />
       </div>
       <p class="login" @click="changepsw">确定</p>
     </div>
@@ -75,7 +91,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   name: "logreg",
   data() {
@@ -89,37 +105,48 @@ export default {
       tel: "", // 手机号码
       code: "", //验证码
       codetime: "获取验证码", //验证码倒计时
-      cancode: false //允许发送验证码
+      cancode: false, //允许发送验证码,
+      getcode: null
     };
   },
   computed: {
     ...mapState(["logreg", "islogin", "topath"])
   },
   methods: {
-    ...mapActions(["getlogin", "getlogreg"]),
+    ...mapMutations(["setuserid"]),
+    ...mapActions(["getlogin", "getlogreg", "getuserid"]),
     // 登录ing
     loging() {
       if (this.password == "" || this.tel == "") {
         this.$message.error("请完善信息");
       } else {
-        var regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/,
-          regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
-        if (!regpsw.test(this.password) || !regPhone.test(this.tel)) {
-          this.$message.error(
-            "请输入11位正确手机号码或者包含必须数字、字母、字符串的6位数以上的密码"
-          );
-        } else {
-          this.$message({
-            message: "登录成功",
-            type: "success"
+        console.log(this.password, this.tel);
+        this.$axios
+          .post("/index/login/userLogin", {
+            phone: this.tel,
+            pwd: this.password
+          })
+          .then(res => {
+            console.log(res);
+            if (res.data.code == 1) {
+              this.$message({
+                message: "登录成功",
+                type: "success"
+              });
+              // 存储userid
+              this.setuserid(Number(res.data.data));
+              // 设置登录状态;
+              this.getlogin(true);
+              // 跳转到要去的页面
+              this.$router.push({ path: this.topath });
+              // 掩藏登录框
+              this.getlogreg(false);
+              // 掩藏登录框
+              this.$emit("close", false);
+            } else if (res.data.code == 0) {
+              this.$message.error("账号或密码错误");
+            }
           });
-          // 设置登录状态
-          this.getlogin(true);
-          // 跳转到要去的页面
-          this.$router.push({ path: this.topath });
-          // 掩藏登录框
-          this.$emit("close", false);
-        }
       }
     },
     // 显示注册
@@ -133,23 +160,32 @@ export default {
       if (this.code == "" || this.tel == "") {
         this.$message.error("请完善信息");
       } else {
-        // 判断验证码和手机号码
-        var regcode = /^\d{4}$/,
-          regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/;
-        if (!regcode.test(this.code) || !regPhone.test(this.tel)) {
-          this.$message.error("您输入的格式有错误");
-        } else {
-          this.$message({
-            message: "发送成功",
-            type: "success"
+        console.log(this.tel, this.code, "erwr");
+        this.$axios
+          .post("/index/login/register", {
+            phone: this.tel,
+            code: this.code,
+            pwd: this.password
+          })
+          .then(res => {
+            console.log(res, "注册");
+            if (res.data.code == 1) {
+              this.$message({
+                message: "注册成功",
+                type: "success"
+              });
+              // 存储userid
+              this.getuserid(Number(res.data.data));
+              // 设置登录状态
+              this.getlogin(true);
+              // 跳转到要去的页面
+              this.$router.push({ path: this.topath });
+              // 掩藏登录框
+              this.getlogreg(false);
+            } else if (res.data.code == 0) {
+              this.$message.error("该手机已注册");
+            }
           });
-          // 设置登录状态
-          this.getlogin(true);
-          // 跳转到要去的页面
-          this.$router.push({ path: this.topath });
-          // 掩藏登录框
-          this.getlogreg(false);
-        }
       }
     },
     // 忘记密码
@@ -197,8 +233,9 @@ export default {
     },
     // 发送验证码
     sendCode() {
+      // let _this=this
       if (this.codetime == "获取验证码") {
-        if (this.tel == "" || this.telErr) {
+        if (this.tel == "") {
           this.$message.error("请输入正确手机号");
         } else {
           this.cancode = true;
@@ -211,23 +248,70 @@ export default {
               clearInterval(timer);
             }
           }, 1000);
-          // this.$axios
-          //   .post("/register-verification", {
-          //     mobile: this.tel,
-          //     state: "注册",
-          //     verifcationCode: "",
-          //     id: ""
-          //   })
-          //   .then(res => {
-          //     if (res.data.code == 202) {
-          //       this.$message.error({
-          //         message: "该手机已注册",
-          //         duration: 500
-          //       });
-          //     }
-          //   });
+          // 生成验证码
+          let code = this.rand("0000", "9999");
+          this.getcode = code;
+          console.log(code, "code");
+
+          this.$axios
+            .post("/index/login/sendPhoneCode", {
+              phone: this.tel,
+              code: code
+            })
+            .then(res => {
+              console.log(res, "code");
+
+              // 判断手机是否注册
+              if (res.data.code == 0) {
+                this.$message.error({
+                  message: "该手机已注册"
+                });
+              } else {
+                this.$message({
+                  message: "发送成功",
+                  type: "success"
+                });
+              }
+            });
         }
       }
+    },
+    // 正则判断手机号
+    regtel(tel) {
+      let regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/;
+      if (!regPhone.test(tel)) {
+        this.$message.error("手机号码格式错误");
+        setTimeout(() => {
+          this.tel = "";
+        }, 200);
+      } else {
+        this.tel = tel;
+        console.log(this.tel);
+      }
+    },
+    regpsw(psw) {
+      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
+      if (!regpsw.test(psw)) {
+        this.$message.error("请输入至少6位数以上包含数字、字母、字符串的密码");
+        setTimeout(() => {
+          this.password = "";
+        }, 200);
+      } else {
+        this.password = psw;
+      }
+    },
+    regcode(code) {
+      if (code == this.getcode) {
+        console.log("验证码正确");
+      } else {
+        this.$message.error("验证码错误");
+      }
+    },
+    // 生成验证码
+    rand(min, max) {
+      min = Number(min);
+      max = Number(max);
+      return Math.floor(Math.random() * (max - min)) + min;
     },
     close() {
       this.$emit("close", false);
@@ -239,8 +323,9 @@ export default {
 <style lang="less" scoped>
 .logreg {
   width: 100%;
-  position: absolute;
+  position: fixed;
   top: 0;
+  z-index: 1111;
   background: rgba(0, 0, 0, 0.5);
 
   .box {

@@ -15,12 +15,13 @@
         </div>
         <div class="names">
           <p class="name">
-            四川南宏机电
+            <span v-if="userinfo.user_name">{{userinfo.user_name}}</span>
+            <span v-else>{{userinfo.user_nickname}}</span>
             <img src="../assets/mine/mine.png" alt />
           </p>
           <p class="integ">
             我的积分：
-            <span>2080</span>
+            <span>{{userinfo.points}}</span>
           </p>
         </div>
         <div class="tocoupon">
@@ -45,6 +46,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from "vuex";
 // import minecenter from "../components/mine-center";
 export default {
   name: "mine",
@@ -58,14 +60,31 @@ export default {
         { icon: require("../assets/mine/yh.png"), name: "我的优惠", tag: 2 },
         { icon: require("../assets/mine/jf.png"), name: "我的积分", tag: 3 },
         { icon: require("../assets/mine/mm.png"), name: "修改密码", tag: 4 }
-      ]
+      ],
+      userinfo: []
     };
   },
+  computed: {
+    ...mapState(["userid"])
+  },
+  created() {
+    this.requst();
+  },
   methods: {
+    ...mapMutations(["setpoints"]),
+    requst() {
+      this.$axios
+        .post("/index/user/userInfo", { userId: this.userid })
+        .then(res => {
+          console.log(res);
+          this.userinfo = res.data.data;
+          this.setpoints(res.data.data.points);
+        });
+    },
     tonav(e, item) {
       this.curmineli = e;
       if (e == 1) {
-         setTimeout(() => {
+        setTimeout(() => {
           this.$router.push({ path: "/orderlist", query: { tag: item.tag } });
         }, 500);
       } else {
@@ -107,7 +126,6 @@ export default {
       display: flex;
       justify-content: space-between;
       .head {
-        background: pink;
         width: 114px;
         height: 114px;
         .mainpic {
