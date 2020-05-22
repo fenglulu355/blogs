@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import Axios from 'axios'
+import httpUrl from "../src/api/url.vue"
 import 'lib-flexible'
 // vant
 import {
@@ -45,8 +47,11 @@ Vue.component('v-distpicker', Distpicker)
 
 
 // api
-// Axios.defaults.baseURL = "http://nhjd.public.5151fw.com/";
-// Axios.defaults.headers["Content-type"] = "application/json";
+Vue.prototype.$axios = Axios
+Vue.prototype.httpUrl = httpUrl.httpUrl;
+Axios.defaults.baseURL = "http://nhjd.public.5151fw.com/";
+Axios.defaults.headers["Content-type"] = "application/json";
+
 
 Vue.use(Vuex)
 

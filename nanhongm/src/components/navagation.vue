@@ -75,7 +75,7 @@
           <div
             class="mainpic"
             :style="{
-              backgroundImage: 'url(' + image+ ')',
+              backgroundImage: 'url(' +httpUrl+image.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -123,11 +123,7 @@ export default {
       search: "",
       vioce:
         "强强联手抢占市场高地强强联手抢占市场高地强强联手抢占市场高地强强联手抢占市场高地强强联手抢占市场高地强强联手抢占市场高地强强联手抢占市场高地强强联手抢占市场高地强强联手抢占市场高地 南宏成都店今日正式亮相！",
-      swiperli: [
-        require("../assets/nav/banner.png"),
-        require("../assets/nav/homebanner.png"),
-        require("../assets/nav/banner.png")
-      ],
+      swiperli: [],
       isnav: false,
       navli: [
         { name: "网站首页", path: "/" },
@@ -146,6 +142,7 @@ export default {
     ...mapState(["isbanshow", "islogin", "logreg", "isswiper"])
   },
   created() {
+    this.requst();
     let navidx = sessionStorage.getItem("navindex");
     if (navidx) {
       this.navindex = navidx;
@@ -155,6 +152,12 @@ export default {
   },
   methods: {
     ...mapActions(["getlogreg", "gettopath"]),
+    requst() {
+      this.$axios.post("/index/api/home").then(res => {
+        // console.log(res.data.data);
+        this.swiperli = res.data.data.banner;
+      });
+    },
     toicon(index, item) {
       if (index == 4) {
         timer = setInterval(function() {

@@ -3,10 +3,10 @@
     <div class="goodsshow">
       <div class="swiperbox">
         <van-swipe class="my-swipe" :autoplay="3000" indicator-color="#2482C8">
-          <van-swipe-item v-for="(item, index) in goodsinfo.imgs" :key="index">
+          <van-swipe-item v-for="(item, index) in goodsinfo.goods_images" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' + item+ ')',
+              :style="{backgroundImage: 'url('  +httpUrl+ item.image_url+  ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -16,8 +16,8 @@
         </van-swipe>
       </div>
       <div class="gs-right">
-        <p class="name">{{goodsinfo.name}}</p>
-        <div class="colorbox select">
+        <p class="name">{{goodsinfo.goods_info.goods_name}}</p>
+        <!-- <div class="colorbox select">
           <p class="text">颜色</p>
           <div class="selection">
             <section
@@ -31,49 +31,61 @@
               <span class="color">{{item}}</span>
             </section>
           </div>
-        </div>
+        </div>-->
         <div class="typebox select">
-          <p class="text">规格</p>
-          <div class="selection">
-            <section
-              class="section"
-              v-for="(item, index) in goodsinfo.type"
-              :key="index"
-              :class="type==index?'cur':''"
-              @click="curtype(index)"
-            >
-              <span class="span"></span>
-              <span class="type">{{item}}</span>
-            </section>
+          <div class="selectbox" v-for="(item, indexs) in goodsinfo.goods_format" :key="indexs">
+            <p class="text">{{item.format_name}}</p>
+            <div class="selection">
+              <section
+                class="section"
+                v-for="(items, i) in item.format_children"
+                :key="i"
+                :class="color[indexs]==i?'cur':''"
+                @click="curcolor(indexs,i,items)"
+              >
+                <span class="span"></span>
+                <span class="type">{{items.format_name}}</span>
+              </section>
+            </div>
           </div>
         </div>
-        <p class="price">￥{{goodsinfo.price}}</p>
+        <p class="price">￥{{goodsinfo.goods_info.goods_price}}</p>
         <p class="addcar" @click="tocar">加入购物车</p>
         <p class="info">
-          <span class="sale">销量：{{goodsinfo.sale}}</span>
+          <span class="sale">销量：{{goodsinfo.goods_info.goods_discount}}</span>
           <span>/</span>
-          <span class="stock">库存{{goodsinfo.stock}}</span>
+          <span class="stock">库存{{goodsinfo.goods_info.goods_number}}</span>
         </p>
       </div>
     </div>
     <div class="det-eva">
       <div class="title">
-        <p class="text" @click="deteva(0)" :class="detevas==true?'deteva':''">产品详情</p>
-        <p class="text" @click="deteva(1)" :class="detevas==false?'deteva':''">用户评价</p>
+        <p class="text" @click="deteva(0)" :class="detevas==false?'deteva':''">产品详情</p>
+        <p class="text" @click="deteva(1)" :class="detevas==true?'deteva':''">用户评价</p>
       </div>
       <!-- 详情 -->
       <div class="det detevabox" v-show="detevanum==0">
-        <div class="detinfos scorll">产品详情</div>
+        <div class="detinfos scorll" id="infos-cont" v-html="goodsinfo.goods_info.goods_contents"></div>
       </div>
       <!-- 评价 -->
       <div class="eva detevabox" v-show="detevanum==1">
         <div class="evainfos scorll">
           <ul class="evalist">
-            <li class="evali" v-for="(item, index) in filter" :key="index">
+            <li class="evali" v-for="(item, index) in eva" :key="index">
               <div class="evali-left">
                 <div
+                  v-if=" item.user.bd_headimg"
                   class="mainpic"
-                  :style="{backgroundImage: 'url(' + item.headimg+ ')',
+                  :style="{backgroundImage: 'url(' +httpUrl+ item.user.bd_headimg+ ')',
+                backgroundSize:'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition:'center'
+                 }"
+                ></div>
+                <div
+                  v-else
+                  class="mainpic"
+                  :style="{backgroundImage: 'url(' + item.user.wx_headimg+ ')',
                 backgroundSize:'cover',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition:'center'
@@ -81,18 +93,20 @@
                 ></div>
               </div>
               <div class="evali-right">
-                <p class="name">{{item.name}}</p>
-                <p class="time">{{item.time}}</p>
+                <p class="name" v-if="item.user.user_name">{{item.user.user_name}}</p>
+                <p class="name" v-else>{{item.user.user_nickname}}</p>
+                <p class="time">{{item.created_time}}</p>
                 <p
                   class="cont"
                   @click="isstyle(index)"
                   :class="styleindex==index?'open':''"
-                >{{item.cont}}</p>
-                <div class="pics" v-if="item.imgs">
-                  <div class="slide" v-for="(items, index) in item.imgs" :key="index">
+                  v-html="item.content"
+                ></p>
+                <div class="pics" v-if="item.image_url">
+                  <div class="slide" v-for="(items, index) in item.image_url" :key="index">
                     <div
                       class="showpic"
-                      :style="{backgroundImage: 'url(' + items+ ')',
+                      :style="{backgroundImage: 'url(' +httpUrl+ items+ ')',
                         backgroundSize:'cover',
                         backgroundRepeat: 'no-repeat',
                     backgroundPosition:'center'
@@ -101,8 +115,7 @@
                   </div>
                 </div>
                 <p class="ctype">
-                  <span>{{item.color}}</span>
-                  <span>{{item.type}}</span>
+                  <span>{{item.spec}}</span>
                 </p>
               </div>
             </li>
@@ -124,179 +137,77 @@ export default {
       isevaluate: false,
       checked: false,
       radio: 0,
-      color: 0,
+      color: [],
       type: 0,
       detevas: false,
       detevanum: 0,
       shopshowinfo: [],
-      swiperOptionThumbs: {
-        // loop:true,
-        spaceBetween: 10,
-        touchRatio: 0.2,
-        slideToClickedSlide: true,
-        slidesPerView: 4,
-        watchSlidesVisibility: true /*避免出现bug*/,
-        navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev"
-        }
-      },
       evainfo: {},
-      goodsinfo: {
-        id: 1,
-        name: "格力晶晶滚筒洗衣机",
-        color: ["白色", "灰色", "米色", "黑色"],
-        type: ["1.5匹", "1匹"],
-        imgs: [
-          require("../assets/product/goods1.png"),
-          require("../assets/about/1-1.png"),
-          require("../assets/about/1-2.png"),
-          require("../assets/about/1-3.png"),
-          require("../assets/about/1-4.png"),
-          require("../assets/about/1-2.png")
-        ],
-        price: 1588.0,
-        sale: 500,
-        stock: 200
-      },
-      eva: [
-        {
-          name: "中评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内内容评价内内容评价内内容评价内内容评价内内容评价内容评价内容",
-          imgs: [
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png")
-          ],
-          color: "白色",
-          type: "1.5匹",
-          code: 1
-        },
-        {
-          name: "好评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-          imgs: [
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png")
-          ],
-          color: "白色",
-          type: "1.5匹",
-          code: 0
-        },
-        {
-          name: "差评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-          imgs: [
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png")
-          ],
-          color: "白色",
-          type: "1.5匹",
-          code: 2
-        },
-        {
-          name: "中评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-          imgs: [
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png")
-          ],
-          color: "白色",
-          type: "1.5匹",
-          code: 1
-        },
-        {
-          name: "好评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-          imgs: [
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png")
-          ],
-          color: "白色",
-          type: "1.5匹",
-          code: 0
-        },
-        {
-          name: "差评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-          imgs: [
-            require("../assets/shop/eva-goods.png"),
-            require("../assets/shop/eva-goods.png")
-          ],
-          color: "白色",
-          type: "1.5匹",
-          code: 2
-        },
-        {
-          name: "中评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-
-          color: "白色",
-          type: "1.5匹",
-          code: 1
-        },
-        {
-          name: "好评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-
-          color: "白色",
-          type: "1.5匹",
-          code: 0
-        },
-        {
-          name: "差评1",
-          time: "2019.05.06.09:34",
-          headimg: require("../assets/shop/eva-head.png"),
-          cont:
-            "评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容评价内容",
-
-          color: "白色",
-          type: "1.5匹",
-          code: 2
-        }
-      ],
-      filter: []
+      goodsinfo: [],
+      eva: [],
+      filter: [],
+      class_id: "",
+      fids: []
     };
   },
+  updated() {
+    let a = document.getElementById("infos-cont");
+    let imgs = a.getElementsByTagName("img");
+    for (let i = 0; i < imgs.length; i++) {
+      imgs[i].style.width = "100%";
+      imgs[i].style.height = "100%";
+    }
+  },
   created() {
-    this.shopshowinfo = this.goodsinfo.imgs[0];
-    this.evainfo.name = this.goodsinfo.name;
-    this.evainfo.img = this.goodsinfo.imgs[0];
-    // 过滤好评
-    let nums = this.eva;
-    let res = nums.filter(nums => {
-      return nums.code == 0;
-    });
-    this.filter = res;
+    this.class_id = this.$route.query.class_id;
+    this.requst(this.class_id);
   },
   methods: {
+    // 详情
+    requst(class_id) {
+      this.$axios
+        .post("/index/shop/getGoodsInfo", { gid: class_id })
+        .then(res => {
+          console.log(res);
+          this.goodsinfo = res.data.data;
+          this.shopshowinfo = this.goodsinfo.goods_images[0].image_url;
+          this.eva = this.goodsinfo.goods_commtent;
+          for (
+            let i = 0, lenth = this.goodsinfo.goods_format.length;
+            i < lenth;
+            i++
+          ) {
+            this.fids.push([
+              this.goodsinfo.goods_format[i].format_children[0].format_name
+            ]);
+            this.color.push([]);
+          }
+          console.log(this.fids, " this.fids");
+        });
+    },
     tocar() {
-      this.$router.push({ path: "/shoppingcar" });
+      let userid = JSON.parse(sessionStorage.getItem("vuex")).userid,
+        goodsid = this.goodsinfo.goods_info.goods_id,
+        fids = this.fids.join(",");
+      this.$axios
+        .post("/index/shop/addShoppingCart", {
+          userId: userid,
+          gid: goodsid,
+          num: 1,
+          fids: fids
+        })
+        .then(res => {
+          // console.log(res);
+          if (res.data.code == 200) {
+            this.$toast.success("加入购物车成功");
+            setTimeout(() => {
+              // 跳转至购物车
+              this.$router.push({ path: "/shoppingcar" });
+            }, 500);
+          } else {
+            this.$toast.fail("添加失败");
+          }
+        });
     },
     // open
     isstyle(index) {
@@ -310,8 +221,11 @@ export default {
     curtype(index) {
       this.type = index;
     },
-    curcolor(index) {
-      this.color = index;
+    curcolor(index, indexs, items) {
+      let id = items.format_name;
+      this.fids[index] = id;
+      this.color[index] = indexs;
+      this.$forceUpdate();
     },
     deteva(e) {
       this.detevas = !this.detevas;

@@ -4,18 +4,18 @@
     <div class="productbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <div class="content">
-        <curinfo :curinfo="curinfo" @change="tocurinfo"></curinfo>
+        <curinfo :curinfo="curinfo" :morecur="morecur" @change="tocurinfo" @set="curset"></curinfo>
         <ul class="goodslist">
           <li class="goodsli" v-for="(item, index) in goodsinfo" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.pic+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl+item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
             ></div>
-            <p class="name">{{item.name}}</p>
+            <p class="name">{{item.article_title}}</p>
           </li>
         </ul>
       </div>
@@ -36,6 +36,7 @@ import banner from "../components/homebanner";
 import tabBar from "../components/tabBar";
 import curinfo from "../components/curinfo";
 import moPagination from "../components/pagenation";
+
 export default {
   name: "product",
   data() {
@@ -48,39 +49,16 @@ export default {
       curinfoindex: 0,
       tabtitle: { a: "产品", b: "中心" },
       tabnav: [],
-      curinfo: [
-        {
-          name: "产品分类",
-          info: [
-            "冰箱",
-            "洗衣机",
-            "小家电",
-            "空调",
-            "中央空调",
-            "地暖",
-            "净水",
-            "新风",
-            "电视"
-          ]
-        },
-        { name: "功率", info: ["不限", "1p", "1.5p", "2p", "3p", "5p"] },
-        { name: "种类", info: ["不限", "定频", "变频"] },
-        { name: "能效", info: ["不限", "一级", "二级", "三级"] },
-        { name: "功率", info: ["不限", "1p", "1.5p", "2p", "3p", "5p"] },
-        { name: "种类", info: ["不限", "定频", "变频"] },
-        { name: "能效", info: ["不限", "一级", "二级", "三级"] }
-      ],
-      goodsinfo: [
-        { pic: require("../assets/news/lb.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" },
-        { pic: require("../assets/product/goods1.png"), name: "洗衣机" }
-      ]
+      classid: "",
+      curinfo: [],
+      arr: [],
+      keyword: [],
+      goodsinfo: [],
+      morecur: []
     };
   },
   created() {
+    this.requst();
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
@@ -90,8 +68,64 @@ export default {
   },
 
   methods: {
+    requst(classid) {
+      this.$axios.post("/index/api/productClass").then(res => {
+        this.curinfo = res.data.data;
+
+        console.log(this.curinfo, "a");
+        // let tavnav = JSON.stringify(this.tabnav);
+        // sessionStorage.setItem("tabnav", tavnav);
+        if (this.classid) {
+          this.requstclass(this.classid);
+          this.requstlist("", this.classid, 1, 6);
+        } else {
+          this.classid = this.curinfo[0].class_id;
+          this.requstclass(this.classid);
+          this.requstlist("", this.classid, 1, 6);
+        }
+      });
+    },
+
+    requstclass(classid) {
+      this.$axios.post("/index/api/productAttr", { id: classid }).then(res => {
+        this.morecur = res.data.data;
+        // 将分类添加进第一组
+        let obj = { class_name: "分类" };
+        obj.child = this.curinfo;
+        this.morecur.unshift(obj);
+      });
+    },
+    // 获取列表
+    requstlist(keyword, id, page, limit) {
+      this.$axios
+        .post("/index/api/productList", {
+          keyword: keyword,
+          id: id,
+          page: page,
+          limit: limit
+        })
+        .then(res => {
+          this.goodsinfo = res.data.data.data;
+          this.count = res.data.data.total;
+          // console.log(this.count, this.goodsinfo, "this.keyword");
+        });
+    }, // 大分类列表搜索
+
+    tocurinfo(index, item) {
+      // console.log(index, item);
+      this.curindex = index;
+      this.classid = item.class_id;
+      this.requstclass(this.classid);
+      this.requstlist("", this.classid, 1, 6);
+      // this.reloadcur();
+    },
+    curset(keyword, classid) {
+      this.classid = classid;
+      this.requstlist(keyword, classid, 1, 6);
+      this.$forceUpdate();
+    },
     getList(page) {
-      // this.requstKind(this.class_id, page);
+      this.requstlist("", this.classid, page, 6);
     },
     pageChange(index) {
       this.currentPage = index;
@@ -101,9 +135,6 @@ export default {
     tonav(index) {
       //  console.log(index)
       this.curindex = index;
-    },
-    tocurinfo(mindex, item, e) {
-      console.log(mindex, item);
     }
   },
 

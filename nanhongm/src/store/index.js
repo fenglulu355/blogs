@@ -11,19 +11,32 @@ export default new Vuex.Store({
     reducer(val) {
       return {
         //只储存state中的user
-        topath: val.topath,
-        islogin: val.islogin,
+        'topath': val.topath,
+        'islogin': val.islogin,
+        'userid': val.userid,
+        'points': val.points
       }
     }
   })],
   state: {
+    islb: true,
     isbanshow: true,
     islogin: false,
+    userid: '',
     logreg: false, //登录注册
     topath: '', //未登录时想去的页面路径
-    isswiper: true
+    orderlists: [],
+    points: ''
   },
   mutations: {
+    // 设置积分
+    setpoints(state, e) {
+      state.points = e
+    },
+    setorderlist(state, e) {
+      state.orderlists = e
+      console.log(state.orderlists);
+    },
     // 商城的banner不需要走马灯
     setbanner(state, e) {
       state.isbanshow = e
@@ -40,18 +53,23 @@ export default new Vuex.Store({
     settopath(state, e) {
       state.topath = e
     },
-    // 商场有些页面不需要轮播
-    setswiper(state, e) {
-      state.isswiper = e
-    },
+    setuserid(state, e) {
+      state.userid = e
+      console.log(state.userid, 'state.userid');
+      console.log(e, 'e');
+
+    }
   },
   actions: {
-    // 商场有些页面不需要轮播
-    getswiper({
+    getorderlist({
       commit
     }, data) {
-      commit('setswiper', data);
-      // console.log(data, 'banner');
+      commit('setorderlist', data)
+    },
+    getuserid({
+      commit
+    }, data) {
+      commit('setuserid', data)
     },
     // 获取商城的banner状态
     getbanner({

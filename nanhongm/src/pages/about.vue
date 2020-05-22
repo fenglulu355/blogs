@@ -28,7 +28,7 @@
           <li class="cpshowli" v-for="(item, index) in cpshowli" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' + item+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -62,7 +62,7 @@
           <li class="staffli" v-for="(item, index) in ygfc" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' + item.bg+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+  ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -70,7 +70,7 @@
             ></div>
             <div class="infos">
               <p class="text">旅游时光</p>
-              <p class="des">{{item.shopname}}</p>
+              <p class="des">{{item.title}}</p>
             </div>
           </li>
         </ul>
@@ -90,12 +90,12 @@
                     {{item.year}}
                     <img src="../assets/about/honorr.png" alt />
                   </p>
-                  <p class="intro">{{item.des}}</p>
+                  <p class="intro">{{item.title}}</p>
                 </div>
               </div>
               <div
                 class="mainpic"
-                :style="{backgroundImage: 'url(' + item.img+ ')',
+                :style="{backgroundImage: 'url('  +httpUrl+ item.image_url+ ')',
                   backgroundSize:'cover',
                   backgroundRepeat: 'no-repeat',
                   backgroundPosition:'center'
@@ -105,7 +105,7 @@
             <div class="honorbox" v-else>
               <div
                 class="mainpic"
-                :style="{backgroundImage: 'url(' + item.img+ ')',
+                :style="{backgroundImage: 'url('  +httpUrl+ item.image_url+')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -117,7 +117,7 @@
                     <img src="../assets/about/honorl.png" alt />
                     {{item.year}}
                   </p>
-                  <p class="intro">{{item.des}}</p>
+                  <p class="intro">{{item.title}}</p>
                 </div>
               </div>
             </div>
@@ -152,12 +152,12 @@
         ></div>
       </div>
       <!-- 社招 -->
-      <div class="socia pub" v-show="curindex == 6">
+      <div class="socia pub" v-show="curindex == 6 || curindex == 7">
         <ul class="szlist recruitment">
           <li class="newsli" v-for="(item, index) in lb" :key="index">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.img + ')',
+              :style="{backgroundImage: 'url(' +require('../assets/about/7-1.png') + ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -165,8 +165,8 @@
             ></div>
             <div class="ins-info">
               <p class="title">{{item.title}}</p>
-              <p class="time">{{item.time}}</p>
-              <p class="intro">{{item.intro}}</p>
+              <p class="time">{{item.created_time}}</p>
+              <p class="intro">{{item.desc}}</p>
               <p class="more" @click="torecruit(index,item)">我要应聘</p>
             </div>
           </li>
@@ -180,36 +180,11 @@
         ></mo-pagination>
       </div>
       <!-- 校招 -->
-      <div class="school pub" v-show="curindex == 7">
-        <ul class="szlist recruitment">
-          <li class="newsli" v-for="(item, index) in lb" :key="index">
-            <div
-              class="mainpic"
-              :style="{backgroundImage: 'url(' +item.img + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-            ></div>
-            <div class="ins-info">
-              <p class="title">{{item.title}}</p>
-              <p class="time">{{item.time}}</p>
-              <p class="intro">{{item.intro}}</p>
-              <p class="more" @click="torecruit(index,item)">我要应聘</p>
-            </div>
-          </li>
-        </ul>
-        <!-- 分页 -->
-        <mo-pagination
-          :page-index="currentPage"
-          :total="count"
-          :page-size="pageSize"
-          @change="pageChange"
-        ></mo-pagination>
-      </div>
+
       <!-- 联系我们 -->
       <div class="contact pub" v-show="curindex == 8">
-        <div class="contactbox">
+        <div class="contactbox" v-html="lxwm"></div>
+        <!-- <div class="contactbox">
           <div
             class="warrper"
             :style="{backgroundImage: 'url(' + require('../assets/about/8-1.png')+ ')',
@@ -265,7 +240,7 @@
             </p>
           </div>
           <div class="map"></div>
-        </div>
+        </div>-->
       </div>
     </div>
   </div>
@@ -300,24 +275,8 @@ export default {
         "校园招聘",
         "联系我们"
       ],
-      cpshowli: [
-        require("../assets/about/1-1.png"),
-        require("../assets/about/1-2.png")
-      ],
-      ygfc: [
-        {
-          bg: require("../assets/about/3-1.png"),
-          sbg: require("../assets/about/1-1.png"),
-          shopname:
-            "一个人的旅游，是孤独；两个人的旅游，是甜蜜；一群人的旅游，是温馨。共同奋斗，共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        },
-        {
-          bg: require("../assets/about/1-2.png"),
-          sbg: require("../assets/about/1-2.png"),
-          shopname:
-            "er共同游历，繁华世界掠眼而过，留下的是我们那令人难忘的回忆。——2018年12月1日稻城亚丁"
-        }
-      ],
+      cpshowli: [],
+      ygfc: [],
       branchlist: [
         {
           img: require("../assets/about/3-1.png"),
@@ -338,77 +297,26 @@ export default {
           tel: "000-000000"
         }
       ],
-      lb: [
-        {
-          img: require("../assets/about/7-1.png"),
-          title: "国际贸易专员",
-          time: "2010.8.03",
-          intro:
-            " 岗位职责：1、本科及以上学历，国际贸易类、经济类等相关专业毕业；2、男性，有英语读写能力、有工作经验者优先。"
-        },
-        {
-          img: require("../assets/about/7-1.png"),
-          title: "国际贸易专员",
-          time: "2010.8.03",
-          intro:
-            " 岗位职责：1、本科及以上学历，国际贸易类、经济类等相关专业毕业；2、男性，有英语读写能力、有工作经验者优先。"
-        },
-        {
-          img: require("../assets/about/7-1.png"),
-          title: "国际贸易专员",
-          time: "2010.8.03",
-          intro:
-            " 岗位职责：1、本科及以上学历，国际贸易类、经济类等相关专业毕业；2、男性，有英语读写能力、有工作经验者优先。"
-        }
-      ],
-      honor: [
-        {
-          img: require("../assets/about/honor1.png"),
-          year: "2018",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        },
-        {
-          img: require("../assets/about/honor2.png"),
-          year: "2018",
-          left: true,
-          des: "消费者点赞的诚信企业"
-        },
-        {
-          img: require("../assets/about/honor1.png"),
-          year: "2017",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        },
-        {
-          img: require("../assets/about/honor2.png"),
-          year: "2015",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        },
-        {
-          img: require("../assets/about/honor1.png"),
-          year: "2015",
-          left: true,
-          des: "品牌315诚信企业联盟单位"
-        }
-      ],
-      swiperOptionThumbs: {
-        // loop:true,
-        spaceBetween: 10,
-        touchRatio: 0.2,
-        slideToClickedSlide: true,
-        slidesPerView: 4,
-        watchSlidesVisibility: true /*避免出现bug*/,
-        navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev"
-        }
-      }
+      lb: [],
+      honor: [],
+       lxwm: [],
+      zptype: 0
+      // swiperOptionThumbs: {
+      //   // loop:true,
+      //   spaceBetween: 10,
+      //   touchRatio: 0.2,
+      //   slideToClickedSlide: true,
+      //   slidesPerView: 4,
+      //   watchSlidesVisibility: true /*避免出现bug*/,
+      //   navigation: {
+      //     nextEl: ".swiper-button-next",
+      //     prevEl: ".swiper-button-prev"
+      //   }
+      // }
     };
   },
   created() {
-    this.shopshowinfo = this.ygfc[0];
+    this.requst();
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
@@ -431,9 +339,20 @@ export default {
     }
   },
   methods: {
+    requst(id) {
+      this.$axios.post("/index/api/about", { id: id }).then(res => {
+        this.cpshowli = res.data.data.child;
+        this.ygfc = res.data.data.team;
+        this.shopshowinfo = this.ygfc[0];
+        this.honor = res.data.data.honor;
+        this.lxwm = res.data.data.lxwm.content;
+        // console.log(this.shopshowinfo);
+        // console.log(res.data, "rrr");
+      });
+    },
     // 分页
     getList(page) {
-      // this.requstKind(this.class_id, page);
+        this.requstzp(this.zptype, page, 3);
     },
     pageChange(index) {
       this.currentPage = index;
@@ -443,6 +362,23 @@ export default {
     tonav(index) {
       //  console.log(index)
       this.curindex = index;
+       if (index == 6) {
+        this.zptype = 0;
+        this.requstzp(0, 1, 3);
+      }
+      if (index == 7) {
+        this.zptype = 1;
+        this.requstzp(1, 1, 3);
+      }
+    },
+        requstzp(type, page, limit) {
+      this.$axios
+        .post("/index/api/jobList", { type: type, page: page, limit: limit })
+        .then(res => {
+          this.lb = res.data.data.data;
+          this.count = res.data.data.total;
+          // console.log(res.data.data, "a");
+        });
     },
     swiper(index, item) {
       this.shopshowinfo = item;
@@ -634,7 +570,7 @@ export default {
                   font-size: 42px;
                 }
                 .intro {
-                  width: 45%;
+                  width: 50%;
                   font-size: 24px;
                   line-height: 35px;
                   margin: 0 auto;
@@ -781,7 +717,7 @@ export default {
           color: #333333;
           box-sizing: border-box;
           padding: 30px 0;
-          span{
+          span {
             letter-spacing: 1px;
           }
         }

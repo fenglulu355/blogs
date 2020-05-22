@@ -68,7 +68,7 @@
         >
           <div
             class="mainpic fl"
-            :style="{backgroundImage: 'url(' + item.img+ ')',
+            :style="{backgroundImage: 'url(' +httpUrl+ item.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -76,7 +76,7 @@
           ></div>
           <div class="newsinfo fr">
             <p class="newstitle">{{item.title}}</p>
-            <p class="newsdes">{{item.dec}}</p>
+            <p class="newsdes">{{item.content}}</p>
             <p class="tonews">查看详情</p>
           </div>
         </li>
@@ -114,30 +114,18 @@ export default {
         }
       ],
       videoPlay: false,
-      newslist: [
-        {
-          img: require("../assets/home/news1.png"),
-          title: "新闻大标题新闻大标题新闻大标题新闻大标题",
-          dec:
-            "7月25日，南宏机电副总经理南宏机电副总经理南宏机电副总经理带领南宏品牌及营销团队负责人一行进行商务洽谈，受到了公司……"
-        },
-        {
-          img: require("../assets/home/news2.png"),
-          title: "新闻大标题新闻大标题新闻大标题新闻大标题",
-          dec:
-            "7月25日，南宏机电副总经理南宏机电副总经理南宏机电副总经理带领南宏品牌及营销团队负责人一行进行商务洽谈，受到了公司……"
-        },
-        {
-          img: require("../assets/home/news3.png"),
-          title: "新闻大标题新闻大标题新闻大标题新闻大标题",
-          dec:
-            "7月25日，南宏机电副总经理南宏机电副总经理南宏机电副总经理带领南宏品牌及营销团队负责人一行进行商务洽谈，受到了公司……"
-        }
-      ]
+      newslist: []
     };
   },
-  created() {},
+  created() {
+    this.requst();
+  },
   methods: {
+    requst() {
+      this.$axios.post("/index/api/home").then(res => {
+        this.newslist = res.data.data.news;
+      });
+    },
     play() {
       this.videoPlay = true;
     },
@@ -148,7 +136,7 @@ export default {
       document.body.scrollTop = document.documentElement.scrollTop = 0;
       this.$router.push({
         path: "/detail",
-        query: { id: index, kind: "news" }
+        query: { id: item.id, kind: "news" }
       });
     },
     mouseenter(index) {

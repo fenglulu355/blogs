@@ -3,12 +3,12 @@
     <ul class="cilist">
       <li
         class="cili"
-        @click="changenav(index)"
-        v-for="(item, index) in showlist"
+        @click="changenav(index,item)"
+        v-for="(item, index) in curlist"
         :key="index"
         :class="curindex==index?'sel':''"
       >
-        <span>{{item}}</span>
+        <span>{{item.class_name}}</span>
       </li>
       <li class="more" @click="getmore">
         <span>|</span>
@@ -20,18 +20,22 @@
       <div class="menubox clearFix">
         <van-collapse v-model="activeNames" class="fr moremenulist">
           <van-collapse-item
-            :title="item.name"
+            :title="item.class_name"
             :name="index"
-            v-for="(item, index) in this.curinfo"
+            v-for="(item, index) in this.morecur"
             :key="index"
           >
             <div
               class="mli"
-              v-for="(items, index) in item.info"
-              @click="choseitem(items,index)"
-              :key="index"
+              v-for="(items, indexs) in item.child"
+              @click="curitem(index,indexs,items)"
+              :key="indexs"
             >
-              <p>{{items}}</p>
+              <p
+                v-if="items.class_name"
+                :class="{'cur':curitemindex[index]===indexs}"
+              >{{items.class_name}}</p>
+              <p v-else :class="{'cur':arr[index].indexOf(items) != -1}">{{items}}</p>
             </div>
           </van-collapse-item>
         </van-collapse>
@@ -51,22 +55,44 @@ export default {
     return {
       ismenu: false,
       isbule: false,
-      activeNames: ["1"],
-      isopen: true,
-      value1: 0,
+      activeNames: [],
       curindex: 0,
+      curitemindex: [0],
       showlist: [],
-      issel: false
+      issel: false,
+      morefl: [],
+      iscur: false,
+      arr: [],
+      arrb: [],
+      classid: "",
+      keyword: "",
+      copycurinfo: []
     };
   },
-  created() {
-    this.showlist = this.curinfo[0].info.slice(0, 3);
-    console.log(this.showlist);
-    console.log(this.curinfo);
+  mounted() {},
+  watch: {
+    morecur(val) {
+      if (val.length != 0) {
+        console.log(val, "morecur存在");
+        for (let index = 0; index < val.length; index++) {
+          // this.curitemindex[index] = 0;
+          this.activeNames[index] = index;
+          this.arr[index] = [];
+          this.arrb[index] = [];
+        }
+      }
+    }
   },
-
   props: {
+    morecur: {
+      type: Array,
+      default: {}
+    },
     curinfo: {
+      type: Array,
+      default: {}
+    },
+    curlist: {
       type: Array,
       default: {}
     },
@@ -76,29 +102,62 @@ export default {
     }
   },
   methods: {
-    changenav(index) {
+    curitem(index, indexs, items) {
+      if (index == 0) {
+        this.curitemindex[index] = indexs;
+        this.classid = items.class_id;
+        this.$emit("change", index, items);
+      } else {
+        if (this.arr[index].indexOf(items) == -1) {
+          this.arr[index].push(items);
+        } else {
+          this.arr[index].splice(this.arr[index].indexOf(items), 1);
+        }
+        let b = this.encodeArray2D(this.arr);
+        this.keyword = b;
+      }
+      this.$forceUpdate();
+
+      // console.log(this.keyword, "bbbbbbb");
+      // console.log(this.curitemindex[index], "this.curitemindex[index]");
+      // console.log(this.arr, "aaarrrrrr");
+    },
+    encodeArray2D(obj) {
+      var array = [];
+      for (var i = 0; i < obj.length; i++) {
+        array[i] = obj[i].join("|");
+      }
+      return array.join(",");
+    },
+    changenav(index, item) {
       this.curindex = index;
       this.issel = false;
-      // this.$emit("change", mindex, item);
+      // console.log(item, "this.curindex");
+      this.$emit("change", this.curindex, item);
     },
     getmore() {
       this.curindex = 3;
       this.issel = true;
       setTimeout(() => {
         this.ismenu = true;
-      }, 200);
-    },
-    choseitem(items, index) {
-      console.log(items);
+      }, 500);
     },
     reset() {
       this.isbule = true;
+      this.curitemindex = [0];
+      this.arr = JSON.parse(JSON.stringify(this.arrb));
+      this.$forceUpdate();
+      console.log(this.arr);
     },
     set() {
       this.isbule = false;
+      if (this.classid == "") {
+        this.classid = this.curinfo[0].class_id;
+      }
+      this.$emit("set", this.keyword, this.classid);
       setTimeout(() => {
         this.ismenu = false;
-      }, 200);
+      }, 500);
     }
   }
 };
@@ -168,6 +227,11 @@ export default {
             color: #333333;
             font-size: 24px;
             background: #f5f4f5;
+          }
+          .cur {
+            // border: 1px solid #2482c8;
+            background: #2482c8;
+            color: white;
           }
         }
       }

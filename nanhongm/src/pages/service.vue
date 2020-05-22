@@ -8,7 +8,7 @@
           <div class="telinfo">
             <p class="text">销售、售后及配送集于一体的综合企业</p>
             <h1>全心全意为顾客服务</h1>
-            <p class="tel">服务热线：18181878760</p>
+            <p class="tel">服务热线：{{shtel}}</p>
             <div class="totel">
               <img src="../assets/ser/tel.png" alt />
               <span>立即咨询</span>
@@ -25,25 +25,7 @@
         </div>
         <div class="reinfo">
           <p>售后服务</p>
-          <section>
-            一、售前
-            （1）如客户需要，按客户的特殊要求，协助设计所需产品。（2）热情接待客户，迅速处理来电、来函、传真及其他咨询。
-            （3）免费帮助客户培训操作、维护技术人员、帮助他们能熟练掌握技术。
-            二、售中
-            （1）严格按照合同技术要求及国家有关标准组织生产，保质保量，准时在约定地点交货。
-            （2）当客户选型错误、订单数量不足或其他情况要求提前供货时，我公司优先安排生产，努力满足客户要求。
-            三、售后
-            （1）实行售后服务到位制度，即接到用户通知后，服务人员及时到位服务。（三年保修）
-            （2）产品在交付前是损坏、短缺等质量问题，概有我们公司负责。
-            （3）质量保质期内（2个月）存在或发生是质量问题，经双方确认后，的确是我公司责任，我们公司负责妥善处理，合理费用概由我们公司承担。
-            （4）双方确认是用户责任造成的质量问题，我们公司也将协助解决，力争满足用户的合理要求。
-            （5）用户设计变更，产品规格、型号数量有所变动，我们公司将积极配合，努力满足客户要求；如用户所订购是产品超过实际需要或因设计变更，原订购产品不能继续使用，我们公司部将积极配合用户做好售后处理工作，减轻用户负担。
-            （6）用户在使用过程中，需要提供技术指导，我们公司将及时派出专业技术人员提供服务。
-            （7)我们公司建立用户档案，在质量保证期结束后，我们公司仍将于用户联系沟通，追求尽善尽美，满足用户需要。
-            （8）对非本公司制造质量造成的现场服务，我们公司将根据实际发生的差旅等费用，酌情向客户收取技术服务费。
-            （9）对非本公司制造质量问题造成的损坏或质保期外的损坏，我们公司提供有偿维修服务。
-            为了方便用户质量投诉，我们公司电话24小时开通。
-          </section>
+          <section v-html="shfw"></section>
         </div>
       </div>
       <!-- 团队 -->
@@ -71,7 +53,7 @@
           <li class="teaminfoli" v-for="(item, index) in teaminfo" :key="index">
             <div
               class="pics"
-              :style="{backgroundImage: 'url(' + item.img+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl + item.image_url+  ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -79,7 +61,7 @@
             ></div>
             <p class="name">
               <span>{{item.name}}</span>
-              <span>{{item.job}}</span>
+              <span>{{item.title}}</span>
             </p>
           </li>
         </ul>
@@ -133,10 +115,10 @@
       <!-- 安装流程 -->
       <div class="install serv" v-show="curindex===3">
         <ul class="ins-list">
-          <li class="ins-li" v-for="(item, index) in insli" :key="index">
+          <li class="ins-li" v-for="(item, index) in insli" :key="index"  @click="toservde(item)">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.img + ')',
+              :style="{backgroundImage: 'url(' +httpUrl+item.image_url +  ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -144,7 +126,7 @@
             ></div>
             <div class="ins-info">
               <p class="title">{{item.title}}</p>
-              <p class="time">{{item.time}}</p>
+              <p class="time">{{item.created_time}}</p>
               <p class="intro">
                 <span>简介：{{item.intro}}</span>
                 <span>小区：{{item.xq}}</span>
@@ -157,10 +139,10 @@
         </ul>
         <!-- 分页 -->
         <mo-pagination
-          :page-index="currentPage"
-          :total="count"
-          :page-size="pageSize"
-          @change="pageChange"
+          :page-index="currentPages"
+          :total="counts"
+          :page-size="pageSizes"
+          @change="pageChanges"
         ></mo-pagination>
       </div>
       <!-- 售后 -->
@@ -169,7 +151,7 @@
           <div class="telinfo">
             <p class="text">销售、售后及配送集于一体的综合企业</p>
             <h1>全心全意为顾客服务</h1>
-            <p class="tel">服务热线：18181878760</p>
+            <p class="tel">服务热线：{{shtel}}</p>
             <div class="totel">
               <img src="../assets/ser/tel.png" alt />
               <span>立即咨询</span>
@@ -186,41 +168,15 @@
         </div>
         <div class="reinfo">
           <p>工程售后维保</p>
-          <section>
-            一、工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-            工程售后维保内容客户稍后提供工程售后维保内容客户稍后提供
-          </section>
+          <section v-html="shcontent"></section>
         </div>
       </div>
       <!-- 条款 -->
       <div class="clause serv" v-show="curindex===5">
         <p class="title">服务条款</p>
-        <p class="time">更新时间：2019-02-26 21:56:24</p>
+        <!-- <p class="time">更新时间：2019-02-26 21:56:24</p> -->
         <div class="clauseinfo">
-          <section>
-            项目名称: 合同来源:
-            合同编号: 材料名称：
-            买卖合同（通用版本） 买受人： （以下简称甲方） 出卖人： （以下简称乙方）
-            甲、乙双方在自愿的基础上经充分协商，依照《中华人民共和国合同法》及其他有关法律法规的规定，订立本合同。
-            第1条 货物的名称、品种、规格、质量和验收
-            1、货物的具体的名称、品种、规格型号、数量、厂家、价款以本合同书附件1所列为准。
-            2、货物的质量、技术标准：货物的质量满足国家或相关行业的强制性质量标准；并具有国家认可机构出具的与每批货物相对应有效期限内的有效质量检验合格报告，无强制性标准的应以样品或双方约定的标准为准（包括图纸、样品等），如标准间存在冲突，按严格的标准执行。图纸及样品必须经双方签认并妥善封存。
-            第二条 货物的数量、计价方法
-            1、货物的数量：实际需要的货物品种、规格、数量由甲方按单个工程项目分批提供订货清单，订货清单须由甲方授权代表签字有效。乙方须按订货清单供货。
-            2、计价方法：按验收合格的数量乘以相应货物结算单价据实结算。
-            3、乙方送货到指定地点后，由甲方两名仓管、两名保安和工地主管以抽检的方式对货物的规格型号、数量和质量进行初验且签收确认。
-            4、乙方在交货前应向甲方提供货物相对应有效期限内的产品合格证（原件）、国家认可机构出具的产品质量检验报告（需加盖厂家公章）、产品质量说明书（或产品质量认证证书）等文件。
-            5、乙方同意甲方可聘请有资质的检测机构对货物随机抽样进行产品质量检验。质量检验合格，检验费用由甲方承担；质量检验不合格，检验费用由乙方承担。
-          </section>
+          <section v-html="fwtk"></section>
         </div>
       </div>
     </div>
@@ -235,9 +191,12 @@ export default {
   data() {
     return {
       // 分页
-      pageSize: 24, // 每页显示20条数据
+      pageSize: 4, // 每页显示20条数据
       currentPage: 1, // 当前页码
-      count: 300, // 总记录数,
+      count: 1, // 总记录数,
+      pageSizes: 3, // 每页显示20条数据
+      currentPages: 1, // 当前页码
+      counts: 1, // 总记录数,
       curindex: null,
       tabtitle: {
         a: "服务与",
@@ -261,60 +220,19 @@ export default {
         require("../assets/ser/lc2.png"),
         require("../assets/ser/lc3.png")
       ],
-      teaminfo: [
-        {
-          img: require("../assets/ser/onepp.png"),
-          name: "冯经理",
-          job: "项目经理"
-        },
-        {
-          img: require("../assets/ser/onepp.png"),
-          name: "张经理",
-          job: "项目经理"
-        },
-        {
-          img: require("../assets/ser/onepp.png"),
-          name: "周经理",
-          job: "项目经理"
-        },
-        {
-          img: require("../assets/ser/onepp.png"),
-          name: "李经理",
-          job: "项目经理"
-        }
-      ],
-      insli: [
-        {
-          img: require("../assets/shopshow/bg.png"),
-          title: "中央空调安装全过程记录",
-          time: "2010.8.03",
-          intro: "舒服舒服大撒大声地",
-          xq: "红盛花园",
-          home: "三室两厅",
-          area: "100㎡"
-        },
-        {
-          img: require("../assets/shopshow/bg.png"),
-          title: "中央空调安装全过程记录",
-          time: "2010.8.03",
-          intro: "舒服舒服大撒大声地",
-          xq: "香榭名苑",
-          home: "三室两厅",
-          area: "100㎡"
-        },
-        {
-          img: require("../assets/shopshow/bg.png"),
-          title: "中央空调安装全过程记录",
-          time: "2010.8.03",
-          intro: "舒服舒服大撒大声地",
-          xq: "清溪南街",
-          home: "三室两厅",
-          area: "100㎡"
-        }
-      ]
+      teaminfo: [],
+      insli: [],
+      infos: [],
+      shtel: "",
+      shcontent: "",
+      fwtk: "",
+      shfw: ""
     };
   },
   created() {
+    this.requst();
+    this.requsttd(1, 4);
+    this.requstazlc(1, 3);
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
@@ -323,14 +241,57 @@ export default {
     }
   },
   methods: {
-    // 分页
+    // 请求服务数据
+    requst() {
+      this.$axios.post("/index/api/fwzcList").then(res => {
+        this.infos = res.data.data;
+        this.shtel = res.data.data.shwb.tel;
+        this.shfw = res.data.data.fwzc.content;
+        this.shcontent = res.data.data.shwb.content;
+        this.fwtk = res.data.data.fwtk.content;
+        // console.log(res.data.data, "rrr");
+      });
+    },
+    // 请求团队数据
+    requsttd(page, limit) {
+      this.$axios
+        .post("/index/api/tdzsList", { page: page, limit: limit })
+        .then(res => {
+          this.teaminfo = res.data.data.data;
+          this.count = res.data.data.total;
+        });
+    },
+    // 请求安装流程数据
+    requstazlc(page, limit) {
+      this.$axios
+        .post("/index/api/azlcList", { page: page, limit: limit })
+        .then(res => {
+          this.insli = res.data.data.data;
+          this.counts = res.data.data.total;
+        });
+    },
     getList(page) {
-      // this.requstKind(this.class_id, page);
+      this.requsttd(page, 4);
     },
     pageChange(index) {
       this.currentPage = index;
-      // console.log( this.currentPage)
       this.getList(index);
+    },
+    // 安装流程分页
+    getLists(page) {
+      this.requstazlc(page, 3);
+    },
+       toservde(item) {
+      console.log(item);
+      let id = item.id;
+      this.$router.push({
+        path: "/detail",
+        query: { id: item.id, kind: "serv" }
+      });
+    },
+    pageChanges(index) {
+      this.currentPages = index;
+      this.getLists(index);
     },
     tonav(index) {
       //  console.log(index)
@@ -366,16 +327,16 @@ export default {
     .team {
       .teamshow {
         width: 100%;
-        height: 270px;
+        height: 280px;
         display: flex;
         .ts-left {
           width: 55%;
-          height: 270px;
+          height: 280px;
         }
         .ts-right {
           width: 45%;
           box-sizing: border-box;
-          padding: 34px 10px 0 0px;
+          padding: 24px 10px 0 0px;
           .top {
             font-size: 30px;
             color: rgba(62, 145, 223, 1);
@@ -387,7 +348,7 @@ export default {
             font-size: 24px;
           }
           .bottom {
-            padding-top: 10px;
+            padding-top: 5px;
             color: #999999;
             font-size: 24px;
             line-height: 35px;
