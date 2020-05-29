@@ -23,7 +23,10 @@
           <div class="accountbox">
             <button @click="decrement(item,index)" :disabled="item.cart_num <= 1">-</button>
             {{ item.cart_num }}
-            <button @click="increment(item,index)">+</button>
+            <button
+              @click="increment(item,index)"
+              :disabled="item.cart_num >= item.goods_number"
+            >+</button>
           </div>
           <!-- 单个总价 -->
           <p class="allprice">{{item.goods_price* item.cart_num | showPrice}}</p>
@@ -93,20 +96,20 @@ export default {
     decrement(item, index) {
       this.goodsinfo[index].cart_num--;
       let num = this.goodsinfo[index].cart_num;
-      // num--;
-      // this.$forceUpdate();
       console.log(num);
-      this.requstaddcar(item.user_id, item.goods_id, num, item.format_ids);
+      this.requstaddcar(item.user_id, item.goods_id, -1, item.format_ids);
     },
     // 数量+
     increment(item, index) {
-      this.goodsinfo[index].cart_num ++;
+      this.goodsinfo[index].cart_num++;
       let num = this.goodsinfo[index].cart_num;
-      // num++;
-      // this.$forceUpdate();
+      if (num >= item.goods_number) {
+        this.$message.error("库存不足！");
+      }
       console.log(num);
-      // this.requstaddcar(item.user_id, item.goods_id, num, item.format_ids);
+      this.requstaddcar(item.user_id, item.goods_id, 1, item.format_ids);
     },
+
     // 删除
     del(index, item) {
       this.$confirm("您确定要删除这件宝贝吗", "提示", {
@@ -163,7 +166,7 @@ export default {
     },
     // 去结算
     toorder() {
-      this.setorderlist(this.goodsinfo);
+      // this.setorderlist(this.goodsinfo);
       this.$router.push({ path: "/order" });
     }
   },

@@ -11,18 +11,28 @@
       </p>
       <!-- 地址展示 -->
       <div class="curdress">
-        <div class="left">
-          <img src="../assets/shop/dress.png" alt />
-        </div>
-        <div class="center">
-          <p>
-            <span class="name">{{dressinfo[0].name}}</span>
-            <span class="tel">{{dressinfo[0].tel}}</span>
-          </p>
-          <p class="dress">{{dressinfo[0].dress}}</p>
-        </div>
-        <div class="right">
-          <img @click="tochangedress" src="../assets/shop/right.png" alt />
+        <p class="none" v-if="dressinfo.length==0" @click="toadddress">地址为空，点击此处去添加</p>
+        <div
+          class="dressinfos"
+          v-for="(item, index) in dressinfo"
+          :key="index"
+          @click.stop="changecurdress(item,index)"
+        >
+          <div class="left">
+            <img v-show="isdressindex==index" src="../assets/shop/dress.png" alt />
+          </div>
+          <div class="center">
+            <p>
+              <span class="name">{{item.address_name}}</span>
+              <span class="tel">{{item.address_phone}}</span>
+            </p>
+            <p
+              class="dress"
+            >{{item.address_province}}{{item.address_city}}{{item.address_area}}{{item.address_info}}</p>
+          </div>
+          <div class="right">
+            <img @click.stop="tochangedress(item,index)" src="../assets/shop/right.png" alt />
+          </div>
         </div>
       </div>
     </div>
@@ -34,33 +44,41 @@
         <li class="goodsli" v-for="(item, index) in goodsinfo" :key="index">
           <div
             class="mainpic"
-            :style="{backgroundImage: 'url(' + item.img+ ')',
+            :style="{backgroundImage: 'url(' +httpUrl+ item.goods_image+  ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
           ></div>
           <div class="otct">
-            <p class="name">{{item.name}}</p>
-            <p class="aprice">￥{{item.aprice}}</p>
+            <p class="name">{{item.goods_name}}</p>
+            <p class="aprice">￥{{item.goods_price}}</p>
             <p class="pic">
               <img src="../assets/shop/tb.png" alt />
             </p>
             <p class="color">
-              <span class="color">颜色：{{item.color}}</span>
-              <span class="type">规格：{{item.type}}</span>
+              <span class="color">规格：{{item.format_ids}}</span>
             </p>
           </div>
-          <p class="num">×{{item.num}}</p>
+          <p class="num">×{{item.cart_num}}</p>
         </li>
       </ul>
       <!-- 优惠券 -->
       <div class="coupon">
         <van-collapse v-model="activeNames">
           <van-collapse-item title="优惠券" name="1">
-            <div class="couponbox" v-for="(item, index) in coupon" :key="index">
-              <span>{{item.des}}</span>
-              <span class="time">有效期至{{item.time}}</span>
+            <div
+              class="couponbox"
+              v-for="(item, index) in coupon"
+              :key="index"
+              :class="iscurcoupon==index?'cur':''"
+              @click="curyhq(item,index)"
+            >
+              <div class="style"></div>
+              <p>
+                <span>{{item.desc}}</span>
+                <span class="time">有效期至{{item.end_time}}</span>
+              </p>
             </div>
           </van-collapse-item>
           <van-collapse-item title="积分抵扣" name="2">
@@ -69,9 +87,9 @@
               <span class="aint">{{integral}}</span>
               <span class="text">积分</span>
               <span class="text sel">本次使用</span>
-              <input v-model="numData"   step="1" />
+              <input v-model.number="orderlist.numData" @input="watchipt" step="1" />
               <span class="text">抵扣</span>
-              <span class="num">￥{{numData}}</span>
+              <span class="num">￥{{orderlist.numData}}</span>
             </div>
           </van-collapse-item>
         </van-collapse>
@@ -83,15 +101,15 @@
           <div class="list">
             <p class="goodsprice">
               <span>商品总金额</span>
-              <span>￥1588.00</span>
+              <span>{{allprice | showPrice}}</span>
             </p>
             <p class="cutcoupon">
               <span>优惠券</span>
-              <span>-￥20.00</span>
+              <span>-{{couponnum | showPrice }}</span>
             </p>
             <p class="cutintegral">
               <span>积分抵扣</span>
-              <span>-￥0.00</span>
+              <span>-{{orderlist.numData | showPrice}}</span>
             </p>
             <p class="freight">
               <span>运费</span>
@@ -100,82 +118,239 @@
           </div>
           <p class="totalprice">
             <span class="text">应付总额</span>
-            <span class="totalprice">￥1568.00</span>
+            <span class="totalprice">{{totalPrice | showPrice}}</span>
           </p>
           <p class="submit" @click="topay">提交订单</p>
         </div>
       </div>
     </div>
+    <div class="editdressbox" v-if="isedit" :style="{'height':height+`px`}">
+      <editdress :edititem="curdress" @close="close"></editdress>
+    </div>
   </div>
 </template>
 
 <script>
+import editdress from "../components/editdress";
+
+import { mapState } from "vuex";
 export default {
+  inject: ["reload"],
   name: "order",
   data() {
     return {
+      height: 0,
+      orderlist: {
+        numData: 0
+      },
       activeNames: ["1", "2"],
       curridio: "1",
       dressridio: "1",
       radio: null,
       rintegral: 0,
       numData: 0,
-      dressinfo: [
-        {
-          name: "张三",
-          tel: "12345678901",
-          dress: "四川省成都市高新区新希望大厦使劲地基督教色达阿萨德"
-        },
-        { name: "张三", tel: "135245444", dress: "四川省成都市" }
-      ],
-      goodsinfo: [
-        {
-          img: require("../assets/product/goods1.png"),
-          name:
-            "机静滚筒洗衣机格力净格力净静滚筒洗衣机格力净格力净静滚筒洗衣机格力净格力净静滚筒洗衣机格力净",
-          price: 1,
-          num: 2,
-          aprice: 1588,
-          color: "白色",
-          type: "1.5匹"
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          num: 2,
-          aprice: 1588,
-          color: "白色",
-          type: "1.5匹"
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          num: 2,
-          aprice: 1588,
-          color: "白色",
-          type: "1.5匹"
-        }
-      ],
-      coupon: [
-        { des: "满100减20（满减优惠）", time: "2019-10-31" },
-        { des: "满100减20（满减优惠）", time: "2019-10-31" },
-        { des: "满100减20（满减优惠）", time: "2019-10-31" },
-        { des: "满100减20（满减优惠）", time: "2019-10-31" }
-      ],
-      integral: 49
+      dressinfo: [],
+      isedit: false,
+      curdress: [],
+      curdressid: "",
+      isdressindex: 0,
+      goodsinfo: [],
+      coupon: [],
+      couponid: null,
+      iscurcoupon: null,
+      couponnum: 0, //优惠券价格
+      integral: 0
     };
   },
-  methods: {
-    topay() {
-      // console.log(e);
-      this.$router.push({ path: "/payment", quety: {} });
+  computed: {
+    ...mapState(["orderlists", "userid"]),
+    allprice() {
+      return this.goodsinfo.reduce(
+        (previousValue, item) =>
+          previousValue + this.accMul(item.cart_num, Number(item.goods_price)),
+        0
+      );
     },
-    tochangedress() {
-      this.$router.push({ path: "/minecenter", query: { tag: "1" } });
+    totalPrice() {
+      return this.allprice - this.orderlist.numData - this.couponnum;
     }
-  }
+  },
+  created() {
+    this.height = document.documentElement.clientHeight;
+    console.log(this.height);
+
+    this.requstcar(this.userid);
+    this.requstyhq();
+    this.requstmine();
+    this.requstaddress(this.userid);
+  },
+  methods: {
+    toadddress() {
+      this.$router.push({ path: "/minecenter", query: { tag: 1 } });
+    },
+    requstmine() {
+      this.$axios
+        .post("/index/user/userInfo", { userId: this.userid })
+        .then(res => {
+          this.integral = res.data.data.points;
+          console.log(res);
+        });
+    },
+    requstcar(userid) {
+      this.$axios
+        .post("/index/shop/getCartData", { userId: userid, cartId: "" })
+        .then(res => {
+          this.goodsinfo = res.data.cart_data;
+        });
+    },
+    requstaddress(userId) {
+      this.$axios.post("/index/user/address", { userId: userId }).then(res => {
+        this.dressinfo = res.data.data;
+        this.curdress = this.dressinfo[0];
+        this.curdressid = this.dressinfo[0].address_id;
+      });
+    },
+    changecurdress(item, index) {
+      this.isdressindex = index;
+      console.log(item);
+      this.curdress = item;
+      this.curdressid = item.address_id;
+    },
+    // 优惠券
+    requstyhq() {
+      this.$axios
+        .post("/index/coupon/userCoupon", { userId: this.userid })
+        .then(res => {
+          console.log(res);
+          this.coupon = res.data.data;
+
+          if (res.data.data.length == 0) {
+            console.log("没有优惠券");
+          }
+        });
+    },
+    curyhq(item, index) {
+      let cond = Number(item.cond);
+      console.log(cond);
+      if (cond > this.allprice || cond == this.allprice) {
+        this.$toast.fail("对不起！满" + cond + "才能使用");
+      } else {
+        this.iscurcoupon = index;
+        this.couponid = item.id;
+        this.couponnum = Number(item.price);
+      }
+    },
+    // jf
+    watchipt(e) {
+      if (this.orderlist.numData > this.integral) {
+        console.log(1);
+        this.$dialog
+          .confirm({
+            title: "提示",
+            message: "账户共有" + this.integral + "积分, 是否全部使用?"
+          })
+          .then(() => {
+            this.orderlist.numData = this.integral;
+          })
+          .catch(() => {
+            this.orderlist.numData = 0;
+          });
+      }
+    },
+    topay() {
+      let totalPrice = this.totalPrice.toFixed(2);
+      this.$dialog
+        .confirm({
+          title: "提示",
+          message: "总价" + totalPrice + "元，确认提交"
+        })
+        .then(() => {
+          this.$axios
+            .post("/index/shop/subOrders", {
+              userId: this.userid,
+              total: totalPrice,
+              data: this.goodsinfo,
+              adid: this.curdressid,
+              coupon_id: this.couponid,
+              points: this.orderlist.numData
+            })
+            .then(res => {
+              console.log(res);
+              if (res.data.code == 1) {
+                this.$toast.success("提交成功!");
+                console.log(res.data.data.order_num);
+                setTimeout(() => {
+                  this.$router.push({
+                    path: "/payment",
+                    query: {
+                       ordernum: res.data.data.order_num,
+                      orderid: res.data.data.order_id,
+                      price: this.totalPrice
+                    }
+                  });
+                }, 500);
+              } else {
+                this.$toast.fail(res.data.msg);
+              }
+            });
+        })
+        .catch(() => {
+          this.$toast.fail("已取消提交");
+        });
+
+      //
+    },
+    close(e, info) {
+      this.isedit = e;
+      // 修改地址
+      this.$axios
+        .post("/index/user/editaddress", {
+          aid: this.curdressid,
+          userId: this.userid,
+          address_name: info.name,
+          address_phone: info.tel,
+          address_province: info.province,
+          address_city: info.city,
+          address_area: info.county,
+          address_info: info.addressDetail
+        })
+        .then(res => {
+          console.log(res);
+          this.reload();
+        });
+      console.log(info, "wwww");
+    },
+    tochangedress(item, index) {
+      this.isdressindex = index;
+      this.curdressid = item.address_id;
+      setTimeout(() => {
+        this.isedit = true;
+        this.curdress = item;
+      }, 200);
+      // this.$router.push({ path: "/minecenter", query: { tag: "1" } });
+    },
+
+    accMul: function(arg1, arg2) {
+      arg2 = arg2.toFixed(2);
+      var m = 0,
+        s1 = arg1.toString(),
+        s2 = arg2.toString();
+      try {
+        m += s1.split(".")[1].length;
+      } catch (e) {}
+      try {
+        m += s2.split(".")[1].length;
+      } catch (e) {}
+
+      return (Number(s1.replace(".", "")) * Number(s2.replace(".", ""))) / 100;
+    }
+  },
+  filters: {
+    showPrice(price) {
+      return "￥" + price.toFixed(2);
+    }
+  },
+  components: { editdress }
 };
 </script>
 
@@ -186,6 +361,15 @@ export default {
   box-sizing: border-box;
   padding: 50px 25px;
   background: rgba(245, 245, 245, 1);
+  .editdressbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 111;
+    background: rgba(8, 8, 8, 0.5);
+    box-sizing: border-box;
+    padding: 200px 90px 0 90px;
+  }
   .toptitle {
     width: 100%;
     height: 85px;
@@ -231,45 +415,51 @@ export default {
     .curdress {
       width: 100%;
       border-bottom: 1px solid rgba(204, 204, 204, 1);
-      box-sizing: border-box;
-      padding: 30px 0;
-      display: flex;
-      justify-content: space-between;
-      .left {
-        width: 15%;
-        align-self: center;
-        img {
-          width: 64px;
-          height: 64px;
-        }
+      .none {
+        padding: 40px 0;
+        color: #333333;
       }
-      .center {
-        align-self: center;
-        width: 75%;
-        .name {
-          color: #333333;
-          font-size: 30px;
+      .dressinfos {
+        box-sizing: border-box;
+        padding: 30px 0;
+        display: flex;
+        justify-content: space-between;
+        .left {
+          width: 15%;
+          align-self: center;
+          img {
+            width: 64px;
+            height: 64px;
+          }
         }
-        .tel {
-          font-size: 24px;
-          color: #8e8e8e;
-          box-sizing: border-box;
-          padding-left: 30px;
+        .center {
+          align-self: center;
+          width: 75%;
+          .name {
+            color: #333333;
+            font-size: 30px;
+          }
+          .tel {
+            font-size: 24px;
+            color: #8e8e8e;
+            box-sizing: border-box;
+            padding-left: 30px;
+          }
+          .dress {
+            box-sizing: border-box;
+            padding-top: 20px;
+            font-size: 24px;
+            color: #333333;
+            line-height: 35px;
+          }
         }
-        .dress {
-          box-sizing: border-box;
-          padding-top: 20px;
-          font-size: 24px;
-          color: #333333;
-          line-height: 35px;
-        }
-      }
-      .right {
-        align-self: center;
-        width: 10%;
-        text-align: center;
-        img {
-          width: 13px;
+        .right {
+          align-self: center;
+          width: 10%;
+          text-align: center;
+          img {
+            width: 13px;
+          }
         }
       }
     }
@@ -323,6 +513,19 @@ export default {
     }
     .coupon {
       width: 100%;
+      .style {
+        align-self: center;
+        width: 12px;
+        height: 12px;
+        background: #ffffff;
+        border-radius: 50%;
+      }
+      .cur {
+        .style {
+          background: #2482c8;
+        }
+        color: #2482c8;
+      }
       .couponbox {
         font-size: 24px;
         line-height: 50px;
@@ -330,7 +533,13 @@ export default {
         font-size: 18px;
         width: 100%;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
+        p {
+          width: 100%;
+          padding-left: 20px;
+          display: flex;
+          justify-content: space-between;
+        }
       }
       .intinfo {
         font-size: 24px;

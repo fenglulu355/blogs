@@ -14,10 +14,10 @@
           <li class="tobank" @click="tobank">
             <img src="../assets/shop/yl.png" alt />
           </li>
-          <li class="towx">
+          <li class="towx" @click="towx">
             <img src="../assets/shop/wx.png" alt />
           </li>
-          <li class="tozfb">
+          <li class="tozfb" @click="tozfb">
             <img src="../assets/shop/zfb.png" alt />
           </li>
         </ul>
@@ -38,22 +38,101 @@
         </div>
       </div>
     </div>
+    <div class="wxewm" v-show="isshowwx">
+      <div class="infos" v-loading.fullscreen.lock="fullscreenLoading">
+        <img class="closeimg" @click="closewx" src="../assets/navgation/log-x.png" alt />
+        <div
+          class="mainpic"
+          :style="{backgroundImage: 'url(' +imgurl+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+        ></div>
+        <p>微信支付二维码</p>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
 export default {
   data() {
     return {
+      fullscreenLoading: false,
       ispay: false,
       ordernum: null,
-      money: null
+      money: null,
+      orderid: "",
+      imgurl: "",
+      isshowwx: false
     };
   },
   created() {
     this.ordernum = this.$route.query.ordernum;
     this.money = this.$route.query.price;
+    this.orderid = this.$route.query.orderid;
+  },
+  computed: {
+    ...mapState(["userid"])
   },
   methods: {
+    closewx() {
+      this.$confirm("支付还未完成，您确定要取消吗", "提示", {
+        cancelButtonText: "继续支付",
+        confirmButtonText: "取消支付",
+
+        type: "warning"
+      })
+        .then(() => {
+          this.$message.error("取消支付");
+          this.isshowwx = false;
+        })
+        .catch(() => {
+          return;
+        });
+    },
+    towx() {
+      this.isshowwx = true;
+      this.fullscreenLoading = true;
+      this.$axios
+        .post("/index/Wxpay/createJsBizPackage", {
+          orderId: this.orderid,
+          userId: this.userid
+        })
+        .then(res => {
+          this.imgurl = res.data.data;
+          this.fullscreenLoading = false;
+          console.log(res);
+        });
+    },
+    tozfb() {
+      this.isshowwx = true;
+      this.fullscreenLoading = true;
+      this.$axios
+        .post("/index/alipay/doPay", {
+          orderId: this.orderid,
+          userId: this.userid
+        })
+        .then(res => {
+          // this.imgurl = res.data.data;
+          this.fullscreenLoading = false;
+          console.log(res);
+        });
+    },
+    // 更新状态
+    changestate(orderId, userid, oldState, newState) {
+      this.$axios
+        .post("/index/user/changeOrderState", {
+          orderId: orderId,
+          userId: userid,
+          oldState: oldState,
+          newState: newState
+        })
+        .then(res => {
+          console.log(res);
+        });
+    },
     tobank() {
       this.ispay = true;
     },
@@ -107,6 +186,37 @@ export default {
         cursor: pointer;
         display: inline-block;
         margin-right: 30px;
+      }
+    }
+  }
+  .wxewm {
+    position: fixed;
+    z-index: 111;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    .infos {
+      box-sizing: border-box;
+      background: white;
+      width: 500px;
+      height: 350px;
+      margin: 234px auto;
+      padding-top: 40px;
+      position: relative;
+      .closeimg {
+        position: absolute;
+        right: 30px;
+        top: 30px;
+      }
+      .mainpic {
+        width: 200px;
+        height: 200px;
+        margin: 20px auto;
+      }
+      p {
+        text-align: center;
       }
     }
   }

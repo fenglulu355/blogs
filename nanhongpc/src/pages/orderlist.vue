@@ -19,73 +19,66 @@
         <ul class="orderslist">
           <li class="ordersli" v-for="(item, index) in orderinfos" :key="index">
             <div class="continfo">
-              <p class="citop">
-                <span class="time">{{item.time}}</span>
-                <span class="ordernum">订单号：{{item.ordernum}}</span>
-              </p>
+              <div class="citop">
+                <span class="time">{{item.created_time}}</span>
+                <span class="ordernum">订单号：{{item.order_num}}</span>
+              </div>
+
               <div class="cicenter">
                 <div class="cicleft">
-                  <div class="orderlists" v-for="(items, index) in item.orderlist" :key="index">
+                  <div class="orderlists" v-for="(items, index) in item.goods" :key="index">
                     <div
                       class="mainpic"
-                      :style="{backgroundImage: 'url(' + items.img+ ')',
+                      :style="{backgroundImage: 'url(' +httpUrl+ items.oe_format_img+ ')',
                      backgroundSize:'cover',
                      backgroundRepeat: 'no-repeat',
                      backgroundPosition:'center'
                     }"
                     ></div>
-                    <p class="des">{{items.des}}</p>
-                    <p class="num">×{{items.num}}</p>
+                    <p class="des">{{items.oe_goods_name}}</p>
+                    <p class="num">×{{items.oe_num}}</p>
+                    <p
+                      class="toeva"
+                      v-show="item.order_state==4 && item.isCommtent==0"
+                      @click="toeva(index,items,item)"
+                    >去评价</p>
                   </div>
                 </div>
                 <div class="ciccenter">
-                  <span class="name">{{item.name}}</span>
+                  <span class="name">{{item.address_name}}</span>
                   <img src="../assets/shop/mine.png" alt />
                 </div>
                 <div class="cicprice">
-                  <p class="aprice">总额 ￥{{item.aprice}}</p>
-                  <p class="return" v-show="!item.received && item.payment">退款/退货</p>
-                  <p class="integral" v-show="item.received">已获得{{item.aprice}}积分</p>
+                  <p class="aprice">总额 ￥{{item.order_price}}</p>
+                  <p class="return" v-show="item.order_state !=0">退款/退货</p>
+                  <p
+                    class="integral"
+                    v-show="item.order_state==4"
+                  >已获得{{ Math.floor(item.order_price)}}积分</p>
                 </div>
 
                 <div class="cicright">
                   <!-- 待付款 -->
-                  <div
-                    class="alreadypayment"
-                    v-show="!item.evaluate && !item.send && !item.received && !item.payment"
-                  >
+                  <div class="alreadypayment" v-show="item.order_state == 0">
                     <p class="payment">已下单</p>
                     <p class="toeva" @click="topay(index,item)">去付款</p>
                   </div>
                   <!-- 待收货 -->
-                  <div
-                    class="alreadysend"
-                    v-show="!item.evaluate && item.send && !item.received && item.payment"
-                  >
+                  <div class="alreadysend" v-show="item.order_state==3">
                     <p class="send">已发货</p>
                     <p class="toreceived" @click="toreceived(index,item)">去收货</p>
                   </div>
                   <!-- 待评价 -->
-                  <div
-                    class="alreadyreceived"
-                    v-show="!item.evaluate && item.send && item.received && item.payment "
-                  >
+                  <div class="alreadyreceived" v-show="item.order_state==4 && item.isCommtent==0">
                     <p class="received">已收货</p>
-                    <p class="toeva" @click="toeva(index,item)">去评价</p>
                   </div>
                   <!-- 待发货 -->
-                  <div
-                    class="alreadypayment"
-                    v-show="!item.evaluate && !item.send && !item.received && item.payment"
-                  >
+                  <div class="alreadypayment" v-show="item.order_state==1">
                     <p class="payment">已付款</p>
                     <p class="waitsend">待发货</p>
                   </div>
                   <!-- 已评价 -->
-                  <div
-                    class="alreadyreceived"
-                    v-show="item.evaluate && item.send && item.received && item.payment "
-                  >
+                  <div class="alreadyreceived" v-show="item.order_state==4&&item.isCommtent == 1 ">
                     <p class="received">已收货</p>
                     <p class="hassend">已评价</p>
                   </div>
@@ -127,6 +120,7 @@ import evaluate from "../components/evaluate";
 import logistics from "../components/logistics";
 import { mapState } from "vuex";
 export default {
+  inject: ["reload"],
   name: "orderlist",
   data() {
     return {
@@ -139,315 +133,16 @@ export default {
       goodsinfo: {},
       navli: [
         { name: "所有订单", num: "" },
-        { name: "待付款", num: "2" },
-        { name: "待发货", num: "3" },
+        { name: "待付款", num: "" },
+        { name: "待发货", num: "" },
         { name: "待收货", num: "" },
-        { name: "待评价", num: "1" }
+        { name: "待评价", num: "" }
       ],
-      orderinfo: [
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: false,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "李四",
-          aprice: "2499.00",
-          payment: true,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "王五",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: true
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: false,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "李四",
-          aprice: "2499.00",
-          payment: true,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "王五",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1"
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: true
-        }
-      ],
+      num: [[], [], [], []],
+      nums: [],
+      orderinfo: [],
       orderinfos: [],
       logisticsinfo: [
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "正在派送中"
-          },
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des:
-              "你的订单已被收件员揽收，【成都市武侯区新希件员揽收，【成都市武侯区新希件员揽收，【成都市武侯区新希件员揽收，【成都市武侯区新希件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
-        [
-          {
-            day: "2019-10-24",
-            time: "20:50",
-            des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
-          }
-        ],
         [
           {
             day: "2019-10-24",
@@ -476,12 +171,13 @@ export default {
             des: "你的订单已被收件员揽收，【成都市武侯区新希望营业部】库存中"
           }
         ]
-      ]
+      ],
+      status: 0,
+      oderid: ""
     };
   },
   components: { evaluate, logistics },
   created() {
-    this.orderinfos = this.orderinfo;
     this.requst();
   },
   computed: {
@@ -492,9 +188,31 @@ export default {
       this.$axios
         .post("/index/user/orders", { userId: this.userid })
         .then(res => {
-          console.log(res);
+          this.orderinfo = res.data.order_list;
+          this.orderinfos = this.orderinfo;
+          console.log(this.orderinfos);
+
+          for (let i = 0, length = this.orderinfo.length; i < length; i++) {
+            if (this.orderinfo[i].order_state == 0) {
+              this.num[0].push(this.orderinfo[i]);
+              this.navli[1].num = this.num[0].length;
+            } else if (this.orderinfo[i].order_state == 1) {
+              this.num[1].push(this.orderinfo[i]);
+              this.navli[2].num = this.num[1].length;
+            } else if (this.orderinfo[i].order_state == 3) {
+              this.num[2].push(this.orderinfo[i]);
+              this.navli[3].num = this.num[2].length;
+            } else if (
+              this.orderinfo[i].order_state == 4 &&
+              this.orderinfo[i].isCommtent == 0
+            ) {
+              this.num[3].push(this.orderinfo[i]);
+              this.navli[4].num = this.num[3].length;
+            }
+          }
         });
     },
+
     changeOrderNav(index) {
       this.ordernav = index;
       console.log(index);
@@ -504,7 +222,7 @@ export default {
       if (index == 1) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return e.payment == false;
+          return e.order_state == 0;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -512,7 +230,7 @@ export default {
       if (index == 2) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return e.send == false && e.payment == true;
+          return e.order_state == 1;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -520,7 +238,7 @@ export default {
       if (index == 3) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return e.received == false && e.payment == true && e.send == true;
+          return e.order_state == 3;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -528,12 +246,7 @@ export default {
       if (index == 4) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return (
-            e.evaluate == false &&
-            e.payment == true &&
-            e.send == true &&
-            e.received == true
-          );
+          return e.order_state == 4 && e.isCommtent == 0;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -542,19 +255,68 @@ export default {
     // 去付款
     topay(index, item) {
       console.log(item);
+      this.$router.push({
+        path: "/payment",
+        query: {
+          ordernum: item.order_num,
+          orderid: item.order_id,
+          price: item.order_price
+        }
+      });
     },
     // 去评价
-    toeva(index, item) {
-      this.goodsinfo = this.orderinfo[index];
+    toeva(index, items, item) {
+      this.goodsinfo = items;
+      this.goodsinfo.eva = [
+        { title: "好评", num: 3 },
+        { title: "中评", num: 2 },
+        { title: "差评", num: 1 }
+      ];
+      this.goodsinfo.oderid = item.order_id;
       this.isevaluate = true;
-      console.log(this.isevaluate);
+      console.log(items);
     },
     // 点击收货
     toreceived(index, item) {
-      this.isinteg = true;
-      console.log(item);
-      this.integ = Math.floor(item.aprice);
+      // this.changestate(item.order_id, item.user_id, item.order_state, 4);
+      this.$axios
+        .post("/index/user/changeOrderState", {
+          orderId: item.order_id,
+          userId: item.user_id,
+          oldState: item.order_state,
+          newState: 4
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.code == 200) {
+            this.$message({
+              type: "success",
+              message: "收货成功!"
+            });
+            setTimeout(() => {
+              this.isinteg = true;
+              console.log(item);
+              this.integ = Math.floor(item.order_price);
+            }, 500);
+          } else {
+            this.$message.error("提交失败");
+          }
+        });
+
       // 此处连接后台修改状态
+    },
+    // 更新状态
+    changestate(orderId, userid, oldState, newState) {
+      this.$axios
+        .post("/index/user/changeOrderState", {
+          orderId: orderId,
+          userId: userid,
+          oldState: oldState,
+          newState: newState
+        })
+        .then(res => {
+          console.log(res);
+        });
     },
     // 查看积分
     tointeg() {
@@ -562,6 +324,7 @@ export default {
     },
     close(e) {
       this.isevaluate = e;
+      this.reload();
     },
     openlog(index, item) {
       this.islogistics = true;
@@ -600,9 +363,11 @@ export default {
         }
       }
       .sel {
+        transition: color 0.5s ease;
         color: rgba(36, 130, 200, 1);
         position: relative;
         .blue {
+          transition: background-color 0.5s ease;
           display: inline-block;
           width: 70px;
           height: 5px;
@@ -617,6 +382,7 @@ export default {
       width: 100%;
       .orderslist {
         width: 100%;
+        transition: all 0.5s ease;
         .ordersli {
           box-sizing: border-box;
           margin-bottom: 15px;
@@ -646,9 +412,11 @@ export default {
               display: flex;
               justify-content: flex-start;
               .cicleft {
+                align-self: center;
                 // background: red;
                 width: 710px;
                 position: relative;
+
                 &::after {
                   content: "";
                   width: 1px;
@@ -656,14 +424,17 @@ export default {
                   background: rgba(228, 228, 228, 0.63);
                   position: absolute;
                   right: 0;
-                  top: -12px;
+                  top: 50px;
+                  transform: translateY(-50%);
                 }
                 .orderlists {
                   width: 100%;
                   display: flex;
                   justify-content: flex-start;
                   padding-bottom: 10px;
+                  position: relative;
                   .mainpic {
+                    transition: all 0.5s ease;
                     width: 77px;
                     height: 77px;
                     border: 1px solid rgba(239, 239, 239, 1);
@@ -685,9 +456,23 @@ export default {
                     color: rgba(153, 153, 153, 1);
                     font-size: 15px;
                   }
+                  .toeva {
+                    font-size: 12px;
+                    box-sizing: border-box;
+                    position: absolute;
+                    right: 12%;
+                    cursor: pointer;
+                    width: 54px;
+                    height: 30px;
+                    background: RGBA(225, 58, 62, 1);
+                    text-align: center;
+                    line-height: 30px;
+                    color: white;
+                  }
                 }
               }
               .ciccenter {
+                // align-self: center;
                 // background: lawngreen;
                 // height: 77px;
                 width: 140px;
@@ -707,10 +492,12 @@ export default {
                   background: rgba(228, 228, 228, 0.63);
                   position: absolute;
                   right: 0;
-                  top: -12px;
+                  top: 50px;
+                  transform: translateY(-50%);
                 }
               }
               .cicprice {
+                // align-self: center;
                 // background: lightblue;
                 width: 170px;
                 text-align: center;
@@ -723,7 +510,8 @@ export default {
                   background: rgba(228, 228, 228, 0.63);
                   position: absolute;
                   right: 0;
-                  top: -12px;
+                  top: 50px;
+                  transform: translateY(-50%);
                 }
                 .aprice {
                   color: rgba(153, 153, 153, 1);
@@ -745,7 +533,7 @@ export default {
                 }
               }
               .cicright {
-                // background: lightcoral;
+                // align-self: center;
                 width: 120px;
                 .send,
                 .received,

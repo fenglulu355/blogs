@@ -5,45 +5,52 @@
         <img src="../assets/shop/return.png" alt /> 评价商品
       </p>
       <ul class="goodslist">
-        <li class="goodsli" v-for="(item, index) in goodsinfos.orderlist" :key="index">
+        <li class="goodsli">
           <div class="goodsinfo">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +item.img+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl+goodsinfos.oe_format_img+ ')',
                      backgroundSize:'cover',
                      backgroundRepeat: 'no-repeat',
                      backgroundPosition:'center'
                     }"
             ></div>
             <div class="infos">
-              <p class="des">{{item.des}}</p>
+              <p class="des">{{goodsinfos.oe_goods_name}}</p>
               <p class="num">
-                <span>￥{{item.apprice}}</span>
-                <span>×{{item.num}}</span>
+                <span>￥{{goodsinfos.oe_format_price}}</span>
               </p>
               <img src="../assets/shop/tb.png" alt />
               <p class="color">
-                <span>颜色：{{item.color}}</span>
-                <span>规格{{item.type}}</span>
+                <span>规格{{goodsinfos.oe_format_name}}</span>
               </p>
             </div>
           </div>
           <ul class="evalist">
             <li
               class="evali"
-              v-for="(items, indexs) in item.eva"
+              v-for="(items, indexs) in goodsinfos.eva"
               :key="indexs"
-              @click="changeevali(indexs,index,item,items,$event,)"
-              :class="{'sel':evaindex[index]===indexs}"
-              :data-index="index"
+              @click="changeevali(indexs,items,$event,)"
+              :class="{'sel':evaindex==indexs}"
               :data-indexs="indexs"
             >{{items.title}}</li>
           </ul>
           <div class="ipteva">
-            <textarea placeholder="亲，写点评价吧，你的评价对其他买家有很大帮助的。"></textarea>
+            <textarea
+              @blur="regtext(something)"
+              placeholder="亲，写点评价吧，你的评价对其他买家有很大帮助的。"
+              v-model="something"
+            ></textarea>
           </div>
           <div class="uploadimg">
-            <van-uploader v-model="fileList[index]" multiple :max-count="2" />
+            <van-uploader
+              v-model="fileList"
+              :before-delete="beforedelete"
+              :after-read="afterRead"
+              multiple
+              :max-count="2"
+            />
           </div>
         </li>
       </ul>
@@ -57,10 +64,11 @@ export default {
   name: "evaluate",
   data() {
     return {
-      evaindex: [],
+      something: "",
+      evaindex: 0,
       // evaindex: new Array(this.goodsinfos.length).fill(0),
       fileList: [],
-      evali: ["好评", "中评", "差评"]
+      headimg: ["", ""]
     };
   },
   props: {
@@ -72,27 +80,77 @@ export default {
       default: "false"
     }
   },
-  created() {
-    for (let index = 0; index < this.goodsinfos.orderlist.length; index++) {
-      this.evaindex[index] = 0;
-    }
-  },
+  created() {},
   methods: {
-    changeevali(indexs, index, item, items, e) {
-      console.log(indexs, "indexs");
-      console.log(index, "index");
-      console.log(e, "e");
-      this.evaindex[index] = indexs;
+    changeevali(indexs, items, e) {
+      this.evaindex = indexs;
       this.$forceUpdate();
     },
+    beforedelete(detail, index) {
+      console.log(index.index);
+      this.headimg[index.index] = "";
+      console.log(this.headimg);
+      return true;
+    },
+    afterRead(file) {
+      file.status = "success";
+      file.message = "上传成功";
+      let data = new FormData();
+      data.append("file", file.file);
+      this.$axios.post("/index/api/uploadPet", data).then(res => {
+        console.log(res);
+        if (this.headimg[0] == "") {
+          this.headimg[0] = res.data;
+        } else if ((this.headimg[1] = res.data)) {
+          this.headimg[1] = res.data;
+        }
+        console.log(this.headimg);
+      });
+    },
+    regtext(text) {
+      let regwords = text.replace(/<\/?[^>]*>/g, "");
+      this.something = regwords;
+    },
     send() {
-      // if (this.curradio == null) {
-      //   // 默认好评
-      // } else {
-      // }
-      console.log(this.fileList);
+      this.$dialog
+        .confirm({
+          title: "提示",
+          message: "是否立即评价"
+        })
+        .then(() => {
+          let img = this.headimg.join(",");
+          console.log(this.something, img, this.radio);
+          this.$axios
+            .post("/index/user/commentList", {
+              userId: this.userid,
+              goods_id: this.goodsinfos.oe_goods_id,
+              order_id: this.goodsinfos.oderid,
+              star: this.radio,
+              content: this.something,
+              image: img
+            })
+            .then(res => {
+              console.log(res);
+              if ((res.data.code = 200)) {
+                this.$toast.success("评价成功!");
+                setTimeout(() => {
+                  this.$emit("close", false);
+                }, 500);
+              } else {
+                this.$toast.fail("提交失败");
+                setTimeout(() => {
+                  this.$emit("close", false);
+                }, 500);
+              }
+            });
+        })
+        .catch(() => {
+          this.$toast.fail("取消评价");
+        });
 
-      this.$emit("close", false);
+      console.log(this.headimg, this.evaindex, this.something);
+
+      // this.$emit("close", false);
     }
   }
 };
@@ -138,11 +196,11 @@ export default {
           padding-bottom: 35px;
           border-bottom: 1px solid #cccccc;
           .mainpic {
-            width: 20%;
-            height: 107px;
+            width: 30%;
+            height: 178px;
           }
           .infos {
-            width: 78%;
+            width: 65%;
             .des {
               width: 100%;
               line-height: 35px;

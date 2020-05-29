@@ -197,7 +197,7 @@ export default {
     allprice() {
       return this.goodsinfo.reduce(
         (previousValue, item) =>
-          previousValue + item.cart_num * item.goods_price,
+          previousValue + this.accMul(item.cart_num, Number(item.goods_price)),
         0
       );
     },
@@ -265,14 +265,9 @@ export default {
       // console.log(1);
     },
     topay() {
-      console.log(
-        this.totalPrice,
-        this.goodsinfo,
-        this.curdressid,
-        this.couponid,
-        this.orderlist.numData
-      );
-      this.$confirm("总价" + this.totalPrice + "元，确认提交", "提示", {
+      let totalPrice = this.totalPrice.toFixed(2);
+
+      this.$confirm("总价" + totalPrice + "元，确认提交", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
@@ -281,7 +276,7 @@ export default {
           this.$axios
             .post("/index/shop/subOrders", {
               userId: this.userid,
-              total: this.totalPrice,
+              total: totalPrice,
               data: this.goodsinfo,
               adid: this.curdressid,
               coupon_id: this.couponid,
@@ -294,13 +289,14 @@ export default {
                   type: "success",
                   message: "提交成功!"
                 });
-                console.log(res.data.data.order_num);
+                console.log(res.data.data);
 
                 setTimeout(() => {
                   this.$router.push({
                     path: "/payment",
                     query: {
                       ordernum: res.data.data.order_num,
+                      orderid: res.data.data.order_id,
                       price: this.totalPrice
                     }
                   });
@@ -391,13 +387,31 @@ export default {
         });
     },
     curyhq(item, index) {
-      this.iscurcoupon = index;
-      this.couponid = item.id;
-      console.log(item, "a");
-      console.log(index);
-      // this.couponnum = this.coupon[radio].price;
-      this.couponnum = Number(item.price);
-      // console.log(this.couponnum);
+      let cond = Number(item.cond);
+      console.log(cond);
+      if (cond > this.allprice || cond == this.allprice) {
+        this.$message.error(
+          "对不起，此订单不符合使用条件！满" + cond + "才能使用"
+        );
+      } else {
+        this.iscurcoupon = index;
+        this.couponid = item.id;
+        this.couponnum = Number(item.price);
+      }
+    },
+    accMul: function(arg1, arg2) {
+      arg2 = arg2.toFixed(2);
+      var m = 0,
+        s1 = arg1.toString(),
+        s2 = arg2.toString();
+      try {
+        m += s1.split(".")[1].length;
+      } catch (e) {}
+      try {
+        m += s2.split(".")[1].length;
+      } catch (e) {}
+
+      return (Number(s1.replace(".", "")) * Number(s2.replace(".", ""))) / 100;
     }
   }, // 保留两位小数
   filters: {
@@ -449,7 +463,7 @@ export default {
       box-sizing: border-box;
       padding: 24px 0;
       .dsinfobox {
-        width: 100%;
+        width: 1100px;
         display: inline-block;
         .dsinfo {
           width: 1000px;
@@ -474,7 +488,7 @@ export default {
         padding: 20px 0;
       }
       .dsinfobox {
-        width: 100%;
+        width: 1000px;
         display: inline-block;
         .dsinfo {
           width: 100%;

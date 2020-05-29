@@ -18,7 +18,7 @@
             <p>银联支付</p>
             <img src="../assets/shop/yl.png" alt />
           </li>
-          <li class="towx">
+          <li class="towx" @click="towx">
             <p>微信支付</p>
             <img src="../assets/shop/wx.png" alt />
           </li>
@@ -45,6 +45,20 @@
         </div>
       </div>
     </div>
+    <div class="wxewm" v-show="isshowwx">
+      <div class="infos">
+        <img class="closeimg" @click="closewx" src="../assets/navgation/log-x.png" alt />
+        <div
+          class="mainpic"
+          :style="{backgroundImage: 'url(' +imgurl+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+        ></div>
+        <p>微信支付二维码</p>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -52,13 +66,49 @@ export default {
   data() {
     return {
       ispay: false,
-      ordernum: 26548498498,
-      money: 2087.0
+      ordernum: null,
+      money: null,
+      orderid: "",
+      imgurl: "",
+      isshowwx: false
     };
   },
+  created() {
+    this.ordernum = this.$route.query.ordernum;
+    this.money = this.$route.query.price;
+    this.orderid = this.$route.query.orderid;
+  },
   methods: {
+    closewx() {
+      this.$confirm("支付还未完成，您确定要取消吗", "提示", {
+        cancelButtonText: "继续支付",
+        confirmButtonText: "取消支付",
+
+        type: "warning"
+      })
+        .then(() => {
+          this.$message.error("取消支付");
+          this.isshowwx = false;
+        })
+        .catch(() => {
+          return;
+        });
+    },
     tobank() {
       this.ispay = true;
+    },
+    towx() {
+      // this.isshowwx = true;
+      // this.fullscreenLoading = true;
+      this.$axios
+        .post("/index/Wxpay/dopay", {
+          order_id: this.orderid
+        })
+        .then(res => {
+          // this.imgurl = res.data.data;
+          // this.fullscreenLoading = false;
+          console.log(res);
+        });
     },
     toshop() {
       this.ispay = false;
@@ -126,6 +176,37 @@ export default {
         img {
           width: 375px;
         }
+      }
+    }
+  }
+  .wxewm {
+    position: fixed;
+    z-index: 111;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    .infos {
+      box-sizing: border-box;
+      background: white;
+      width: 500px;
+      height: 350px;
+      margin: 234px auto;
+      padding-top: 40px;
+      position: relative;
+      .closeimg {
+        position: absolute;
+        right: 30px;
+        top: 30px;
+      }
+      .mainpic {
+        width: 200px;
+        height: 200px;
+        margin: 20px auto;
+      }
+      p {
+        text-align: center;
       }
     }
   }

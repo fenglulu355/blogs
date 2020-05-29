@@ -97,23 +97,15 @@ export default {
   border: none !important;
   transition: all 0s !important;
 }
-/* .distpicker-address-wrapper select :focus {
-  outline: none;
-  border: none;
-} */
-/* upimg */
-.el-upload--picture-card,
-.el-upload-list--picture-card .el-upload-list__item {
-  width: 63px !important;
-  height: 63px !important;
-}
+
+
 .uploadimg [class^="el-icon-"] {
   position: relative !important;
-  top: -35px !important;
+
 }
 .el-upload-list--picture-card .el-upload-list__item-thumbnail {
-  width: auto !important;
-  height: 61px !important;
+ width: 100% !important;
+  height: 100% !important;
 }
 .el-upload-list--picture-card
   .el-upload-list__item-actions

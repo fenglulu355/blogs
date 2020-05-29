@@ -3,30 +3,40 @@
     <div class="editbox">
       <section class="ds">
         <span class="text">地址信息：</span>
-        <v-distpicker province="四川省" city="成都市" area="武侯区" @selected="onSelected"></v-distpicker>
+        <v-distpicker
+          :province="edititem.address_province"
+          :city="edititem.address_city"
+          :area="edititem.address_area"
+          @selected="onSelected"
+        ></v-distpicker>
       </section>
       <section>
         <span class="text">详细地址：</span>
         <input
           class="dds"
           type="text"
-          placeholder="请输入如道路、门牌号、小区、楼栋号、单元等信息"
+          :placeholder="edititem.address_info"
           v-model="address.dress"
         />
       </section>
       <section>
         <span class="text">收货人姓名：</span>
-        <input class="consignee" type="text" placeholder="长度不超过25个字符" v-model="address.name" />
+        <input
+          class="consignee"
+          type="text"
+          :placeholder="edititem.address_name"
+          v-model="address.name"
+        />
       </section>
       <section class="tel">
         <span class="text">手机号码：</span>
         <span class="border">中国大陆 +86</span>
         <input
           class="telipt"
-          @blur="regphone(address.tel)"
+          @blur="regphone(edititem.address_phone)"
           maxlength="11"
           type="text"
-          placeholder="电话号码、手机号码必须填一项"
+          :placeholder="edititem.address_phone"
           v-model="address.tel"
         />
       </section>

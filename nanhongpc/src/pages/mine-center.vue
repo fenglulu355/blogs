@@ -22,18 +22,32 @@
             <div class="uphead">
               <div
                 class="mainpic"
+                v-if="userinfo.user_image"
+                :style="{backgroundImage: 'url(' +httpUrl+userinfo.user_image+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+              ></div>
+              <div
+                v-else
+                class="mainpic"
                 :style="{backgroundImage: 'url(' + require('../assets/about/1-4.png')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
               ></div>
+
+              <!-- <input type="file" accept="image/*" @change="changeImage($event)" ref="avatarInput" /> -->
               <el-upload
                 class="upload-demo"
-                action="https://jsonplaceholder.typicode.com/posts/"
+                :action="httpUrl+`/index/api/uploadPet`"
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 :before-remove="beforeRemove"
+                :before-upload="beforeAvatarUpload"
+                :on-success="onsuccess"
                 multiple
                 :limit="1"
                 :on-exceed="handleExceed"
@@ -44,20 +58,27 @@
           </div>
           <div class="changename pl">
             <span class="text">昵称</span>
-            <input type="text" placeholder="请输入昵称" v-model="input" />
+            <input
+              type="text"
+              @blur="regname(input)"
+              :placeholder="placeholdername"
+              v-model="input"
+            />
             <!-- <el-input placeholder="请输入内容" v-model="input" clearable></el-input> -->
           </div>
           <div class="acct pl">
             <span class="text">账号</span>
-            <span>123154844</span>
+            <span>{{userinfo.user_name}}</span>
           </div>
           <div class="changesex pl">
             <span class="text">性别</span>
-            <el-radio v-model="radio" label="1">男</el-radio>
-            <el-radio v-model="radio" label="2">女</el-radio>
+            <el-radio-group v-model="sexradio" @change="sexchange">
+              <el-radio label="1">男</el-radio>
+              <el-radio label="2">女</el-radio>
+            </el-radio-group>
           </div>
           <!-- 保存设置 -->
-          <div class="save">
+          <div class="save" @click="savamine">
             <p>保存设置</p>
           </div>
         </div>
@@ -66,14 +87,21 @@
           <p class="dstitle">收货地址</p>
           <div class="dslist">
             <el-radio-group v-model="radio">
-              <el-radio :label="index" v-for="(item, index) in dressinfo" :key="index">
+              <el-radio
+                :label="index"
+                v-for="(item, index) in dressinfo"
+                @change="changecurdress(item)"
+                :key="index"
+              >
                 <div class="dsinfobox">
                   <div class="dsinfo">
-                    <p class="name">{{item.name}}</p>
-                    <p class="tel">{{item.tel}}</p>
-                    <p class="dress">{{item.province}}{{item.city}}{{item.county}}{{item.dress}}</p>
+                    <p class="name">{{item.address_name}}</p>
+                    <p class="tel">{{item.address_phone}}</p>
+                    <p
+                      class="dress"
+                    >{{item.address_province}}{{item.address_city}}{{item.address_area}}{{item.address_info}}</p>
                     <p class="edit" @click="edit(item)">编辑</p>
-                    <p class="delds">删除</p>
+                    <p class="delds" @click="deldress">删除</p>
                   </div>
                 </div>
               </el-radio>
@@ -184,41 +212,45 @@
         <div class="pswbox" v-show="selmcli==4">
           <p class="pswtitle">修改密码</p>
           <section>
-            <input type="text" placeholder="注册账户手机号" v-model="regtel" />
+            <input type="text" readonly :placeholder="minezh" v-model="minezh" />
           </section>
           <section class="code">
-            <input type="text" placeholder="请输入验证码" v-model="code" />
+            <input type="text" placeholder="暂时不输入验证码" disabled v-model="code" />
             <p>获取验证码</p>
           </section>
           <section>
-            <input type="text" placeholder="请输入新密码" v-model="npsw" />
+            <input type="password" placeholder="请输入新密码" v-model="npsw" />
           </section>
           <section>
-            <input type="text" placeholder="请再次输入新密码" v-model="qrpsw" />
+            <input type="password" @blur="regnpsw(qrpsw)" placeholder="请再次输入新密码" v-model="qrpsw" />
           </section>
           <!-- 保存设置 -->
-          <div class="save">
+          <div class="save" @click="savepsw">
             <p>保存设置</p>
           </div>
         </div>
       </div>
     </div>
-    <editdress :edititem="edititem" @close="close" v-if="isedit"></editdress>
+    <editdress :edititem="curdress" @close="close" v-if="isedit"></editdress>
   </div>
 </template>
 
 <script>
 import VDistpicker from "v-distpicker";
 import editdress from "../components/editdress";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "minecenter",
   inject: ["reload"],
   data() {
     return {
+      placeholdername: "",
+      headimg: "",
+      minezh: "",
       edititem: "",
       isedit: false,
       selmcli: 0,
+      sexradio: "1",
       radio: "1",
       input: "",
       detaildress: "", //详细地址
@@ -227,7 +259,7 @@ export default {
       regtel: "", //注册账户手机号
       code: "", //验证码
       npsw: "", //新密码
-      qrpsw: "", //旧密码
+      qrpsw: "", //确认密码
       address: {
         name: "",
         tel: "",
@@ -237,49 +269,53 @@ export default {
         county: "武侯区"
       },
       mineli: ["个人信息", "我的地址", "我的优惠", "我的积分", "修改密码"],
-      dressinfo: [
-        {
-          name: "张三",
-          tel: "12345678901",
-          dress:
-            "四川省成都市四川省成都市四川省成都市四川省成都市四川省成都市四川省成都市四川省成都市",
-          province: "四川省",
-          city: "成都市",
-          county: "高新区"
-        },
-        {
-          name: "张三",
-          tel: "135245444",
-          dress: "四川省成都市",
-          province: "四川省",
-          city: "达州市",
-          county: "通川区"
-        }
-      ],
+      dressinfo: [],
+      curdress: [],
+      curdressid: "",
       mineyhq: [],
       intinfo: [],
       points: "",
-      userinfo: []
+      userinfo: [],
+      imgDatas: []
     };
   },
   created() {
     this.selmcli = this.$route.query.tag;
     this.requstmine();
+
     if (this.selmcli == 3) {
       this.requstyhq();
+    } else if (this.selmcli == 2) {
+      this.getyhq();
+    } else if (this.selmcli == 1) {
+      this.requstaddress(this.userid);
     }
   },
   computed: {
     ...mapState(["userid"])
   },
   methods: {
+    ...mapActions(["getlogin", "getlogreg"]),
+    requstaddress(userId) {
+      this.$axios.post("/index/user/address", { userId: userId }).then(res => {
+        this.dressinfo = res.data.data;
+        this.curdress = this.dressinfo[0];
+        this.curdressid = this.dressinfo[0].address_id;
+      });
+    },
     //
     requstmine() {
       this.$axios
         .post("/index/user/userInfo", { userId: this.userid })
         .then(res => {
           this.userinfo = res.data.data;
+          this.minezh = res.data.data.user_phone;
           console.log(res);
+          if (res.data.data.user_nickname) {
+            this.placeholdername = res.data.data.user_nickname;
+          } else {
+            this.placeholdername = "请输入昵称";
+          }
         });
     },
     // 获取优惠券
@@ -305,11 +341,15 @@ export default {
         this.userinfo.points > item.points ||
         this.userinfo.points == item.points
       ) {
-        this.$confirm("您有积分" + this.points + "确定要兑换此券吗", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        })
+        this.$confirm(
+          "您有积分" + this.userinfo.points + "确定要兑换此券吗",
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+          }
+        )
           .then(() => {
             // 领取优惠券
             this.$axios
@@ -368,11 +408,14 @@ export default {
         });
     },
     //   上传头像
+    beforeAvatarUpload(file) {
+      // console.log(file);
+    },
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
     },
     handlePreview(file) {
-      console.log(file);
+      // console.log(file);
     },
     handleExceed(files, fileList) {
       this.$message.warning(
@@ -384,7 +427,49 @@ export default {
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
+    onsuccess(res) {
+      console.log(res);
+      this.headimg = res;
+    },
+    regname(name) {
+      console.log(name);
+      let reg = /^[\u4E00-\u9FA5A-Za-z0-9]+$/;
+      console.log(reg.test(name));
 
+      if (!reg.test(name)) {
+        this.$message.error("昵称只能由汉字、数字、字母组成");
+        this.input = "";
+      }
+    },
+    sexchange() {
+      console.log(this.sexradio);
+    },
+    savamine() {
+      if (this.sexradio == "" || this.headimg == "" || this.input == "") {
+        this.$message.error("请完善信息");
+      } else {
+        this.$axios
+          .post("/index/user/editUser", {
+            userId: this.userid,
+            user: this.input,
+            image: this.headimg,
+            sex: this.sexradio
+          })
+          .then(res => {
+            console.log(res);
+            if (res.data.code == 200) {
+              this.$message({
+                message: "修改成功",
+                type: "success"
+              });
+              this.reload();
+            } else {
+              this.$message.error("修改失败");
+            }
+          });
+      }
+      console.log(this.sexradio, this.headimg, this.input);
+    },
     // city
     onSelected(data) {
       this.address.province = data.province.value;
@@ -401,15 +486,80 @@ export default {
         this.edititem = item;
       }, 200);
     },
-    close(e) {
+    close(e, info) {
       this.isedit = e;
-      console.log(e, "wwww");
+      // 修改地址
+      this.$axios
+        .post("/index/user/editaddress", {
+          aid: this.curdressid,
+          userId: this.userid,
+          address_name: info.name,
+          address_phone: info.tel,
+          address_province: info.province,
+          address_city: info.city,
+          address_area: info.county,
+          address_info: info.dress
+        })
+        .then(res => {
+          // console.log(res);
+          this.reload();
+        });
+      console.log(info, "wwww");
+    },
+    deldress() {
+      console.log(this.curdressid);
+      this.$axios
+        .post("/index/user/delAddress", { aid: this.curdressid })
+        .then(res => {
+          if (res.data.data.code == 1) {
+            this.$message({
+              message: "删除成功",
+              type: "success"
+            });
+          } else {
+            this.$message.error("删除失败");
+          }
+          this.reload();
+          console.log(res);
+        });
+    },
+    changecurdress(item) {
+      console.log(item);
+      this.curdress = item;
+      this.curdressid = item.address_id;
     },
     tonav(index, item) {
       this.selmcli = index;
-      if (index == 2) {
-        // 获取优惠券
+      if (this.selmcli == 3) {
+        this.requstyhq();
+      } else if (this.selmcli == 2) {
         this.getyhq();
+      } else if (this.selmcli == 1) {
+        this.requstaddress(this.userid);
+      }
+    },
+    savepsw() {
+      console.log(this.minezh, this.npsw, this.qrpsw);
+      if (this.npsw == "" || this.qrpsw == "") {
+        this.$message.error("请完善信息");
+      } else {
+        this.$axios
+          .post("/index/user/setpwd", { phone: this.minezh, pwd: this.qrpsw })
+          .then(res => {
+            console.log(res);
+            if (res.data.code == 200) {
+              this.$message({
+                message: "修改成功，请重新登录",
+                type: "success"
+              });
+              this.getlogin(false);
+              setTimeout(() => {
+                window.location.reload();
+              }, 200);
+            } else {
+              this.$message.error("修改失败");
+            }
+          });
       }
     },
     // 正则判断手机号
@@ -423,6 +573,26 @@ export default {
       } else {
         this.tel = tel;
         console.log(this.tel);
+      }
+    },
+    regpsw(psw) {
+      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
+      if (!regpsw.test(psw)) {
+        this.$message.error("请输入至少6位数以上包含数字、字母、字符串的密码");
+        setTimeout(() => {
+          this.npsw = "";
+        }, 200);
+      } else {
+        this.npsw = psw;
+      }
+    },
+    regnpsw(qrpsw) {
+      console.log(this.npsw, qrpsw);
+      if (this.npsw != qrpsw) {
+        this.$message.error("两次密码不一致");
+        setTimeout(() => {
+          this.qrpsw = "";
+        }, 200);
       }
     }
   },
@@ -455,6 +625,9 @@ export default {
     }
   }
   .main {
+    .save {
+      cursor: pointer;
+    }
     width: 1200px;
     margin: 0 auto;
     display: flex;
@@ -557,7 +730,7 @@ export default {
           border-top: 1px solid rgba(204, 204, 204, 1);
         }
         .dsinfobox {
-          width: 100%;
+          width: 940px;
           display: inline-block;
           .dsinfo {
             width: 100%;
@@ -731,6 +904,7 @@ export default {
     // 修改密码
     .pswbox {
       .save {
+        cursor: pointer;
         box-sizing: border-box;
         // padding: 27px 0;
         margin-top: 50px;

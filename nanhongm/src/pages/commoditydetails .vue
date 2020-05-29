@@ -383,19 +383,13 @@ export default {
       width: 100%;
       padding: 25px 0;
       background: rgba(255, 255, 255, 1);
-      // .scorll {
-      //   width: 100%;
-      //   height: 1100px;
-      //   margin: 0px auto;
-      //   box-sizing: border-box;
-      //   padding: 0px 20px;
-      //   overflow-y: scroll;
-      // }
     }
     .evainfos {
-      // background: pink;
-
+      width: 100%;
+      height: 100%;
       .evalist {
+        width: 100%;
+        height: 100%;
         .evali {
           box-sizing: border-box;
           padding: 50px 0;

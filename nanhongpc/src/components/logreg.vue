@@ -9,14 +9,14 @@
           <img src="../assets/navgation/log-tel.png" alt />
         </span>
         <input type="tel" id="logtel" placeholder="登录账户手机号" maxlength="11" v-model="tel" />
-        <img class="clear" src="../assets/navgation/log-x.png" alt />
+        <img class="clear" @click="cleartel" src="../assets/navgation/log-x.png" alt />
       </div>
       <div class="intbox">
         <span class="img">
           <img src="../assets/navgation/log-pw.png" alt />
         </span>
         <input type="password" id="logpsw" placeholder="输入密码" v-model="password" />
-        <img class="clear" src="../assets/navgation/log-x.png" alt />
+        <img class="clear" @click="clearpsw" src="../assets/navgation/log-x.png" alt />
       </div>
       <p class="forget" @click="topaw">忘记密码</p>
       <p class="login" @click="loging">登录</p>
@@ -73,17 +73,36 @@
 
       <p class="title">找回密码</p>
       <div class="intbox telbox">
-        <input type="tel" id="gettel" maxlength="11" v-model="tel" placeholder="注册账户手机号" />
+        <input
+          type="tel"
+          @blur="regtel(tel)"
+          id="gettel"
+          maxlength="11"
+          v-model="tel"
+          placeholder="注册账户手机号"
+        />
       </div>
       <div class="intbox codebox">
         <input placeholder="输入验证码" id="getcode" v-model="code" />
         <p class="code" @click="sendCode" :class="cancode ? 'cantchoose':''">{{codetime}}</p>
       </div>
       <div class="intbox telbox">
-        <input type="password" id="getnpsw" placeholder="请输入新密码" v-model="password" />
+        <input
+          type="password"
+          id="getnpsw"
+          @blur="regpsw(password)"
+          placeholder="请输入新密码"
+          v-model="password"
+        />
       </div>
       <div class="intbox telbox">
-        <input type="password" id="getnpsws" placeholder="请再次输入密码" v-model="confirmPsw" />
+        <input
+          type="password"
+          id="getnpsws"
+          @blur="regnpsw(confirmPsw)"
+          placeholder="请再次输入密码"
+          v-model="confirmPsw"
+        />
       </div>
       <p class="login" @click="changepsw">确定</p>
     </div>
@@ -197,38 +216,33 @@ export default {
     changepsw() {
       if (
         this.tel == "" ||
-        this.code == "" ||
+        // this.code == "" ||
         this.password == "" ||
         this.confirmPsw == ""
       ) {
         this.$message.error("请完善信息");
       } else {
-        var regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/,
-          regcode = /^\d{4}$/,
-          regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
-        if (
-          !regcode.test(this.code) ||
-          !regPhone.test(this.tel) ||
-          !regpsw.test(this.password) ||
-          !regpsw.test(this.confirmPsw)
-        ) {
-          this.$message.error("您输入的格式有错误");
-        } else {
-          if (this.password != this.confirmPsw) {
-            this.$message.error("两次密码不一致");
-          } else {
-            this.$message({
-              message: "发送成功",
-              type: "success"
-            });
-            // 设置登录状态
-            this.getlogin(true);
-            // 跳转到要去的页面
-            this.$router.push({ path: this.topath });
-            // 掩藏登录框
-            this.getlogreg(false);
-          }
-        }
+        console.log(this.tel, this.password, this.confirmPsw);
+        this.$axios
+          .post("/index/user/forgetpwd", {
+            phone: this.tel,
+            pwd: this.confirmPsw
+          })
+          .then(res => {
+            if (res.data.code == 200) {
+              this.$message({
+                message: "重置成功，请重新登录",
+                type: "success"
+              });
+              setTimeout(() => {
+                this.islog = true;
+                this.isreg = false;
+                this.ispsw = false;
+              }, 500);
+            } else {
+              this.$message.error("重置失败");
+            }
+          });
       }
     },
     // 发送验证码
@@ -252,7 +266,7 @@ export default {
           let code = this.rand("0000", "9999");
           this.getcode = code;
           console.log(code, "code");
-
+          return this.$confirm(`验证码 ${this.getcode}`);
           this.$axios
             .post("/index/login/sendPhoneCode", {
               phone: this.tel,
@@ -300,6 +314,14 @@ export default {
         this.password = psw;
       }
     },
+    regnpsw(confirmPsw) {
+      if (this.password != confirmPsw) {
+        this.$message.error("两次密码不一致");
+        setTimeout(() => {
+          this.confirmPsw = "";
+        }, 200);
+      }
+    },
     regcode(code) {
       if (code == this.getcode) {
         console.log("验证码正确");
@@ -315,6 +337,12 @@ export default {
     },
     close() {
       this.$emit("close", false);
+    },
+    cleartel() {
+      this.tel = "";
+    },
+    clearpsw() {
+      this.password = "";
     }
   }
 };
@@ -360,7 +388,7 @@ export default {
         width: 230px;
         height: 40px;
         position: relative;
-        top: -2px;
+        // top: -2px;
         right: 2px;
         border-left: 1px solid rgba(228, 228, 228, 1);
         box-sizing: border-box;

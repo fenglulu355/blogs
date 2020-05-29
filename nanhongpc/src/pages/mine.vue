@@ -6,6 +6,16 @@
         <div class="head">
           <div
             class="mainpic"
+            v-if="userinfo.user_image"
+            :style="{backgroundImage: 'url(' +httpUrl+userinfo.user_image+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+          ></div>
+          <div
+            v-else
+            class="mainpic"
             :style="{backgroundImage: 'url(' + require('../assets/about/1-4.png')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',

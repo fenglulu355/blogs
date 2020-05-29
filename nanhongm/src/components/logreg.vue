@@ -9,27 +9,27 @@
           <img src="../assets/navgation/log-tel.png" alt />
         </span>
         <input type="tel" placeholder="登录账户手机号" @blur="regtel(tel)" maxlength="11" v-model="tel" />
-        <img class="clear" src="../assets/navgation/log-x.png" alt />
+        <img class="clear" @click="cleartel" src="../assets/navgation/log-x.png" alt />
       </div>
       <div class="intbox">
         <span class="img">
           <img src="../assets/navgation/log-pw.png" alt />
         </span>
         <input type="password" placeholder="输入密码" @blur="regpsw(password)" v-model="password" />
-        <img class="clear" src="../assets/navgation/log-x.png" alt />
+        <img class="clear" @click="clearpsw" src="../assets/navgation/log-x.png" alt />
       </div>
       <p class="tologin btn" @click="loging">登录</p>
       <p class="toreg btn" @click="toreg">注册</p>
       <p class="text">
-        <span>短信验证码登录</span>|
+        <!-- <span>短信验证码登录</span>| -->
         <span @click="toreg">注册</span>|
         <span @click="topaw">忘记密码</span>
       </p>
-      <p class="texts">选择其他方式登录</p>
+      <!-- <p class="texts">选择其他方式登录</p>
       <div class="other">
         <img class="icon" src="../assets/nav/qq.png" alt />
         <img class="icon" src="../assets/nav/wx.png" alt />
-      </div>
+      </div>-->
     </div>
     <!-- 注册 -->
     <div class="register box" v-if="isreg">
@@ -59,24 +59,29 @@
         <p @click="sendCode" class="code" :class="cancode ? 'cantchoose':''">{{codetime}}</p>
       </div>
       <p class="tologin btn" @click="reging">注册</p>
-      <p class="toreg btn" @click="loging">登录</p>
+      <p class="toreg btn" @click="tologs">登录</p>
     </div>
     <!-- 忘记密码 -->
     <div class="getpsw box" v-if="ispsw">
       <img @click="toclose" class="toclose" src="../assets/navgation/log-x.png" alt />
       <p class="title">找回密码</p>
       <div class="intbox telbox">
-        <input type="tel" maxlength="11" v-model="tel" placeholder="注册账户手机号" />
+        <input type="tel" @blur="regtel(tel)" maxlength="11" v-model="tel" placeholder="注册账户手机号" />
       </div>
       <div class="intbox codebox">
         <input placeholder="输入验证码" v-model="code" />
         <p class="code" @click="sendCode" :class="cancode ? 'cantchoose':''">{{codetime}}</p>
       </div>
       <div class="intbox telbox">
-        <input type="password" placeholder="请输入新密码" v-model="password" />
+        <input type="password" @blur="regpsw(password)" placeholder="请输入新密码" v-model="password" />
       </div>
       <div class="intbox telbox">
-        <input type="password" placeholder="请再次输入密码" v-model="confirmPsw" />
+        <input
+          type="password"
+          @blur="regnpsw(confirmPsw)"
+          placeholder="请再次输入密码"
+          v-model="confirmPsw"
+        />
       </div>
       <p class="tologin btn" @click="changepsw">确定</p>
     </div>
@@ -143,6 +148,12 @@ export default {
           });
       }
     },
+    // 显示登录
+    tologs() {
+      this.islog = true;
+      this.isreg = false;
+      this.ispsw = false;
+    },
     // 显示注册
     toreg() {
       this.islog = false;
@@ -187,38 +198,31 @@ export default {
     changepsw() {
       if (
         this.tel == "" ||
-        this.code == "" ||
+        // this.code == "" ||
         this.password == "" ||
         this.confirmPsw == ""
       ) {
         this.$toast.fail("请完善信息");
       } else {
-        var regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/,
-          regcode = /^\d{4}$/,
-          regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
-        if (
-          !regcode.test(this.code) ||
-          !regPhone.test(this.tel) ||
-          !regpsw.test(this.password) ||
-          !regpsw.test(this.confirmPsw)
-        ) {
-          this.$toast.fail("您输入的格式错误");
-        } else {
-          if (this.password != this.confirmPsw) {
-            this.$toast.fail("两次密码不一致");
-          } else {
-            this.$message({
-              message: "发送成功",
-              type: "success"
-            });
-            // 设置登录状态
-            this.getlogin(true);
-            // 跳转到要去的页面
-            this.$router.push({ path: this.topath });
-            // 掩藏登录框
-            this.getlogreg(false);
-          }
-        }
+        console.log(this.tel, this.password, this.confirmPsw);
+        this.$axios
+          .post("/index/user/forgetpwd", {
+            phone: this.tel,
+            pwd: this.confirmPsw
+          })
+          .then(res => {
+            if (res.data.code == 200) {
+              this.$toast.success("重置成功，请重新登录");
+
+              setTimeout(() => {
+                this.islog = true;
+                this.isreg = false;
+                this.ispsw = false;
+              }, 500);
+            } else {
+              this.$toast.fail("重置失败");
+            }
+          });
       }
     },
     // 发送验证码
@@ -242,7 +246,7 @@ export default {
           let code = this.rand("0000", "9999");
           this.getcode = code;
           console.log(code, "code");
-
+          this.$dialog({message:"验证码为" + this.getcode});
           this.$axios
             .post("/index/login/sendPhoneCode", {
               phone: this.tel,
@@ -250,7 +254,6 @@ export default {
             })
             .then(res => {
               console.log(res, "code");
-
               // 判断手机是否注册
               if (res.data.code == 0) {
                 this.$toast.fail("该手机已注册");
@@ -292,6 +295,14 @@ export default {
         this.$toast.fail("验证码错误");
       }
     },
+    regnpsw(confirmPsw) {
+      if (this.password != confirmPsw) {
+        this.$toast.fail("两次密码不一致");
+        setTimeout(() => {
+          this.confirmPsw = "";
+        }, 200);
+      }
+    },
     // 生成验证码
     rand(min, max) {
       min = Number(min);
@@ -300,6 +311,12 @@ export default {
     },
     toclose() {
       this.getlogreg(false);
+    },
+    cleartel() {
+      this.tel = "";
+    },
+    clearpsw() {
+      this.password = "";
     }
   }
 };
@@ -449,9 +466,20 @@ export default {
   }
   .register {
     width: 100%;
-    .tel {
-      text-align: center;
-      width: 35%;
+    input {
+      position: relative;
+      left: 1px;
+    }
+
+    .telbox {
+      .tel {
+        text-align: center;
+        width: 35%;
+        border-right: 1px solid rgba(228, 228, 228, 1);
+      }
+      input {
+        width: 64%;
+      }
     }
     .codebox {
       .code {

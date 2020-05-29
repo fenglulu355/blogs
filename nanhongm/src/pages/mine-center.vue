@@ -1,17 +1,6 @@
 <template>
   <div class="mine-center">
     <div class="main">
-      <!-- <ul class="mclist">
-        <li
-          class="mcli"
-          v-for="(item, index) in mineli"
-          :key="index"
-          :class="selmcli ==index?'selmcli':''"
-          @click="tonav(index,item)"
-        >
-          <p>{{item}}</p>
-        </li>
-      </ul>-->
       <div class="contbox">
         <!-- 个人信息 -->
         <div class="minebox" v-show="selmcli==0">
@@ -32,16 +21,14 @@
           <div class="changename pl">
             <span class="text">昵称</span>
             <div class="right">
-              <span class="text">南宏机电</span>
-              <!-- <input type="text" placeholder="请输入昵称" v-model="input" /> -->
+              <input type="text" :placeholder="minename" v-model="input" />
               <img src="../assets/shop/tr.png" alt />
             </div>
           </div>
           <div class="acct pl">
             <span class="text">账号</span>
             <div class="right">
-              <span>123154844</span>
-              <!-- <input type="text" placeholder="请输入昵称" v-model="input" /> -->
+              <input type="text" :placeholder="minezh" v-model="input" />
               <img src="../assets/shop/tr.png" alt />
             </div>
           </div>
@@ -56,8 +43,8 @@
         </div>
         <!-- 我的地址 -->
         <div class="dressbox" v-show="selmcli==1">
-          <p class="dstitle">
-            <img src="../assets/shop/return.png" alt />
+          <p class="dstitle" @click="goback">
+            <img   src="../assets/shop/return.png" alt />
             收货地址
           </p>
           <div class="dslist" v-if="!isedit">
@@ -68,20 +55,23 @@
                 </div>
                 <div class="center">
                   <p class="name">
-                    {{item.name}}
-                    <span>{{item.tel}}</span>
+                    {{item.address_name}}
+                    <span>{{item.address_phone}}</span>
                   </p>
-                  <p class="dress">{{item.province}}{{item.city}}{{item.county}}{{item.dress}}</p>
+                  <p
+                    class="dress"
+                  >{{item.address_province}}{{item.address_city}}{{item.address_area}}{{item.address_info}}</p>
                 </div>
                 <div class="right">
                   <span class="edit" @click="edit(item)">编辑</span>
-                  <span class="delds">删除</span>
+                  <span class="delds" @click="deldress(item)">删除</span>
                 </div>
               </div>
             </div>
           </div>
-          <p class="adddressbox" v-if="!isedit">新增收货地址+</p>
+          <p class="adddressbox" v-if="!isedit" @click="addadress">新增收货地址+</p>
           <editdress :edititem="edititem" @close="close" v-if="isedit"></editdress>
+          <editdress :edititem="edititem" @close="closead" v-if="isadd"></editdress>
         </div>
         <!-- 优惠券 -->
         <div class="integralbox" v-show="selmcli==2">
@@ -90,23 +80,23 @@
             <span class="tochange">优惠券</span>
           </p>
           <ul class="intlist">
-            <li class="intli" v-for="(item, index) in intinfo" :key="index">
+            <li class="intli" v-for="(item, index) in mineyhq" :key="index">
               <div class="couponinfo curbg">
                 <div class="top">
                   <div class="tleft">
-                    <p class="tltop">满减券</p>
-                    <p class="tlbot">满{{item.aprice}}可使用</p>
+                    <p class="tltop">{{item.title}}</p>
+                    <p class="tlbot">{{item.desc}}</p>
                   </div>
                   <p class="cut">
                     <span>￥</span>
-                    {{item.num}}
+                    {{item.price}}
                   </p>
                 </div>
                 <div class="bot">
                   <p class="brd">积分兑换·超值满减券</p>
-                  <p class="time">{{item.starttime}}-{{item.closetime}}</p>
-                  <p class="needint" v-show="item.isexchange==false">立即领取</p>
-                  <p class="needint" v-show="item.isexchange==true">已领取</p>
+                  <p class="time">{{item.start_time}}-{{item.end_time}}</p>
+
+                  <p class="needint">已领取</p>
                 </div>
               </div>
             </li>
@@ -117,26 +107,30 @@
           <p class="inttitle">
             <span class="tochange">积分兑换</span>
             <span>我的积分：</span>
-            <span class="num">2080</span>
+            <span class="num">{{userinfo.points}}</span>
           </p>
           <ul class="intlist">
-            <li class="intli" v-for="(item, index) in intinfo" :key="index">
-              <div class="couponinfo" :class="item.isexchange==false?'curbg':'exchange'">
+            <li
+              class="intli"
+              v-for="(item, index) in intinfo"
+              :key="index"
+              @click="changePoints(item)"
+            >
+              <div class="couponinfo curbg">
                 <div class="top">
                   <div class="tleft">
-                    <p class="tltop">满减券</p>
-                    <p class="tlbot">满{{item.aprice}}可使用</p>
+                    <p class="tltop">{{item.title}}</p>
+                    <p class="tlbot">{{item.desc}}</p>
                   </div>
                   <p class="cut">
                     <span>￥</span>
-                    {{item.num}}
+                    {{item.price}}
                   </p>
                 </div>
                 <div class="bot">
                   <p class="brd">积分兑换·超值满减券</p>
-                  <p class="time">{{item.starttime}}-{{item.closetime}}</p>
-                  <p class="needint" v-show="item.isexchange==false">{{item.need}}积分兑换</p>
-                  <p class="needint" v-show="item.isexchange==true">已兑换</p>
+                  <p class="time">{{item.start_time}}-{{item.end_time}}</p>
+                  <p class="needint">{{item.points}}积分兑换</p>
                 </div>
               </div>
             </li>
@@ -148,7 +142,7 @@
             <img src="../assets/shop/return.png" alt /> 修改密码
           </p>
           <section>
-            <input type="text" placeholder="注册账户手机号" v-model="regtel" />
+            <input type="text" placeholder="注册账户手机号" v-model="minezh" />
           </section>
           <section class="code">
             <input type="text" placeholder="请输入验证码" v-model="code" />
@@ -170,13 +164,19 @@
 <script>
 import VDistpicker from "v-distpicker";
 import editdress from "../components/editdress";
+import { mapState } from "vuex";
 
 export default {
   name: "minecenter",
+  inject: ["reload"],
   data() {
     return {
+      userinfo: [],
+      minezh: "",
+      minename: "",
       edititem: "",
       isedit: false,
+      isadd: false,
       selmcli: 0,
       radio: "1",
       input: "",
@@ -196,105 +196,174 @@ export default {
         county: ""
       },
       mineli: ["个人信息", "我的地址", "我的优惠", "我的积分", "修改密码"],
-      dressinfo: [
-        {
-          name: "张三",
-          tel: "12345678901",
-          dress:
-            "四川省成都市四川省成都市四川省成都市四川省成都市四川省成都市四川省成都市四川省成都市",
-          province: "四川省",
-          city: "成都市",
-          county: "高新区"
-        },
-        {
-          name: "张三",
-          tel: "135245444",
-          dress: "四川省成都市",
-          province: "四川省",
-          city: "达州市",
-          county: "通川区"
-        }
-      ],
-      intinfo: [
-        {
-          aprice: "1000.00",
-          num: 200,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 1000,
-          isexchange: false
-        },
-        {
-          aprice: "1000.00",
-          num: 200,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 1000,
-          isexchange: false
-        },
-        {
-          aprice: "1000.00",
-          num: 400,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 2000,
-          isexchange: false
-        },
-        {
-          aprice: "1000.00",
-          num: 200,
-          starttime: "2019.09.01 00.00",
-          closetime: "2019.10.05.23.59",
-          need: 1000,
-          isexchange: true
-        }
-      ]
+      dressinfo: [],
+      curdress: [],
+      mineyhq: [],
+      curdressid: "",
+      intinfo: [],
+      points: ""
     };
   },
   created() {
     this.selmcli = this.$route.query.tag;
+    this.requstmine();
+    if (this.selmcli == 1) {
+      this.requstaddress(this.userid);
+    } else if (this.selmcli == 2) {
+      this.getyhq();
+    } else if (this.selmcli == 3) {
+      this.requstyhq();
+    }
+  },
+  computed: {
+    ...mapState(["userid"])
   },
   methods: {
-    //   上传头像
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
+    requstmine() {
+      this.$axios
+        .post("/index/user/userInfo", { userId: this.userid })
+        .then(res => {
+          this.userinfo = res.data.data;
+          if (res.data.data.user_name) {
+            this.minename = res.data.data.user_name;
+          } else {
+            this.minename = res.data.data.user_nickname;
+          }
+          this.minezh = res.data.data.user_phone;
+          console.log(res);
+        });
     },
-    handlePreview(file) {
-      console.log(file);
+    requstaddress(userId) {
+      this.$axios.post("/index/user/address", { userId: userId }).then(res => {
+        this.dressinfo = res.data.data;
+        this.curdress = this.dressinfo[0];
+        this.curdressid = this.dressinfo[0].address_id;
+      });
     },
-    handleExceed(files, fileList) {
-      this.$message.warning(
-        `当前限制选择 1 个文件，本次选择了 ${
-          files.length
-        } 个文件，共选择了 ${files.length + fileList.length} 个文件`
-      );
+    deldress() {
+      this.$axios
+        .post("/index/user/delAddress", { aid: this.curdressid })
+        .then(res => {
+          if (res.data.data.code == 1) {
+            this.$toast.success(" 删除成功");
+          } else {
+            this.$toast.error("删除失败");
+          }
+          this.reload();
+          console.log(res);
+        });
     },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-
-    // city
-    onSelected(data) {
-      this.address.province = data.province.value;
-      this.address.city = data.city.value;
-      this.address.county = data.area.value;
-      console.log(data);
+    addadress() {
+      setTimeout(() => {
+        this.isadd = true;
+        this.edititem = this.curdress;
+      }, 200);
     },
     // 修改地址
     edit(item) {
-      console.log(item);
-      console.log(this.address);
       setTimeout(() => {
         this.isedit = true;
+        this.isadd = false;
         this.edititem = item;
       }, 200);
     },
-    close(e) {
+    close(e, info) {
       this.isedit = e;
-      console.log(e, "wwww");
+      // 修改地址
+      this.$axios
+        .post("/index/user/editaddress", {
+          aid: this.curdressid,
+          userId: this.userid,
+          address_name: info.name,
+          address_phone: info.tel,
+          address_province: info.province,
+          address_city: info.city,
+          address_area: info.county,
+          address_info: info.addressDetail
+        })
+        .then(res => {
+          // console.log(res);
+          this.reload();
+        });
+      console.log(info, "wwww");
+    },
+    closead(e, info) {
+      this.isadd = e;
+      console.log(info);
+
+      this.$axios
+        .post("/index/user/addaddress", {
+          userId: this.userid,
+          address_name: info.name,
+          address_phone: info.tel,
+          address_province: info.province,
+          address_city: info.city,
+          address_area: info.county,
+          address_info: info.addressDetail
+        })
+        .then(res => {
+          // console.log(res);
+          this.reload();
+        });
+      console.log(info, "wwww");
+    },
+    // 获取优惠券
+    getyhq() {
+      this.$axios
+        .post("/index/coupon/userCoupon", { userId: this.userid })
+        .then(res => {
+          console.log(res);
+          this.mineyhq = res.data.data;
+        });
+    },
+    requstyhq() {
+      this.$axios.post("/index/coupon/coupon").then(res => {
+        console.log(res);
+        this.intinfo = res.data.data;
+      });
+    },
+    changePoints(item) {
+      console.log(item);
+      if (
+        this.userinfo.points > item.points ||
+        this.userinfo.points == item.points
+      ) {
+        this.$dialog
+          .confirm({
+            title: "提示",
+            message: "您有积分" + this.userinfo.points + "确定要兑换此券吗"
+          })
+          .then(() => {
+            // 领取优惠券
+            this.$axios
+              .post("/index/coupon/addcoupon", {
+                userId: this.userid,
+                couponId: item.id
+              })
+              .then(res => {
+                console.log(res);
+                if (res.data.code == 200) {
+                  // 请求个人信息更新积分
+                  this.requstmine();
+                  this.$toast.success("领取成功");
+                  this.$forceUpdate();
+                } else {
+                  this.$toast.fail("领取失败");
+                }
+              });
+          })
+          .catch(() => {
+            this.$toast.fail("已取消兑换");
+          });
+      } else {
+        this.$toast.fail("对不起！您的积分不足，不能兑换！");
+      }
     },
     tonav(index, item) {
       this.selmcli = index;
+    },
+    goback(){
+       this.$router.go(-1)
     }
   },
   components: { VDistpicker, editdress }
@@ -386,20 +455,12 @@ export default {
         display: flex;
         justify-content: space-between;
         .right {
-          span {
-            padding-right: 20px;
+          input {
+            width: 213px;
+            height: 100%;
+            border-radius: 5px;
+            color: #848484;
           }
-        }
-      }
-      .changename {
-        width: 100%;
-
-        input {
-          background: chartreuse;
-          width: 213px;
-          height: 100%;
-          border-radius: 5px;
-          color: #848484;
         }
       }
     }
@@ -523,8 +584,8 @@ export default {
             .cut {
               color: rgba(36, 130, 200, 1);
             }
-            .needint{
-               background: #2482c8;
+            .needint {
+              background: #2482c8;
             }
           }
           .exchange {
@@ -597,7 +658,7 @@ export default {
                 width: 100%;
                 height: 72px;
                 line-height: 72px;
-               
+
                 text-align: center;
                 font-size: 33px;
                 font-weight: bold;

@@ -26,7 +26,7 @@
             backgroundPosition:'center'
             }"
             ></div>
-            <p class="name">{{item.article_title}}</p>
+            <p class="name">{{item.goods_name}}</p>
           </li>
         </ul>
       </div>

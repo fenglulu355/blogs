@@ -9,7 +9,7 @@
         <li class="goodsli" v-for="(item, index) in goodsinfo" :key="index">
           <div
             class="mainpic"
-            :style="{backgroundImage: 'url(' + item.img+ ')',
+            :style="{backgroundImage: 'url('  +httpUrl+ item.goods_image+')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -17,18 +17,24 @@
           ></div>
           <!-- 商品名 -->
           <div class="centerbox">
-            <p class="name">{{item.name}}</p>
+            <p class="name">
+              {{item.goods_name}}
+              <span>{{item.format_ids}}</span>
+            </p>
             <!-- 单个总价 -->
-            <p class="allprice">{{item.price* item.count | showPrice}}</p>
+            <p class="allprice">{{item.goods_price* item.cart_num | showPrice}}</p>
           </div>
           <div class="rightbox">
-            <p class="del" @click="del(index)">
+            <p class="del" @click="del(index,item)">
               <img src="../assets/shop/close.png" alt />
             </p>
             <div class="accountbox">
-              <button @click="decrement(index)" :disabled="item.count <= 1">-</button>
-              {{ item.count }}
-              <button @click="increment(index)">+</button>
+              <button @click="decrement(item,index)" :disabled="item.cart_num<= 1">-</button>
+              {{ item.cart_num }}
+              <button
+                @click="increment(item,index)"
+                :disabled="item.cart_num >= item.goods_number"
+              >+</button>
             </div>
           </div>
         </li>
@@ -58,74 +64,79 @@
 
 <script>
 export default {
+  inject: ["reload"],
   name: "shoppingcar",
   data() {
     return {
       dgzj: [],
       aprice: "",
       num: [],
-      goodsinfo: [
-        {
-          img: require("../assets/product/goods1.png"),
-          name:
-            "格力净静滚筒洗衣机格力净静滚筒洗衣机格力净静滚筒洗衣机格力净静滚筒洗衣机",
-          price: 1500.0,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1.2,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        },
-        {
-          img: require("../assets/product/goods1.png"),
-          name: "格力净静滚筒洗衣机格力净",
-          price: 1,
-          count: 1
-        }
-      ]
+      goodsinfo: []
     };
   },
-  created() {},
+  created() {
+    this.requst();
+  },
   computed: {
     totalPrice() {
       return this.goodsinfo.reduce(
-        (previousValue, item) => previousValue + item.count * item.price,
+        (previousValue, item) =>
+          previousValue + item.cart_num * item.goods_price,
         0
       );
     }
   },
   methods: {
+    requst() {
+      let userid = JSON.parse(sessionStorage.getItem("vuex")).userid;
+      this.$axios
+        .post("/index/shop/getCartData", { userId: userid, cartId: "" })
+        .then(res => {
+          this.goodsinfo = res.data.cart_data;
+          console.log(res);
+        });
+    },
+
     //   数量-
-    decrement(index) {
-      this.goodsinfo[index].count--;
+    decrement(item, index) {
+      this.goodsinfo[index].cart_num--;
+      let num = this.goodsinfo[index].cart_num;
+      console.log(num);
+      this.requstaddcar(item.user_id, item.goods_id, -1, item.format_ids);
     },
     // 数量+
-    increment(index) {
-      this.goodsinfo[index].count++;
+    increment(item, index) {
+      this.goodsinfo[index].cart_num++;
+      let num = this.goodsinfo[index].cart_num;
+      if (num >= item.goods_number) {
+        this.$toast.fail("库存不足！");
+      }
+      console.log(num);
+      this.requstaddcar(item.user_id, item.goods_id, 1, item.format_ids);
     },
     // 删除
-    del(index) {
-      this.goodsinfo.splice(index, 1);
+    del(index, item) {
+      this.$dialog
+        .confirm({
+          title: "提示",
+          message: "您确定要删除这件宝贝吗"
+        })
+        .then(() => {
+          this.cardel(item.cart_id);
+        })
+        .catch(() => {
+          this.$toast.fail("已取消删除");
+        });
+    },
+    cardel(cartId) {
+      this.$axios
+        .post("/index/shop/delShoppingCart", { cartId: cartId })
+        .then(res => {
+          this.reload();
+          this.$toast.success("删除成功");
+
+          console.log(res, "aa");
+        });
     },
     // 返回商城
     toshop() {
@@ -134,6 +145,38 @@ export default {
     // 去结算
     toorder() {
       this.$router.push({ path: "/order" });
+    },
+    // 增删操作之后重新请求数据
+    requstaddcar(userid, gid, num, fids) {
+      this.$axios
+        .post("/index/shop/addShoppingCart", {
+          userId: userid,
+          gid: gid,
+          num: num,
+          fids: fids
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.data.code == 1) {
+            this.$toast("操作成功");
+          } else {
+            this.$toast.fail("操作失败");
+          }
+        });
+    },
+    accMul: function(arg1, arg2) {
+      arg2 = arg2.toFixed(2);
+      var m = 0,
+        s1 = arg1.toString(),
+        s2 = arg2.toString();
+      try {
+        m += s1.split(".")[1].length;
+      } catch (e) {}
+      try {
+        m += s2.split(".")[1].length;
+      } catch (e) {}
+
+      return (Number(s1.replace(".", "")) * Number(s2.replace(".", ""))) / 100;
     }
   }, // 保留两位小数
   filters: {

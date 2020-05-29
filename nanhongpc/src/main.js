@@ -15,6 +15,16 @@ import VueAwesomeSwiper from 'vue-awesome-swiper'
 import 'swiper/dist/css/swiper.css'
 Vue.use(VueAwesomeSwiper, /* { default global options } */ )
 
+// vant
+import {
+  Uploader,
+} from 'vant';
+
+Vue.use(Uploader)
+
+import 'vant/lib/index.css';
+
+
 // vuex
 import Vuex from 'vuex'
 import store from './store'

@@ -20,84 +20,55 @@
           <li class="ordersli" v-for="(item, index) in orderinfos" :key="index">
             <div class="continfo">
               <div class="citop">
-                <span class="time">{{item.time}}</span>
-                <span class="ordernum">订单号：{{item.ordernum}}</span>
-                <span
-                  class="red"
-                  v-if="!item.evaluate && !item.send && !item.received && !item.payment"
-                >待付款</span>
-                <span
-                  class="red"
-                  v-if="!item.evaluate && !item.send && !item.received && item.payment"
-                >待发货</span>
-                <span
-                  class="red"
-                  v-if="!item.evaluate && item.send && !item.received && item.payment"
-                >已发货</span>
-                <span
-                  class="red"
-                  v-if="!item.evaluate && item.send && item.received && item.payment "
-                >已收货</span>
-                <span
-                  class="red"
-                  v-if="item.evaluate && item.send && item.received && item.payment "
-                >已评价</span>
+                <span class="time">{{item.created_time}}</span>
+                <span class="ordernum">订单号：{{item.order_num}}</span>
+                <span class="red" v-if="item.order_state == 0">待付款</span>
+                <span class="red" v-if="item.order_state==1">待发货</span>
+                <span class="red" v-if="item.order_state==2">已发货</span>
+                <span class="red" v-if="item.order_state==4 && item.isCommtent==0 ">已收货</span>
+                <span class="red" v-if="item.order_state==4&&item.isCommtent == 1 ">已评价</span>
               </div>
               <div class="center">
-                <div class="orderlists" v-for="(items, index) in item.orderlist" :key="index">
+                <div class="orderlists" v-for="(items, index) in item.goods" :key="index">
                   <div
                     class="mainpic"
-                    :style="{backgroundImage: 'url(' + items.img+ ')',
+                    :style="{backgroundImage: 'url(' +httpUrl+ items.oe_format_img+ ')',
                      backgroundSize:'cover',
                      backgroundRepeat: 'no-repeat',
                      backgroundPosition:'center'
                     }"
                   ></div>
                   <div class="infos">
-                    <p class="des">{{items.des}}</p>
+                    <p class="des">{{items.oe_goods_name}}</p>
                     <p class="num">
-                      <span>￥{{items.apprice}}</span>
-                      <span>×{{items.num}}</span>
+                      <span>￥{{items.oe_format_price}}</span>
+                      <span>×{{items.oe_num}}</span>
                     </p>
                     <img src="../assets/shop/tb.png" alt />
                     <p class="color">
-                      <span>颜色：{{items.color}}</span>
-                      <span>规格{{items.type}}</span>
+                      <span>规格：{{items.oe_format_name}}</span>
                     </p>
+                    <p
+                      class="toeva"
+                      v-if="item.order_state==4 && item.isCommtent==0"
+                      @click="toeva(index,item,items)"
+                    >去评价</p>
                   </div>
                 </div>
               </div>
               <div class="bot">
-                <p
-                  class="jf has"
-                  v-if="item.evaluate && item.send && item.received && item.payment"
-                >已获得{{item.aprice}}积分</p>
-                <p class="jf" v-else>确认收货后获得{{item.aprice}}积分</p>
+                <p class="jf has" v-if="item.order_state==4">已获得{{item.order_price}}积分</p>
+                <p class="jf" v-else>确认收货后获得{{item.order_price}}积分</p>
                 <p class="numprice">
-                  共{{item.orderlist.length}}件商品 合计：
-                  <span>￥{{item.aprice}}</span>
+                  共{{item.goods.length}}件商品 合计：
+                  <span>￥{{item.order_price}}</span>
                 </p>
                 <div class="buttons">
-                  <p
-                    class="wl"
-                    @click="openlog(index,item)"
-                    v-if="!item.evaluate && !item.send && !item.received && item.payment"
-                  >物流明细</p>
-                  <p class="returngoods" v-if="!item.received && item.payment">退货/退款</p>
-                  <p
-                    class="torecive"
-                    v-if="!item.evaluate && item.send && !item.received && item.payment"
-                    @click="toreceived(index,item)"
-                  >去收货</p>
-                  <p
-                    class="toeva"
-                    v-if="!item.evaluate && item.send && item.received && item.payment "
-                    @click="toeva(index,item)"
-                  >去评价</p>
-                  <p
-                    class="topay"
-                    v-if="!item.evaluate && !item.send && !item.received && !item.payment"
-                  >去付款</p>
+                  <p class="wl" @click="openlog(index,item)" v-if="item.order_state==3">物流明细</p>
+                  <p class="returngoods" v-if="item.order_state !=0">退货/退款</p>
+                  <p class="torecive" v-if="item.order_state==3" @click="toreceived(index,item)">去收货</p>
+
+                  <p class="topay" @click="topay(index,item)" v-if="item.order_state == 0">去付款</p>
                 </div>
               </div>
             </div>
@@ -132,6 +103,7 @@
 <script>
 import evaluate from "../components/evaluate";
 import logistics from "../components/logistics";
+import { mapState } from "vuex";
 export default {
   name: "orderlist",
   data() {
@@ -145,413 +117,13 @@ export default {
       goodsinfo: {},
       navli: [
         { name: "所有订单", num: "" },
-        { name: "待付款", num: "2" },
-        { name: "待发货", num: "3" },
+        { name: "待付款", num: "" },
+        { name: "待发货", num: "" },
         { name: "待收货", num: "" },
-        { name: "待评价", num: "1" }
+        { name: "待评价", num: "" }
       ],
-      orderinfo: [
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                " 壁式空调挂体式立享舒适壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: false,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "李四",
-          aprice: "2499.00",
-          payment: true,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "王五",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: true
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: false,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            },
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "李四",
-          aprice: "2499.00",
-          payment: true,
-          send: false,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: false,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "王五",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: false
-        },
-        {
-          time: "2019-10-25 11:32:45",
-          ordernum: "1254164184",
-          orderlist: [
-            {
-              img: require("../assets/about/1-4.png"),
-              des:
-                "格力京逸（GREE）正1.5匹 定速 冷暖 分体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂体式立享舒适 智能睡眠 挂壁式空调挂",
-              num: "1",
-              apprice: 1450,
-              color: "白色",
-              type: "1.5匹",
-              eva: [
-                { title: "好评", num: 0 },
-                { title: "中评", num: 1 },
-                { title: "差评", num: 2 }
-              ]
-            }
-          ],
-          name: "张三",
-          aprice: "2499.00",
-          payment: true,
-          send: true,
-          received: true,
-          evaluate: true
-        }
-      ],
+      num: [[], [], [], [], []],
+      orderinfo: [],
       orderinfos: [],
       logisticsinfo: [
         [
@@ -659,9 +231,39 @@ export default {
   },
   components: { evaluate, logistics },
   created() {
-    this.orderinfos = this.orderinfo;
+    this.requst();
+  },
+  computed: {
+    ...mapState(["userid"])
   },
   methods: {
+    requst() {
+      this.$axios
+        .post("/index/user/orders", { userId: this.userid })
+        .then(res => {
+          this.orderinfo = res.data.order_list;
+          console.log(this.orderinfo);
+          this.orderinfos = this.orderinfo;
+          for (let i = 0, length = this.orderinfo.length; i < length; i++) {
+            if (this.orderinfo[i].order_state == 0) {
+              this.num[0].push(this.orderinfo[i]);
+              this.navli[1].num = this.num[0].length;
+            } else if (this.orderinfo[i].order_state == 1) {
+              this.num[1].push(this.orderinfo[i]);
+              this.navli[2].num = this.num[1].length;
+            } else if (this.orderinfo[i].order_state == 3) {
+              this.num[2].push(this.orderinfo[i]);
+              this.navli[3].num = this.num[2].length;
+            } else if (
+              this.orderinfo[i].order_state == 4 &&
+              this.orderinfo[i].isCommtent == 0
+            ) {
+              this.num[4].push(this.orderinfo[i]);
+              this.navli[4].num = this.num[4].length;
+            }
+          }
+        });
+    },
     changeOrderNav(index) {
       this.ordernav = index;
       console.log(index);
@@ -671,7 +273,7 @@ export default {
       if (index == 1) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return e.payment == false;
+          return e.order_state == 0;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -679,7 +281,7 @@ export default {
       if (index == 2) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return e.send == false && e.payment == true;
+          return e.order_state == 1;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -687,7 +289,7 @@ export default {
       if (index == 3) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return e.received == false && e.payment == true && e.send == true;
+          return e.order_state == 3;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -695,12 +297,7 @@ export default {
       if (index == 4) {
         let arr = this.orderinfo;
         let arrb = arr.filter(function(e) {
-          return (
-            e.evaluate == false &&
-            e.payment == true &&
-            e.send == true &&
-            e.received == true
-          );
+          return e.order_state == 4 && e.isCommtent == 0;
         });
         this.orderinfos = arrb;
         console.log(this.orderinfos, "arr");
@@ -709,23 +306,68 @@ export default {
     // 去付款
     topay(index, item) {
       console.log(item);
+      this.$router.push({
+        path: "/payment",
+        query: {
+          ordernum: item.order_num,
+          orderid: item.order_id,
+          price: item.order_price
+        }
+      });
     },
     // 去评价
-    toeva(index, item) {
-      this.goodsinfo = item;
+    toeva(index, item, items) {
+      this.goodsinfo = items;
+      this.goodsinfo.eva = [
+        { title: "好评", num: 3 },
+        { title: "中评", num: 2 },
+        { title: "差评", num: 1 }
+      ];
+      this.goodsinfo.oderid = item.order_id;
       this.isevaluate = true;
-      console.log(item);
+      console.log(items);
     },
     // 点击收货
     toreceived(index, item) {
-      this.isinteg = true;
-      console.log(item);
-      this.integ = Math.floor(item.aprice);
+      this.$axios
+        .post("/index/user/changeOrderState", {
+          orderId: item.order_id,
+          userId: item.user_id,
+          oldState: item.order_state,
+          newState: 4
+        })
+        .then(res => {
+          console.log(res);
+          if (res.data.code == 200) {
+            this.$toast.success("收货成功!");
+            setTimeout(() => {
+              this.isinteg = true;
+              console.log(item);
+              this.integ = Math.floor(item.order_price);
+            }, 500);
+          } else {
+            this.$toast.fail("提交失败");
+          }
+        });
       // 此处连接后台修改状态
     },
     // 查看积分
     tointeg() {
       this.$router.push({ path: "/minecenter", query: { tag: "3" } });
+    },
+    // 更新状态
+    changestate(orderId, userid, oldState, newState) {
+      this.$axios
+        .post("/index/user/changeOrderState", {
+          orderId: orderId,
+          userId: userid,
+          oldState: oldState,
+          newState: newState
+        })
+        .then(res => {
+          console.log(res);
+          this.reload();
+        });
     },
     close(e) {
       this.isevaluate = e;
@@ -827,6 +469,19 @@ export default {
                 }
                 .infos {
                   width: 78%;
+                  position: relative;
+                  .toeva {
+                    position: absolute;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(36, 130, 200, 1);
+                    color: white;
+                    width: 100px;
+                    text-align: center;
+                    line-height: 40px;
+                    font-size: 14px;
+                    height: 40px;
+                  }
                   .des {
                     width: 100%;
                     line-height: 35px;
