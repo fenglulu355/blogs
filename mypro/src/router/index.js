@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import home from '../components/home.vue'
 import morecur from '../components/morecur/mcindex.vue'
+import xlselect from '../components/xlselect/xlsindex.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -14,6 +15,11 @@ export default new Router({
       path: '/morecur',
       name: 'morecur',
       component: morecur
+    },
+    {
+      path: '/xlselect',
+      name: 'xlselect',
+      component: xlselect
     },
   ]
 })

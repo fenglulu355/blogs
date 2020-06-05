@@ -12,7 +12,10 @@ export default {
   name: "home",
   data() {
     return {
-      list: [{ path: "/morecur", name: "多选" }]
+      list: [
+        { path: "/morecur", name: "多选" },
+        { path: "/xlselect", name: "下拉选择" }
+      ]
     };
   }
 };
