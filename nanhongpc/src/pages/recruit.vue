@@ -140,7 +140,7 @@ export default {
   box-sizing: border-box;
   padding: 60px 0 90px 0;
   border-top: 1px solid rgba(236, 236, 236, 1);
-  border-bottom: 1px solid rgba(236, 236, 236, 1);
+  // border-bottom: 1px solid rgba(236, 236, 236, 1);
   color: rgba(51, 51, 51, 1);
   .title {
     width: 1200px;

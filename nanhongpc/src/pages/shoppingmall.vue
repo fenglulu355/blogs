@@ -105,6 +105,9 @@ export default {
   created() {
     this.requst();
   },
+  mounted() {
+    document.body.scrollTop = document.documentElement.scrollTop = 600;
+  },
   computed: {
     ...mapState(["islogin", "logreg"])
   },

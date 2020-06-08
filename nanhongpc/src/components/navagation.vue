@@ -43,7 +43,7 @@
             <mnav :btitle="bhome" :ltitle="lhome" :path="'/'" :navindex="0"></mnav>
           </li>
           <li class="navli" value="1" @click.stop="tonav($event)">
-            <router-link to="/product" :class="navindex ==1?'sel':''">产品中心</router-link>
+            <router-link to="/product" :class="navindex ==1?'sel':''">智慧中心</router-link>
             <mnav :btitle="bpro" :ltitle="lpro" :path="'/product'" :navindex="1"></mnav>
           </li>
           <li class="navli" value="2" @click.stop="tonav($event)">
@@ -151,7 +151,7 @@ export default {
         }
       ],
       bhome: [""],
-      bpro: ["产品中心"],
+      bpro: ["智慧中心"],
       bshop: ["门店展示"],
       bcase: ["成功案例"],
       bsrv: ["售后服务"],
@@ -180,11 +180,8 @@ export default {
     ...mapState(["isbanshow", "islogin", "logreg"])
   },
   created() {
+    this.requst();
     let navidx = sessionStorage.getItem("navindex");
-    let a = sessionStorage.getItem("tabnav");
-    a = JSON.parse(a);
-    this.lpro = a;
-    // console.log(a);
 
     if (navidx) {
       this.navindex = navidx;
@@ -194,6 +191,13 @@ export default {
   },
   methods: {
     ...mapActions(["getlogreg", "gettopath"]),
+    requst(classid) {
+      this.$axios.post("/index/api/productClass").then(res => {
+        this.tabnav = res.data.data;
+        let a = res.data.data;
+        this.lpro = a;
+      });
+    },
     toicon(index, item) {
       if (index == 4) {
         timer = setInterval(function() {

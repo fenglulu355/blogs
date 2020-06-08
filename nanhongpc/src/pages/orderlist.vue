@@ -35,13 +35,13 @@
                      backgroundPosition:'center'
                     }"
                     ></div>
-                    <p class="des">{{items.oe_goods_name}}</p>
+                    <div class="des">
+                      <p>{{items.oe_goods_name}}</p>
+                      <p class="type">{{items.oe_format_name}}</p>
+                    </div>
                     <p class="num">×{{items.oe_num}}</p>
-                    <p
-                      class="toeva"
-                      v-show="item.order_state==4 && item.isCommtent==0"
-                      @click="toeva(index,items,item)"
-                    >去评价</p>
+
+                    
                   </div>
                 </div>
                 <div class="ciccenter">
@@ -71,6 +71,11 @@
                   <!-- 待评价 -->
                   <div class="alreadyreceived" v-show="item.order_state==4 && item.isCommtent==0">
                     <p class="received">已收货</p>
+                    <p
+                      class="toeva"
+                      v-show="item.order_state==4 && item.isCommtent==0"
+                      @click="toeva(index,item)"
+                    >去评价</p>
                   </div>
                   <!-- 待发货 -->
                   <div class="alreadypayment" v-show="item.order_state==1">
@@ -265,8 +270,8 @@ export default {
       });
     },
     // 去评价
-    toeva(index, items, item) {
-      this.goodsinfo = items;
+    toeva(index,  item) {
+      this.goodsinfo = item;
       this.goodsinfo.eva = [
         { title: "好评", num: 3 },
         { title: "中评", num: 2 },
@@ -274,7 +279,7 @@ export default {
       ];
       this.goodsinfo.oderid = item.order_id;
       this.isevaluate = true;
-      console.log(items);
+      console.log(item);
     },
     // 点击收货
     toreceived(index, item) {
@@ -440,17 +445,22 @@ export default {
                     border: 1px solid rgba(239, 239, 239, 1);
                   }
                   .des {
+                    // background: brown;
                     box-sizing: border-box;
                     padding: 0 110px 0 18px;
                     width: 350px;
-                    height: 40px;
+                    // height: 40px;
                     color: rgba(51, 51, 51, 1);
                     font-size: 15px;
-                    overflow: hidden;
-                    display: -webkit-box;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    word-break: break-all;
+                    // overflow: hidden;
+                    // display: -webkit-box;
+                    // -webkit-line-clamp: 2;
+                    // -webkit-box-orient: vertical;
+                    // word-break: break-all;
+                    .type{
+                      box-sizing: border-box;
+                      padding-top: 15px;
+                    }
                   }
                   .num {
                     color: rgba(153, 153, 153, 1);

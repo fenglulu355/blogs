@@ -212,14 +212,15 @@
         <div class="pswbox" v-show="selmcli==4">
           <p class="pswtitle">修改密码</p>
           <section>
-            <input type="text" readonly :placeholder="minezh" v-model="minezh" />
-          </section>
+            <input type="text"
+             readonly :placeholder="minezh" v-model="minezh" />
+          </section> 
           <section class="code">
             <input type="text" placeholder="暂时不输入验证码" disabled v-model="code" />
             <p>获取验证码</p>
           </section>
           <section>
-            <input type="password" placeholder="请输入新密码" v-model="npsw" />
+            <input type="password" placeholder="请输入新密码" @blur="regnpsw(npsw)"  v-model="npsw" />
           </section>
           <section>
             <input type="password" @blur="regnpsw(qrpsw)" placeholder="请再次输入新密码" v-model="qrpsw" />

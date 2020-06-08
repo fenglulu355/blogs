@@ -11,8 +11,10 @@
       <div class="curbox">
         <p class="text">请选择支付方式</p>
         <ul class="paylist">
-          <li class="tobank" @click="tobank">
-            <img src="../assets/shop/yl.png" alt />
+          <li class="tobank">
+            <a :href="httpUrl+`/index/unionpay/dopay?orderId=`+orderid">
+              <img src="../assets/shop/yl.png" alt />
+            </a>
           </li>
           <li class="towx" @click="towx">
             <img src="../assets/shop/wx.png" alt />
@@ -134,7 +136,15 @@ export default {
         });
     },
     tobank() {
-      this.ispay = true;
+      this.fullscreenLoading = true;
+      // this.ispay = true;
+      this.$axios
+        .get("/index/unionpay/dopay", { orderId: this.orderid })
+        .then(res => {
+          this.fullscreenLoading = false;
+          console.log(res);
+          alert(res);
+        });
     },
     toshop() {
       this.ispay = false;

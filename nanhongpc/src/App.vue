@@ -1,9 +1,16 @@
 <template>
   <div id="app" :class="isbanshow==true?'paddinga':'paddingb'">
-    <navgation v-if="isAlive"></navgation>
-    <banner v-if="islb"></banner>
-    <router-view v-if="isAlive" />
-    <nhfooter v-if="isAlive"></nhfooter>
+    <div v-if="ispri">
+      <navgation v-if="isAlive"></navgation>
+      <banner v-if="islb"></banner>
+      <router-view v-if="isAlive" />
+      <nhfooter v-if="isAlive"></nhfooter>
+    </div>
+    <div v-else>
+      <navgation v-if="isAlive"></navgation>
+      <router-view v-if="isAlive" />
+      <nhfooter v-if="isAlive"></nhfooter>
+    </div>
   </div>
 </template>
 
@@ -26,7 +33,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["isbanshow", "islb"])
+    ...mapState(["isbanshow", "islb", "ispri"])
   },
   mounted() {
     if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
@@ -98,13 +105,11 @@ export default {
   transition: all 0s !important;
 }
 
-
 .uploadimg [class^="el-icon-"] {
   position: relative !important;
-
 }
 .el-upload-list--picture-card .el-upload-list__item-thumbnail {
- width: 100% !important;
+  width: 100% !important;
   height: 100% !important;
 }
 .el-upload-list--picture-card

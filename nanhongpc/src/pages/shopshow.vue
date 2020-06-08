@@ -70,7 +70,60 @@
             }"
             ></div>
           </li>
-          <li class="shopshowli" v-show="curindex === 1">bbbbbbbbbbbbbbbbb</li>
+          <li class="shopshowli" v-if="curindex === 1">
+            <!-- swiper1 -->
+            <baidu-map class="galler-top" v-if="ismap" :center="{lng: lng, lat: lat}" :zoom="15">
+              <bm-navigation anchor="BMAP_ANCHOR_TOP_RIGHT"></bm-navigation>
+              <bm-marker
+                :position="{lng: lng, lat: lat}"
+                :dragging="true"
+                animation="BMAP_ANIMATION_BOUNCE"
+              >
+                <bm-label
+                  :content="mapinfo.title"
+                  :labelStyle="{color: 'red', fontSize : '24px' ,padding:'0 15px',textAlign:'center'} "
+                  :offset="{width: -35, height: 30}"
+                />
+              </bm-marker>
+            </baidu-map>
+
+            <!-- swiper2 Thumbs -->
+            <swiper :options="swiperOptionThumbs" class="gallery-thumbs" ref="swiperThumbs">
+              <swiper-slide class="slide" v-for="(item, index) in shopinfo" :key="index">
+                <div class="showbox" @click="swipermap(index,item)" :data-id="index">
+                  <div
+                    class="mainpic"
+                    :style="{backgroundImage: 'url('+ httpUrl+ item.image_url+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+                  ></div>
+                  <div class="pichover">
+                    <p>{{item.title}}</p>
+                  </div>
+                </div>
+              </swiper-slide>
+            </swiper>
+            <div
+              class="swiper-button-next swiper-button-white"
+              slot="button-next"
+              :style="{backgroundImage: 'url(' + require('../assets/shopshow/right.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+            ></div>
+            <div
+              class="swiper-button-prev swiper-button-white"
+              slot="button-prev"
+              :style="{backgroundImage: 'url(' + require('../assets/shopshow/left.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+            ></div>
+          </li>
         </ul>
       </div>
     </div>
@@ -83,75 +136,23 @@ import { swiper, swiperSlide } from "vue-awesome-swiper";
 export default {
   name: "shopshow",
   inject: ["reload"],
+  provide() {
+    return {
+      reload: this.mapreload
+    };
+  },
   data() {
     return {
       curindex: 0,
       calleft: 0,
       showimg: "",
       shopshowinfo: [],
+      mapinfo: [],
       tabtitle: {
         a: "门店",
         b: "展示"
       },
       tabnav: [{ class_name: "门店展示" }, { class_name: "门店导航" }],
-      shopinfo: [
-        {
-          bg: require("../assets/shopshow/sbg.png"),
-          sbg: require("../assets/shopshow/bg.png"),
-          shopname: "首家千平体验式旗舰中心（蜀西路丰德羊西店）",
-          mainsell: "分体空调、中央空调、生活家电",
-          address: "成都市金牛区蜀西路9号丰德羊西中心2F",
-          tel: "028-87395760"
-        },
-        {
-          bg: require("../assets/shopshow/sbg.png"),
-          sbg: require("../assets/shopshow/bg.png"),
-          shopname: "一一一一一一",
-          mainsell: "分体空调",
-          address: "成都市金牛区",
-          tel: "028-87395760"
-        },
-        {
-          bg: require("../assets/shopshow/sbg.png"),
-          sbg: require("../assets/shopshow/bg.png"),
-          shopname: "二二二二二二二二二二二二二二二",
-          mainsell: "分体空调、中央空调、生活家电",
-          address: "成都市金牛区蜀西路9号丰德羊西中心2F",
-          tel: "028-87395760"
-        },
-        {
-          bg: require("../assets/shopshow/sbg.png"),
-          sbg: require("../assets/shopshow/bg.png"),
-          shopname: "三三三三三三三三三三三三三三三三三",
-          mainsell: "分体空调、中央空调、生活家电",
-          address: "成都市金牛区蜀西路9号丰德羊西中心2F",
-          tel: "028-87395760"
-        },
-        {
-          bg: require("../assets/shopshow/sbg.png"),
-          sbg: require("../assets/shopshow/bg.png"),
-          shopname: "思思思思",
-          mainsell: "分体空调、中央空调、生活家电",
-          address: "成都市金牛区蜀西路9号丰德羊西中心2F",
-          tel: "028-87395760"
-        },
-        {
-          bg: require("../assets/shopshow/sbg.png"),
-          sbg: require("../assets/shopshow/bg.png"),
-          shopname: "呜呜呜呜呜呜呜呜呜",
-          mainsell: "分体空调、中央空调、生活家电",
-          address: "成都市金牛区蜀西路9号丰德羊西中心2F",
-          tel: "028-87395760"
-        },
-        {
-          bg: require("../assets/shopshow/sbg.png"),
-          sbg: require("../assets/shopshow/bg.png"),
-          shopname: "六六六六六六六",
-          mainsell: "分体空调、中央空调、生活家电",
-          address: "成都市金牛区蜀西路9号丰德羊西中心2F",
-          tel: "028-87395760"
-        }
-      ],
       shopwidth: null,
       swiperOptionThumbs: {
         // loop:true,
@@ -164,13 +165,25 @@ export default {
           nextEl: ".swiper-button-next",
           prevEl: ".swiper-button-prev"
         }
-      }
+      },
+      shopinfo: [],
+      lng: 116.404,
+      lat: 39.915,
+      zb: [
+        { lng: 116.404, lat: 49.915 },
+        { lng: 117.404, lat: 39.915 },
+        { lng: 118.404, lat: 39.815 },
+        { lng: 119.404, lat: 39.715 },
+        { lng: 110.404, lat: 39.615 },
+        { lng: 120.404, lat: 39.515 }
+      ],
+      ismap: true
     };
   },
 
   created() {
     this.requst();
-    this.shopwidth = this.shopinfo.length * 245;
+
     this.getrouter;
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
@@ -180,14 +193,23 @@ export default {
     }
   },
   mounted() {
-    document.body.scrollTop = document.documentElement.scrollTop = 300;
+    document.body.scrollTop = document.documentElement.scrollTop = 600;
   },
   methods: {
+    mapreload() {
+      let self = this;
+      self.ismap = false;
+      self.$nextTick(function() {
+        self.ismap = true;
+      });
+    },
     requst() {
       this.$axios.post("/index/api/mdzsList").then(res => {
         console.log(res.data.data);
         this.shopinfo = res.data.data;
         this.shopshowinfo = this.shopinfo[0];
+        this.shopwidth = this.shopinfo.length * 245;
+        this.mapinfo = this.shopinfo[0];
       });
     },
     getrouter() {
@@ -210,6 +232,13 @@ export default {
     },
     swiper(index, item) {
       this.shopshowinfo = item;
+    },
+    swipermap(index, item) {
+      this.mapinfo = item;
+      this.lng = this.zb[index].lng;
+      this.lat = this.zb[index].lat;
+      this.mapreload();
+      console.log(this.lat, this.lng);
     }
   },
 
@@ -223,7 +252,7 @@ export default {
   .shopbox {
     width: 100%;
     border-top: 1px solid rgba(153, 153, 153, 0.3);
-    border-bottom: 1px solid rgba(153, 153, 153, 0.3);
+    // border-bottom: 1px solid rgba(153, 153, 153, 0.3);
     box-sizing: border-box;
     padding: 60px 0 100px 0;
     .showmain {

@@ -16,6 +16,9 @@ import details from '../pages/details.vue'
 import mine from '../pages/mine.vue'
 import minecenter from '../pages/mine-center.vue'
 import payment from '../pages/payment.vue'
+import privacy from '../components/privacy.vue'
+import policy from '../components/policy.vue'
+import statemap from '../components/statemap.vue'
 
 import commoditydetails from '../pages/commoditydetails .vue'
 import cs from '../pages/cs.vue'
@@ -36,6 +39,28 @@ export default new Router({
       component: about,
       meta: {
         islb: true
+      }
+    }, {
+      path: '/statemap',
+      name: 'statemap',
+      component: statemap,
+      meta: {
+        islb: false
+      }
+    }, {
+      path: '/policy',
+      name: 'policy',
+      component: policy,
+      meta: {
+        islb: false
+      }
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: privacy,
+      meta: {
+        islb: false
       }
     },
     {

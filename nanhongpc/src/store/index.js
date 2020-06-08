@@ -19,6 +19,7 @@ export default new Vuex.Store({
     }
   })],
   state: {
+    ispri: true,
     islb: true,
     isbanshow: true,
     islogin: false,
@@ -29,6 +30,9 @@ export default new Vuex.Store({
     points: ''
   },
   mutations: {
+    setispri(state, e) {
+      state.ispri = e
+    },
     // 设置积分
     setpoints(state, e) {
       state.points = e

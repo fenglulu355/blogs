@@ -11,14 +11,14 @@
         <div class="eva-left fl padding">
           <div
             class="mainpic"
-            :style="{backgroundImage: 'url(' +httpUrl+goodsinfos.oe_format_img+ ')',
+            :style="{backgroundImage: 'url(' +httpUrl+goodsinfos.order_img+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
           ></div>
-          <p class="name">{{goodsinfos.oe_goods_name}}</p>
-          <p class="type">规格：{{goodsinfos.oe_format_name}}</p>
+          <p class="name">{{goodsinfos.order_name}}</p>
+          <p class="type">总价：￥{{goodsinfos.order_price}}</p>
         </div>
         <div class="eva-right fr padding">
           <el-radio-group v-model="radio">
@@ -177,7 +177,7 @@ export default {
       }
       console.log(fileList);
     },
-   
+
     send() {
       this.$confirm("是否立即上传评价?", "提示", {
         confirmButtonText: "立即上传",
@@ -185,12 +185,23 @@ export default {
         type: "warning"
       })
         .then(() => {
-          let img = this.headimg.join(",");
+          let img = this.headimg.join(","),
+            goodsid = [];
           console.log(this.something, img, this.radio);
+
+          for (
+            let i = 0, length = this.goodsinfos.goods.length;
+            i < length;
+            i++
+          ) {
+            goodsid.push(this.goodsinfos.goods[i].oe_goods_id);
+          }
+          goodsid = goodsid.join(",");
+          console.log(goodsid);
           this.$axios
             .post("/index/user/commentList", {
               userId: this.userid,
-              goods_id: this.goodsinfos.oe_goods_id,
+              goods_id: goodsid,
               order_id: this.goodsinfos.oderid,
               star: this.radio,
               content: this.something,

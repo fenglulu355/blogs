@@ -34,6 +34,14 @@ import Distpicker from 'v-distpicker'
 Vue.component('v-distpicker', Distpicker)
 
 
+import BaiduMap from 'vue-baidu-map'
+
+Vue.use(BaiduMap, {
+  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+  ak: '1psZ4xyaMn41pcE5m2kqZLCStXpNslkh'
+})
+
+
 // api
 Vue.prototype.$axios = Axios
 
@@ -49,6 +57,11 @@ Vue.use(Vuex)
 router.beforeEach((to, from, next) => {
   console.log(to, 'to');
   console.log(from, 'from');
+  if (to.path == '/privacy' || to.path == '/policy') {
+    store.state.ispri = false
+  } else {
+    store.state.ispri = true
+  }
   // 控制轮播
   to.meta.islb ? store.state.islb = true : store.state.islb = false
   // 控制banner的走马灯显示

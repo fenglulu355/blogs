@@ -70,7 +70,7 @@ export default {
     }
   },
   mounted() {
-    document.body.scrollTop = document.documentElement.scrollTop = 300;
+    document.body.scrollTop = document.documentElement.scrollTop = 600;
   },
   methods: {
     requst(type, page, limit) {
@@ -115,7 +115,7 @@ export default {
   .productbox {
     width: 100%;
     border-top: 1px solid rgba(153, 153, 153, 0.3);
-    border-bottom: 1px solid rgba(153, 153, 153, 0.3);
+    // border-bottom: 1px solid rgba(153, 153, 153, 0.3);
     box-sizing: border-box;
     padding: 60px 0 100px 0;
     .content {
