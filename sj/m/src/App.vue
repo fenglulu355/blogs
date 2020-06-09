@@ -27,7 +27,8 @@
               <img src="./assets/dingwei.png" />
             </div>
             <!-- <p><a href='http://api.map.baidu.com/geocoder?address=四川省工业贸易学校&output=html'>地图导航</a></p> -->
-            <p @click="tomap">地图导航
+            <p @click="tomap">
+              地图导航
               <!-- <a >地图导航</a> -->
             </p>
           </div>
@@ -82,10 +83,8 @@ export default {
   },
   methods: {
     tomap() {
-      console.log(1);
-
       window.location.href =
-        "https://map.baidu.com/mobile/webapp/place/detail/foo=bar&qt=ninf&wd=%E6%99%AF%E7%82%B9&c=131&searchFlag=sort&center_rank=1&nb_x=11591471.71&nb_y=3572989.16&da_src=unifynearbyclick&uid=dffd464294367fb33c9a5e64&industry=&qid=&pos=&da_ref=&da_qrtp=&da_adquery=&da_adtitle=%E5%9B%9B%E5%B7%9D%E7%9C%81%E5%B7%A5%E4%B8%9A%E8%B4%B8%E6%98%93%E5%AD%A6%E6%A0%A1&da_adindus=%E6%95%99%E8%82%B2%E5%9F%B9%E8%AE%AD;%E4%B8%AD%E5%AD%A6&detail_from=list&vt=map";
+        "https://map.baidu.com/mobile/webapp/place/linesearch/foo=bar/from=place&end=word%3D%25E5%259B%259B%25E5%25B7%259D%25E7%259C%2581%25E5%25B7%25A5%25E4%25B8%259A%25E8%25B4%25B8%25E6%2598%2593%25E5%25AD%25A6%25E6%25A0%25A1%26point%3D11591471.71%252C3572989.16%26uid%3Ddffd464294367fb33c9a5e64%26navi_x%3D11591432.633%26navi_y%3D3573098.53691&tab=line";
     },
     handleScroll() {
       this.scrollTop = document.getElementsByClassName("app-mine")[0].scrollTop;
