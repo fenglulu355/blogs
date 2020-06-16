@@ -19,8 +19,8 @@
         <!-- shangcheng -->
         <div class="shopnav" v-show="!isbanshow">
           <div class="searchbox">
-            <input type="text" placeholder="产品名称" />
-            <img src="../assets/navgation/search.png" alt />
+            <input type="text" placeholder="产品名称" v-model="search" />
+            <img @click="tosearch('shop',search)" src="../assets/navgation/search.png" alt />
           </div>
           <div class="guide">
             <p class="text" @click="toshapingmall">南宏商城</p>
@@ -72,7 +72,7 @@
         </ul>
         <div class="searchbox" v-show="isbanshow">
           <input type="text" v-model="search" placeholder="产品名称" />
-          <img src="../assets/navgation/search.png" alt />
+          <img src="../assets/navgation/search.png" @click="tosearch('product',search)" alt />
         </div>
         <div
           class="bg"
@@ -102,6 +102,7 @@ export default {
   inject: ["reload"],
   data() {
     return {
+      searchipt: "",
       islogreg: false,
       showindex: 0,
       search: "",
@@ -211,6 +212,9 @@ export default {
             clearInterval(timer);
           }
         }, 30);
+      } else if (index == 2) {
+        this.$router.push({ path: "/shopshow" });
+        sessionStorage.setItem("mnavindex", 1);
       }
     },
     tonav(e) {
@@ -265,6 +269,16 @@ export default {
     tocurpage(e) {
       console.log(e);
       this.showindex = e;
+    },
+    tosearch(pro, val) {
+      console.log(val);
+      let keywords = this.search.replace(/<\/?[^>]*>/g, "");
+      this.$router.push({
+        path: "/searchs",
+        query: { from: pro, keyword: keywords }
+      });
+      this.reload();
+      console.log(keywords);
     }
   },
   components: { mnav, logreg }
@@ -357,6 +371,9 @@ export default {
             background: rgba(255, 255, 255, 1);
             border: 1px solid rgba(236, 236, 236, 1);
             border-radius: 15px;
+            box-sizing: border-box;
+            padding: 0 30px 0 10px;
+            font-size: 12px;
           }
         }
         .guide {
@@ -431,6 +448,7 @@ export default {
         }
       }
       .searchbox {
+        // background: blueviolet;
         line-height: 90px;
         position: relative;
         input {
@@ -440,13 +458,15 @@ export default {
           border: 1px solid rgba(236, 236, 236, 1);
           border-radius: 15px;
           box-sizing: border-box;
-          padding-left: 15px;
+          padding: 0 30px 0 10px;
+          font-size: 12px;
         }
         img {
           cursor: pointer;
           position: absolute;
           top: 42%;
           left: 62%;
+          z-index: 1;
         }
       }
       .bg {

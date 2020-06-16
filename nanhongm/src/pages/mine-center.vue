@@ -3,19 +3,20 @@
     <div class="main">
       <div class="contbox">
         <!-- 个人信息 -->
-        <div class="minebox" v-show="selmcli==0">
+        <div class="minebox clearFix" v-show="selmcli==0">
           <div class="changehead">
             <span>更换头像</span>
             <!-- 上传头像 -->
             <div class="uphead">
-              <div
-                class="mainpic"
-                :style="{backgroundImage: 'url(' + require('../assets/about/1-4.png')+ ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-              ></div>
+              <div class="uploadimg">
+                <van-uploader
+                  v-model="fileList"
+                  :before-delete="beforedelete"
+                  :after-read="afterRead"
+                  multiple
+                  :max-count="1"
+                />
+              </div>
             </div>
           </div>
           <div class="changename pl">
@@ -28,23 +29,27 @@
           <div class="acct pl">
             <span class="text">账号</span>
             <div class="right">
-              <input type="text" :placeholder="minezh" v-model="input" />
+              <input type="text" :placeholder="minezh" readonly />
               <img src="../assets/shop/tr.png" alt />
             </div>
           </div>
           <div class="changesex pl">
             <span class="text">性别</span>
             <div class="right">
-              <span>男</span>
+              <van-radio-group v-model="sexradio" direction="horizontal">
+                <van-radio name="1">男</van-radio>
+                <van-radio name="2">女</van-radio>
+              </van-radio-group>
               <!-- <input type="text" placeholder="请输入昵称" v-model="input" /> -->
-              <img src="../assets/shop/tr.png" alt />
+              <!-- <img src="../assets/shop/tr.png" alt /> -->
             </div>
           </div>
+          <div class="save" @click="savemine">保存设置</div>
         </div>
         <!-- 我的地址 -->
         <div class="dressbox" v-show="selmcli==1">
           <p class="dstitle" @click="goback">
-            <img   src="../assets/shop/return.png" alt />
+            <img src="../assets/shop/return.png" alt />
             收货地址
           </p>
           <div class="dslist" v-if="!isedit">
@@ -76,8 +81,8 @@
         <!-- 优惠券 -->
         <div class="integralbox" v-show="selmcli==2">
           <p class="inttitle">
-            <img src="../assets/shop/return.png" alt />
-            <span class="tochange">优惠券</span>
+            <img src="../assets/shop/return.png" @click="goback" alt />
+            <span class="tochange" @click="goback">优惠券</span>
           </p>
           <ul class="intlist">
             <li class="intli" v-for="(item, index) in mineyhq" :key="index">
@@ -105,7 +110,8 @@
         <!-- 我的积分 -->
         <div class="integralbox" v-show="selmcli==3">
           <p class="inttitle">
-            <span class="tochange">积分兑换</span>
+            <img  @click="goback" src="../assets/shop/return.png" alt />
+            <span class="tochange"  @click="goback">积分兑换</span>
             <span>我的积分：</span>
             <span class="num">{{userinfo.points}}</span>
           </p>
@@ -138,23 +144,23 @@
         </div>
         <!-- 修改密码 -->
         <div class="pswbox" v-show="selmcli==4">
-          <p class="pswtitle">
+          <p class="pswtitle" @click="goback">
             <img src="../assets/shop/return.png" alt /> 修改密码
           </p>
           <section>
-            <input type="text" placeholder="注册账户手机号" v-model="minezh" />
+            <input type="text" readonly :placeholder="minezh" />
           </section>
           <section class="code">
-            <input type="text" placeholder="请输入验证码" v-model="code" />
+            <input type="text" placeholder="暂时不输入验证码" disabled v-model="code" />
             <p>获取验证码</p>
           </section>
           <section>
-            <input type="text" placeholder="请输入新密码" v-model="npsw" />
+            <input type="text" placeholder="请输入新密码" @blur="regnpsw(npsw)" v-model="npsw" />
           </section>
           <section>
-            <input type="text" placeholder="请再次输入新密码" v-model="qrpsw" />
+            <input type="text" @blur="regnpsw(qrpsw)" placeholder="请再次输入新密码" v-model="qrpsw" />
           </section>
-          <p class="send">确定</p>
+          <p class="send" @click="savepsw">确定</p>
         </div>
       </div>
     </div>
@@ -171,6 +177,9 @@ export default {
   inject: ["reload"],
   data() {
     return {
+      fileList: [],
+      headimg: "",
+      sexradio: "1",
       userinfo: [],
       minezh: "",
       minename: "",
@@ -180,10 +189,7 @@ export default {
       selmcli: 0,
       radio: "1",
       input: "",
-      detaildress: "", //详细地址
-      consignee: "", //收货人姓名
       tel: "", //收货人电话
-      regtel: "", //注册账户手机号
       code: "", //验证码
       npsw: "", //新密码
       qrpsw: "", //旧密码
@@ -195,7 +201,7 @@ export default {
         city: "",
         county: ""
       },
-      mineli: ["个人信息", "我的地址", "我的优惠", "我的积分", "修改密码"],
+
       dressinfo: [],
       curdress: [],
       mineyhq: [],
@@ -224,15 +230,59 @@ export default {
         .post("/index/user/userInfo", { userId: this.userid })
         .then(res => {
           this.userinfo = res.data.data;
-          if (res.data.data.user_name) {
-            this.minename = res.data.data.user_name;
-          } else {
+          if (res.data.data.user_nickname) {
             this.minename = res.data.data.user_nickname;
+          } else {
+            this.minename = res.data.data.user_name;
           }
           this.minezh = res.data.data.user_phone;
           console.log(res);
         });
     },
+    // 个人中心修改
+    beforedelete(detail, index) {
+      // console.log(index.index);
+      this.headimg = "";
+      // console.log(this.headimg);
+      return true;
+    },
+    afterRead(file) {
+      file.status = "success";
+      file.message = "上传成功";
+      let data = new FormData();
+      data.append("file", file.file);
+      this.$axios.post("/index/api/uploadPet", data).then(res => {
+        console.log(res);
+
+        this.headimg = res.data;
+      });
+    },
+    savemine() {
+      if (this.sexradio == "" || this.headimg == "" || this.input == "") {
+        this.$toast.fail("请完善信息");
+      } else {
+        this.$axios
+          .post("/index/user/editUser", {
+            userId: this.userid,
+            user: this.input,
+            image: this.headimg,
+            sex: this.sexradio
+          })
+          .then(res => {
+            console.log(res);
+            if (res.data.code == 200) {
+              this.$toast.success("修改成功");
+              setTimeout(() => {
+                this.$router.push({ path: "/mine" });
+              }, 500);
+            } else {
+              this.$toast.fail("修改失败");
+            }
+          });
+      }
+      console.log(this.sexradio, this.headimg, this.input);
+    },
+    // 地址
     requstaddress(userId) {
       this.$axios.post("/index/user/address", { userId: userId }).then(res => {
         this.dressinfo = res.data.data;
@@ -247,7 +297,7 @@ export default {
           if (res.data.data.code == 1) {
             this.$toast.success(" 删除成功");
           } else {
-            this.$toast.error("删除失败");
+            this.$toast.fail("删除失败");
           }
           this.reload();
           console.log(res);
@@ -359,11 +409,65 @@ export default {
         this.$toast.fail("对不起！您的积分不足，不能兑换！");
       }
     },
-    tonav(index, item) {
-      this.selmcli = index;
+    // tonav(index, item) {
+    //   this.selmcli = index;
+    // },
+    savepsw() {
+      console.log(this.minezh, this.npsw, this.qrpsw);
+      if (this.npsw == "" || this.qrpsw == "") {
+        this.$toast.fail("请完善信息");
+      } else {
+        this.$axios
+          .post("/index/user/setpwd", { phone: this.minezh, pwd: this.qrpsw })
+          .then(res => {
+            console.log(res);
+            if (res.data.code == 200) {
+              this.$toast.success("修改成功，请重新登录");
+              this.getlogin(false);
+              setTimeout(() => {
+                window.location.reload();
+              }, 200);
+            } else {
+              this.$toast.fail("修改失败");
+            }
+          });
+      }
     },
-    goback(){
-       this.$router.go(-1)
+    // 正则判断手机号
+    regphone(tel) {
+      let regPhone = /^(1[3|5|4|6|7|8|9]\d{1}[*|\d]{4}\d{4})$/;
+      if (!regPhone.test(tel)) {
+        this.$toast.fail("手机号码格式错误");
+        setTimeout(() => {
+          this.tel = "";
+        }, 200);
+      } else {
+        this.tel = tel;
+        console.log(this.tel);
+      }
+    },
+    regpsw(psw) {
+      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
+      if (!regpsw.test(psw)) {
+        this.$toast.fail("请输入至少6位数以上包含数字、字母、字符串的密码");
+        setTimeout(() => {
+          this.npsw = "";
+        }, 200);
+      } else {
+        this.npsw = psw;
+      }
+    },
+    regnpsw(qrpsw) {
+      console.log(this.npsw, qrpsw);
+      if (this.npsw != qrpsw) {
+        this.$toast.fail("两次密码不一致");
+        setTimeout(() => {
+          this.qrpsw = "";
+        }, 200);
+      }
+    },
+    goback() {
+      this.$router.go(-1);
     }
   },
   components: { VDistpicker, editdress }
@@ -426,6 +530,16 @@ export default {
     padding: 27px 25px;
     // 个人信息
     .minebox {
+      .save {
+        padding: 0 0;
+        margin: 30px 0;
+        text-align: center;
+        background: #2482c8;
+        width: 100%;
+        height: 60px;
+        line-height: 60px;
+        color: white;
+      }
       .changehead {
         display: flex;
         justify-content: space-between;
@@ -714,13 +828,13 @@ export default {
           top: 0;
           right: 0;
           width: 30%;
-          height: 75px;
+          height: 73px;
           background: rgba(228, 228, 228, 1);
           border: 1px solid rgba(228, 228, 228, 1);
           font-size: 30px;
           color: rgba(51, 51, 51, 1);
           text-align: center;
-          line-height: 75px;
+          line-height: 73px;
         }
       }
       .send {

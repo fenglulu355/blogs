@@ -8,66 +8,22 @@
     <div class="cont">
       <!-- recruit -->
       <div class="recruit" v-if="isrecruit">
-        <p class="zwname">国际贸易专员</p>
-        <p class="time">更新时间：2019-02-26</p>
-        <div
-          class="mainpic"
-          :style="{backgroundImage: 'url(' +require('../assets/about/7-1.png') + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-        ></div>
-        <p class="num text">招聘人数：3人</p>
-        <p class="department text">招聘部门：营销部</p>
-        <p class="address text">工作地点：泸州市</p>
-        <p class="pubtime text">发布时间：2019-07-01</p>
-        <p class="intro text">工作职责：</p>
-        <p class="intro text">
-          1、本科及以上学历，国际贸易类、经济类等相关专业毕业；
-          2、男性，有英语读写能力、有工作经验者优先。
-        </p>
-        <p class="zg text">任职资格：</p>
-        <p class="zg text">1、收付汇管理、国际贸易合同签订、信用证的开立、协调报关运输、基本业务谈判。 简历投递至：20008345@</p>
+        <p class="zwname">{{zpinfo.title}}</p>
+        <p class="time">更新时间：{{zpinfo.created_time}}</p>
+        <div class="caseinfo" id="deinfos" v-html="zpinfo.content"></div>
       </div>
       <div class="case" v-if="iscase">
-        <p class="name">项目名称</p>
-        <div
-          class="mainpic"
-          :style="{backgroundImage: 'url(' +require('../assets/case/case2.png') + ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-        ></div>
-        <div class="caseinfo">
-          <p class="time text">
-            <span>【工程日期】</span>
-            <!-- {{item.time}} -->
-            8年
-          </p>
-          <p class="area text">
-            <span>【项目面积】</span>56775
-            <!-- {{item.area}} -->
-          </p>
-          <p class="type text">
-            <span>【使用机型】</span>567567
-            <!-- {{item.type}} -->
-          </p>
-          <p class="inro text">
-            <span>【项目简介】</span>678867
-            <!-- {{item.type}} -->
-          </p>
-        </div>
+        <p class="name">{{caseinfo.title}}</p>
+        <div class="caseinfo" id="deinfos" v-html="caseinfo.content"></div>
       </div>
       <div class="serv" v-if="isserv">
         <p class="name">{{servinfo.title}}</p>
-        <div class="content" v-html="servinfo.content"></div>
+        <div class="content" id="deinfos" v-html="servinfo.content"></div>
       </div>
       <div class="case" v-if="isnews">
         <p class="name">{{newsinfo.title }}</p>
         <p class="time">更新时间：{{newsinfo.created_time}}</p>
-        <div class="caseinfo" v-html="newsinfo.content"></div>
+        <div class="caseinfo" id="deinfos" v-html="newsinfo.content"></div>
       </div>
     </div>
   </div>
@@ -88,6 +44,7 @@ export default {
     };
   },
   created() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
     let kind = this.$route.query.kind,
       id = this.$route.query.id;
     if (kind == "case") {
@@ -104,6 +61,14 @@ export default {
       this.isnews = true;
     }
     console.log(kind);
+  },
+  updated() {
+    let a = document.getElementById("deinfos");
+    let imgs = a.getElementsByTagName("img");
+    for (let i = 0; i < imgs.length; i++) {
+      imgs[i].style.width = "100%";
+      imgs[i].style.height = "100%";
+    }
   },
   methods: {
     requstnews(id) {

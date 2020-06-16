@@ -7,6 +7,7 @@
         <curinfo :curinfo="curinfo" @change="tocurinfo" v-if="iscurinfo"></curinfo>
         <ul class="goodslist">
           <li class="goodsli" v-for="(item, index) in goodsinfo" :key="index">
+            <!-- @click="topro(item,index)" -->
             <div
               class="mainpic"
               :style="{backgroundImage: 'url(' +httpUrl+item.image_url+ ')',
@@ -155,6 +156,13 @@ export default {
       self.iscurinfo = false;
       self.$nextTick(function() {
         self.iscurinfo = true;
+      });
+    },
+    topro(item, index) {
+      console.log(item);
+      this.$router.push({
+        path: "/prodetails",
+        query: { classid: item.class_id, id: item.article_id }
       });
     }
   },

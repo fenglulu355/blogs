@@ -19,12 +19,13 @@ Vue.use(VueScroller)
 Vue.config.productionTip = false
 Vue.use(MintUI)
 Vue.use(BaiduMap, {
-  ak: 'yjyHzxOaM2kgXwpASmbBzTG1DTU7n1Gu'  //这个地方是官方提供的ak密钥
+  ak: 'yjyHzxOaM2kgXwpASmbBzTG1DTU7n1Gu' //这个地方是官方提供的ak密钥
 })
-router.afterEach((to,from,next)=>{
-  　　let _that = this
-      _that.scrollTop -= 50
-      document.getElementsByClassName("app-mine")[0].scrollTop = _that.scrollTop
+
+router.afterEach((to, from, next) => {
+  let _that = this
+  _that.scrollTop -= 50
+  document.getElementsByClassName("app-mine")[0].scrollTop = _that.scrollTop
 })
 /* eslint-disable no-new */
 //  window.addEventListener('popstate', function(e) {
@@ -35,6 +36,8 @@ new Vue({
   el: '#app',
   unit,
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

@@ -14,7 +14,8 @@ export default new Vuex.Store({
         'topath': val.topath,
         'islogin': val.islogin,
         'userid': val.userid,
-        'points': val.points
+        'points': val.points,
+        'searchinfo': val.searchinfo
       }
     }
   })],
@@ -27,9 +28,13 @@ export default new Vuex.Store({
     logreg: false, //登录注册
     topath: '', //未登录时想去的页面路径
     orderlists: [],
-    points: ''
+    points: '',
+    searchinfo: []
   },
   mutations: {
+    setsearchinfo(state, e) {
+      state.searchinfo = e
+    },
     setispri(state, e) {
       state.ispri = e
     },

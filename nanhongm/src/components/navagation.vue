@@ -1,109 +1,144 @@
 <template>
   <div class="navgation">
-    <div class="navs">
-      <div class="logo">
-        <img class="mainpic" src="../assets/nav/toplogo.png" alt />
-      </div>
-      <!-- 官网 -->
-      <div class="homebanner" v-show="isbanshow">
-        <div class="shoplogo">
-          <div
-            @click="toshapingmall"
-            class="mainpic"
-            :style="{backgroundImage: 'url(' + require('../assets/nav/shop.png')+ ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-          ></div>
-          <p @click="toshapingmall">商城</p>
+    <!-- 官网 -->
+    <div class="webbox" v-if="isbanshow">
+      <div class="navs">
+        <div class="logo">
+          <img class="mainpic" src="../assets/nav/toplogo.png" alt />
         </div>
-        <div class="menu" @click="isnav = !isnav">
-          <div
-            class="mainpic"
-            :style="{backgroundImage: 'url(' + require('../assets/nav/menu.png')+ ')',
+        <!-- 官网 -->
+
+        <div class="homebanner">
+          <div class="shoplogo">
+            <div
+              @click="toshapingmall"
+              class="mainpic"
+              :style="{backgroundImage: 'url(' + require('../assets/nav/shop.png')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-          ></div>
-          <p>目录</p>
-        </div>
-        <ul class="navlist" v-show="isnav">
-          <li
-            class="navli"
-            v-for="(item, index) in navli"
-            :key="index"
-            :class="navindex==index?'sel':''"
-            @click="tonav(index,item)"
-          >
-            <p class="text">{{item.name}}</p>
-          </li>
-        </ul>
-      </div>
-      <!-- 商城 -->
-      <div class="homebanner" v-show="!isbanshow">
-        <div class="shoplogo">
-          <div
-            @click="tohome"
-            class="mainpic"
-            :style="{backgroundImage: 'url(' + require('../assets/nav/home.png')+ ')',
+            ></div>
+            <p @click="toshapingmall">商城</p>
+          </div>
+          <div class="menu" @click="isnav = !isnav">
+            <div
+              class="mainpic"
+              :style="{backgroundImage: 'url(' + require('../assets/nav/menu.png')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-          ></div>
-          <p @click="tohome">官网</p>
-        </div>
-        <div class="menu">
-          <div
-            @click="tomine"
-            class="mainpic dh"
-            :style="{backgroundImage: 'url(' + require('../assets/nav/dh.png')+ ')',
-             backgroundSize:'cover',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition:'center'
-            }"
-          ></div>
-          <p @click="tomine">我的</p>
+            ></div>
+            <p>目录</p>
+          </div>
+          <ul class="navlist" v-show="isnav">
+            <li
+              class="navli"
+              v-for="(item, index) in navli"
+              :key="index"
+              :class="navindex==index?'sel':''"
+              @click="tonav(index,item)"
+            >
+              <p class="text">{{item.name}}</p>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-    <div class="swiper" v-show="isswiper">
-      <van-swipe class="my-swiper" :autoplay="3000" indicator-color="#2482C8">
-        <van-swipe-item v-for="(image, index) in swiperli" :key="index">
-          <div
-            class="mainpic"
-            :style="{
+      <div class="swiper">
+        <van-swipe class="my-swiper" :autoplay="3000" indicator-color="#2482C8">
+          <van-swipe-item v-for="(image, index) in swiperli" :key="index">
+            <div
+              class="mainpic"
+              :style="{
               backgroundImage: 'url(' +httpUrl+image.image_url+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-          ></div>
-        </van-swipe-item>
-      </van-swipe>
-    </div>
-    <div class="viocebox" v-show="isswiper">
-      <van-notice-bar
-        color="#5B5B5B"
-        background="#F5F5F5"
-        class="vioce"
-        :text="vioce"
-        left-icon="volume-o"
-      />
-    </div>
-    <div class="searchbox">
-      <input type="text" placeholder="产品名称" v-model="search" />
-      <div
-        class="mainpic"
-        :style="{backgroundImage: 'url(' + require('../assets/nav/search.png')+ ')',
+            ></div>
+          </van-swipe-item>
+        </van-swipe>
+      </div>
+      <div class="viocebox" v-show="isswiper">
+        <van-notice-bar
+          color="#5B5B5B"
+          background="#F5F5F5"
+          class="vioce"
+          :text="vioce"
+          left-icon="volume-o"
+        />
+      </div>
+      <div class="searchbox">
+        <input type="text" placeholder="产品名称" v-model="search" />
+        <div
+          @click="tosearch('product',search)"
+          class="mainpic"
+          :style="{backgroundImage: 'url(' + require('../assets/nav/search.png')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
             }"
-      ></div>
+        ></div>
+      </div>
     </div>
+    <!-- 商城 -->
+    <div class="shopbox" v-else>
+      <div class="navs">
+        <div class="logo">
+          <img class="mainpic" src="../assets/nav/toplogo.png" alt />
+        </div>
+        <!-- 商城 -->
+        <div class="homebanner">
+          <div class="shoplogo">
+            <div
+              @click="tohome"
+              class="mainpic"
+              :style="{backgroundImage: 'url(' + require('../assets/nav/home.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+            ></div>
+            <p @click="tohome">官网</p>
+          </div>
+          <div class="menu">
+            <div
+              @click="tomine"
+              class="mainpic dh"
+              :style="{backgroundImage: 'url(' + require('../assets/nav/dh.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+            ></div>
+            <p @click="tomine">我的</p>
+          </div>
+        </div>
+      </div>
+      <div class="viocebox" v-show="isswiper">
+        <van-notice-bar
+          color="#5B5B5B"
+          background="#F5F5F5"
+          class="vioce"
+          :text="vioce"
+          left-icon="volume-o"
+        />
+      </div>
+      <div class="searchbox">
+        <input type="text" placeholder="产品名称" v-model="search" />
+        <div
+          @click="tosearch('shop',search)"
+          class="mainpic"
+          :style="{backgroundImage: 'url(' + require('../assets/nav/search.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+        ></div>
+      </div>
+    </div>
+
     <!-- 登录注册 -->
     <logreg v-if="logreg" @close="close"></logreg>
   </div>
@@ -127,7 +162,7 @@ export default {
       isnav: false,
       navli: [
         { name: "网站首页", path: "/" },
-        { name: "产品中心", path: "/product" },
+        { name: "智慧中心", path: "/product" },
         { name: "门店展示", path: "/shopshow" },
         { name: "成功案例", path: "/cases" },
         { name: "服务与支持", path: "/service" },
@@ -224,6 +259,16 @@ export default {
     tocurpage(e) {
       console.log(e);
       this.showindex = e;
+    },
+    tosearch(pro, val) {
+      console.log(val);
+      let keywords = this.search.replace(/<\/?[^>]*>/g, "");
+      this.$router.push({
+        path: "/searchs",
+        query: { from: pro, keyword: keywords }
+      });
+      this.reload();
+      console.log(keywords);
     }
   },
   components: { mnav, logreg }
@@ -301,7 +346,7 @@ export default {
         z-index: 10;
         top: 90px;
         right: -25px;
-        width: 100%;
+        width: 150%;
         .navli {
           background: #2482c8;
           width: 100%;

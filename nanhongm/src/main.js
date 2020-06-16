@@ -18,13 +18,16 @@ import {
   Step,
   Steps,
   Uploader,
-  AddressEdit
+  AddressEdit,
+  RadioGroup,
+  Radio
 } from 'vant';
 
 Vue.use(Swipe), Vue.use(SwipeItem), Vue.use(Lazyload),
   Vue.use(NoticeBar), Vue.use(Collapse),
   Vue.use(CollapseItem), Vue.use(Toast), Vue.use(Step),
-  Vue.use(Steps), Vue.use(Uploader), Vue.use(AddressEdit);
+  Vue.use(Steps), Vue.use(Uploader), Vue.use(AddressEdit), Vue.use(Radio),
+  Vue.use(RadioGroup);
 
 
 // element
@@ -45,7 +48,12 @@ import Distpicker from 'v-distpicker'
 Vue.component('v-distpicker', Distpicker)
 
 
+import BaiduMap from 'vue-baidu-map'
 
+Vue.use(BaiduMap, {
+  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+  ak: '1psZ4xyaMn41pcE5m2kqZLCStXpNslkh'
+})
 // api
 Vue.prototype.$axios = Axios
 Vue.prototype.httpUrl = httpUrl.httpUrl;

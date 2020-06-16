@@ -107,11 +107,13 @@
               <p class="title">{{item.title}}</p>
               <p class="time">{{item.created_time}}</p>
               <p class="intro">
-                <span>简介：{{item.intro}}</span>
+                {{item.content}}
+             
+                <!-- <span>简介：{{item.intro}}</span>
                 <span>小区：{{item.xq}}</span>
-                <span>房间类型：{{item.home}}</span>
+                <span>房间类型：{{item.home}}</span>-->
               </p>
-              <p class="area">面积：{{item.area}}</p>
+              <!-- <p class="area">面积：{{item.area}}</p> -->
               <p class="more">查看详情+</p>
             </div>
           </li>
@@ -226,6 +228,8 @@ export default {
       this.$axios
         .post("/index/api/azlcList", { page: page, limit: limit })
         .then(res => {
+          console.log(res.data.data);
+
           this.insli = res.data.data.data;
           this.counts = res.data.data.total;
         });
@@ -404,14 +408,12 @@ export default {
             width: calc(100% - 345px);
             box-sizing: border-box;
             padding: 60px 0 0 47px;
+
             .title {
               font-size: 24px;
               font-weight: bold;
               color: rgba(51, 51, 51, 1);
               line-height: 45px;
-              &:hover {
-                color: rgba(36, 130, 200, 1);
-              }
             }
             .time {
               font-size: 14px;
@@ -420,13 +422,18 @@ export default {
               line-height: 45px;
             }
             .intro {
+              width: 100%;
+              height: 50px;
+              // background: blueviolet;
+              overflow: hidden;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              word-break: break-all;
               font-size: 16px;
               // font-weight: 300;
               color: rgba(51, 51, 51, 1);
               line-height: 27px;
-              span {
-                margin-right: 25px;
-              }
             }
             .more {
               width: 133px;
@@ -442,6 +449,11 @@ export default {
             }
           }
           &:hover {
+            .title,
+            .time,
+            .intro {
+              color: rgba(36, 130, 200, 1);
+            }
             .more {
               border: 1px solid rgba(62, 145, 223, 1);
               color: rgba(62, 145, 223, 1);

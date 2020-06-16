@@ -1,220 +1,70 @@
 <template>
-  <div class="curinfo">
-    <ul class="cilist">
-      <li
-        class="cili"
-        @click="changenav(index)"
-        v-for="(item, index) in curinfos"
-        :key="index"
-        :class="curindex==index?'sel':''"
-      >
-        <span>{{item.class_name}}</span>
-      </li>
-      <li class="more" @click="getmore">
-        <span>|</span>
-        <p :class="{'sel':issel===true}">更多筛选></p>
+  <div class="morecur">
+    <ul class="list">
+      <li v-for="(item, i) in list" :key="i">
+        第{{i}}行：
+        <div>
+          <p
+            v-for="(items, j) in item"
+            :key="j"
+            :class="{'cur':arr[i].indexOf(items) != -1}"
+            @click="cur(i,j,items)"
+          >{{items}}</p>
+        </div>
       </li>
     </ul>
-    <div class="moremenu clearFix" v-show="ismenu">
-      <div class="menubox clearFix">
-        <van-collapse v-model="activeNames" class="fr moremenulist">
-          <van-collapse-item
-            :title="item.class_name"
-            :name="index"
-            v-for="(item, index) in morecurinfo"
-            :key="index"
-          >
-            <div
-              class="mli"
-              v-for="(items, indexs) in item.child"
-              @click="curitem(index,indexs,items)"
-              :key="indexs"
-            >
-              <p :class="{'cur':curitemindex[index]===indexs}">{{items}}</p>
-            </div>
-          </van-collapse-item>
-        </van-collapse>
-      </div>
-      <div class="btnbox fr">
-        <p class="cz" @click="reset" :class="{'blue':isbule===true}">重置</p>
-        <p class="qr" @click="set" :class="{'blue':isbule===false}">确定</p>
-      </div>
-    </div>
   </div>
 </template>
-
 <script>
-import { mapState } from "vuex";
-
 export default {
-  name: "curinfo",
+  name: "morecur",
   data() {
     return {
-      ismenu: false,
-      isbule: false,
-      activeNames: ["1"],
-      isopen: true,
-      value1: 0,
-      curindex: 0,
-      curitemindex: [],
-      showlist: [],
-      issel: false
+      list: [
+        [1, 2, 3],
+        [4, 5, 6, 7, 8],
+        [9, 10, 11, 12]
+      ],
+      arr: []
     };
   },
-  created() {},
-  computed: {
-    ...mapState(["curinfos", "morecurinfo"])
-  },
-  mounted() {
-   
-  },
-
-  props: {
-    curinfo: {
-      type: Array,
-      default: {}
-    },
-    morecur: {
-      type: Array,
-      default: {}
-    },
-    curinfoindex: {
-      type: Number,
-      default: null
+  created() {
+    for (let i = 0, length = this.list.length; i < length; i++) {
+      this.arr[i] = [];
     }
   },
   methods: {
-    curitem(index, indexs, items) {
-      this.curitemindex[index] = indexs;
+    cur(i, j, items) {
+      if (this.arr[i].indexOf(items) == -1) {
+        // console.log(1);
+        this.arr[i].push(items);
+      } else {
+        // console.log(2);
+        this.arr[i].splice(this.arr[i].indexOf(items), 1);
+      }
+      // console.log(this.arr);
+      // console.log(this.arr[i]);
       this.$forceUpdate();
-      console.log(items);
-    },
-    changenav(index) {
-      this.curindex = index;
-      this.issel = false;
-      // this.$emit("change", mindex, item);
-    },
-    getmore() {
-      this.curindex = 3;
-      this.issel = true;
-      setTimeout(() => {
-        this.ismenu = true;
-      }, 200);
-    },
-    reset() {
-      this.isbule = true;
-    },
-    set() {
-      this.isbule = false;
-      setTimeout(() => {
-        this.ismenu = false;
-      }, 200);
     }
   }
 };
 </script>
-<style lang="less" scoped>
-.curinfo {
-  width: 100%;
-  // box-sizing: border-box;
-  // padding: 0 25px;
-  // position: relative;
-  .cilist {
-    width: 100%;
-    height: 65px;
-    background: rgba(245, 245, 245, 1);
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    li {
-      width: 25%;
-      color: #5b5b5b;
-      font-size: 30px;
-      line-height: 65px;
-      text-align: center;
-    }
-    .sel {
-      color: #2482c8;
-    }
-    .more {
-      height: 65px;
-      display: flex;
-      span {
-        font-weight: lighter;
-        position: relative;
-        font-size: 40px;
-        color: #dddddd;
-        right: 5px;
-      }
-    }
-  }
-  .moremenu {
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 1111;
-    background: rgba(0, 0, 0, 0.6);
-    width: 100%;
-    height: 100%;
-    .menubox {
-      width: 100%;
-      height: 90%;
-      overflow-y: scroll;
-      .moremenulist {
-        width: 80%;
-        height: 100%;
-        background: white;
-
-        .mli {
-          display: inline-block;
-          width: 30%;
-          height: 80px;
-          margin: 0 2% 2% 0;
-          p {
-            width: 100%;
-            height: 80px;
-            text-align: center;
-            line-height: 80px;
-            color: #333333;
-            font-size: 24px;
-            background: #f5f4f5;
-          }
-          .cur {
-            // border: 1px solid #2482c8;
-            background: #2482c8;
-            color: white;
-          }
-        }
-      }
-    }
-    .btnbox {
-      width: 80%;
-      height: 10%;
-      background: white;
-      text-align: right;
-      font-size: 0;
-      box-sizing: border-box;
-      padding: 20px 50px 0 0;
-      p {
-        display: inline-block;
-        width: 176px;
-        height: 63px;
-        font-size: 30px;
-        text-align: center;
-        line-height: 63px;
-        color: white;
-        background: rgba(153, 153, 153, 1);
-      }
-      .cz {
-        border-radius: 10px 0px 0px 10px;
-      }
-      .qr {
-        border-radius: 0px 10px 10px 0px;
-      }
-      .blue {
-        background: #2482c8;
-      }
-    }
-  }
+<style lang="" scoped>
+div {
+  box-sizing: border-box;
+  padding: 10px 0;
+}
+p {
+  display: inline-block;
+  margin-left: 10px;
+  border: 1px solid darkcyan;
+  color: darkcyan;
+  width: 60px;
+  text-align: center;
+  line-height: 40px;
+}
+.cur {
+  background: darkcyan;
+  color: white;
 }
 </style>

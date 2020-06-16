@@ -22,12 +22,12 @@
                   </div>
                   <div class="shopinfo">
                     <p class="shopname">{{shopshowinfo.shopname}}</p>
-                    <p class="shopdes">
-                      <span class="text desc">主营产品：{{shopshowinfo.content}}</span>
-                      <span class="sx">/</span>
+                    <p class="shopdes" v-html="shopshowinfo.content">
+                      <!-- <span class="text desc">主营产品：{{shopshowinfo.content}}</span> -->
+                      <!-- <span class="sx">/</span>
                       <span class="text">地址：{{shopshowinfo.address}}</span>
                       <span class="sx">/</span>
-                      <span class="text">电话：{{shopshowinfo.tel}}</span>
+                      <span class="text">电话：{{shopshowinfo.tel}}</span>-->
                     </p>
                   </div>
                 </div>
@@ -78,8 +78,10 @@
                 :position="{lng: lng, lat: lat}"
                 :dragging="true"
                 animation="BMAP_ANIMATION_BOUNCE"
+                @click="tomap"
               >
                 <bm-label
+                  @click="tomap"
                   :content="mapinfo.title"
                   :labelStyle="{color: 'red', fontSize : '24px' ,padding:'0 15px',textAlign:'center'} "
                   :offset="{width: -35, height: 30}"
@@ -170,7 +172,7 @@ export default {
       lng: 116.404,
       lat: 39.915,
       zb: [
-        { lng: 116.404, lat: 49.915 },
+        { lng: 116.504, lat: 39.915 },
         { lng: 117.404, lat: 39.915 },
         { lng: 118.404, lat: 39.815 },
         { lng: 119.404, lat: 39.715 },
@@ -202,6 +204,14 @@ export default {
       self.$nextTick(function() {
         self.ismap = true;
       });
+    },
+    tomap() {
+      console.log(this.mapinfo);
+      window.open(
+        `http://api.map.baidu.com/geocoder?address=` +
+          this.mapinfo.address +
+          `&output=html`
+      );
     },
     requst() {
       this.$axios.post("/index/api/mdzsList").then(res => {

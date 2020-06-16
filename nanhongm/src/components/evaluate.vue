@@ -9,20 +9,20 @@
           <div class="goodsinfo">
             <div
               class="mainpic"
-              :style="{backgroundImage: 'url(' +httpUrl+goodsinfos.oe_format_img+ ')',
+              :style="{backgroundImage: 'url(' +httpUrl+goodsinfos.order_img+ ')',
                      backgroundSize:'cover',
                      backgroundRepeat: 'no-repeat',
                      backgroundPosition:'center'
                     }"
             ></div>
             <div class="infos">
-              <p class="des">{{goodsinfos.oe_goods_name}}</p>
+              <p class="des">{{goodsinfos.order_name}}</p>
               <p class="num">
-                <span>￥{{goodsinfos.oe_format_price}}</span>
+                <span>￥{{goodsinfos.order_price}}</span>
               </p>
               <img src="../assets/shop/tb.png" alt />
               <p class="color">
-                <span>规格{{goodsinfos.oe_format_name}}</span>
+                <!-- <span>规格{{goodsinfos.oe_format_name}}</span> -->
               </p>
             </div>
           </div>
@@ -68,7 +68,8 @@ export default {
       evaindex: 0,
       // evaindex: new Array(this.goodsinfos.length).fill(0),
       fileList: [],
-      headimg: ["", ""]
+      headimg: ["", ""],
+      radio: 3
     };
   },
   props: {
@@ -84,6 +85,9 @@ export default {
   methods: {
     changeevali(indexs, items, e) {
       this.evaindex = indexs;
+      this.radio = items.num;
+      // console.log(this.radio);
+
       this.$forceUpdate();
     },
     beforedelete(detail, index) {
@@ -112,14 +116,28 @@ export default {
       this.something = regwords;
     },
     send() {
+      console.log(this.radio);
+
       this.$dialog
         .confirm({
           title: "提示",
           message: "是否立即评价"
         })
         .then(() => {
-          let img = this.headimg.join(",");
+          let img = this.headimg.join(","),
+            goodsid = [];
           console.log(this.something, img, this.radio);
+
+          for (
+            let i = 0, length = this.goodsinfos.goods.length;
+            i < length;
+            i++
+          ) {
+            goodsid.push(this.goodsinfos.goods[i].oe_goods_id);
+          }
+          goodsid = goodsid.join(",");
+          console.log(goodsid);
+
           this.$axios
             .post("/index/user/commentList", {
               userId: this.userid,

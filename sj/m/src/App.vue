@@ -12,11 +12,11 @@
       <div class="footer">
         <div class="footer-top">
           <div class="footer-title">
-            <router-link :to="{path:'home'}" tag="div" target="_blank">首页</router-link>
+            <router-link to="/home" tag="div">首页</router-link>
             <span>|</span>
-            <router-link :to="{path:'major'}" tag="div" target="_blank">招生专业</router-link>
+            <router-link to="/major" tag="div">招生专业</router-link>
             <span>|</span>
-            <router-link :to="{path:'campus'}" tag="div" target="_blank">学校环境</router-link>
+            <router-link to="/campus" tag="div">学校环境</router-link>
             <span>|</span>
             <a @click.stop="backTop">返回顶部</a>
           </div>
@@ -69,6 +69,7 @@ export default {
     };
   },
   created() {
+ 
     this.$ajax.getConfig().then(resp => {
       ////console.log(resp)
       this.mobilea = resp.data.data.mobile;
@@ -101,6 +102,11 @@ export default {
     goBack() {
       // this.$router.push({path:'home'})
     }
+  },
+  destroyed() {
+    // 销毁vm组件
+    // 避免堆栈溢出，多次创建、多次触发
+    window.removeEventListener("popstate", this.popstate, false);
   }
 };
 </script>

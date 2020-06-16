@@ -27,6 +27,11 @@
             }"
             ></div>
             <p class="name">{{item.goods_name}}</p>
+            <p class="price">
+              <span class="oprice">{{item.platform_price}}</span>
+              /
+              <span>{{item.goods_price}}</span>
+            </p>
           </li>
         </ul>
       </div>
@@ -122,7 +127,7 @@ export default {
           limit: limit
         })
         .then(res => {
-          // console.log(res, "aaaaaa");
+          console.log(res, "aaaaaa");
 
           this.goodsinfo = res.data.data.data;
           this.count = res.data.data.total;
@@ -177,7 +182,7 @@ export default {
         });
       }
     },
-      close(e) {
+    close(e) {
       // console.log(e);
       this.getlogreg(e);
     }
@@ -207,12 +212,12 @@ export default {
           cursor: pointer;
           display: inline-block;
           width: 49%;
-          height: 350px;
+          // height: 350px;
           background: rgba(255, 255, 255, 1);
           border: 2px solid rgba(236, 236, 236, 1);
           border-radius: 10px;
           box-sizing: border-box;
-          padding: 43px 0 0 0px;
+          padding: 43px 0 0px 0px;
           margin-bottom: 15px;
           .mainpic {
             transition: all 0.5s ease;
@@ -226,6 +231,15 @@ export default {
             color: #333333;
             // line-height: 55px;
             text-align: center;
+          }
+          .price {
+            width: 250px;
+            margin: 10px auto;
+            font-size: 14px;
+            color: #333333;
+            .oprice {
+              text-decoration: line-through;
+            }
           }
         }
       }

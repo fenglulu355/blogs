@@ -277,42 +277,10 @@ export default {
       ],
       cpshowli: [],
       ygfc: [],
-      branchlist: [
-        {
-          img: require("../assets/about/3-1.png"),
-          name: "分公司名称分公司名称分公司名称",
-          address: "分公司名称分公司名称分公司名称",
-          tel: "000-000000"
-        },
-        {
-          img: require("../assets/about/3-1.png"),
-          name: "分公司名称分公司名称分公司名称",
-          address: "分公司名称分公司名称分公司名称",
-          tel: "000-000000"
-        },
-        {
-          img: require("../assets/about/3-1.png"),
-          name: "分公司名称分公司名称分公司名称",
-          address: "分公司名称分公司名称分公司名称",
-          tel: "000-000000"
-        }
-      ],
       lb: [],
       honor: [],
-       lxwm: [],
+      lxwm: [],
       zptype: 0
-      // swiperOptionThumbs: {
-      //   // loop:true,
-      //   spaceBetween: 10,
-      //   touchRatio: 0.2,
-      //   slideToClickedSlide: true,
-      //   slidesPerView: 4,
-      //   watchSlidesVisibility: true /*避免出现bug*/,
-      //   navigation: {
-      //     nextEl: ".swiper-button-next",
-      //     prevEl: ".swiper-button-prev"
-      //   }
-      // }
     };
   },
   created() {
@@ -352,7 +320,7 @@ export default {
     },
     // 分页
     getList(page) {
-        this.requstzp(this.zptype, page, 3);
+      this.requstzp(this.zptype, page, 3);
     },
     pageChange(index) {
       this.currentPage = index;
@@ -362,7 +330,7 @@ export default {
     tonav(index) {
       //  console.log(index)
       this.curindex = index;
-       if (index == 6) {
+      if (index == 6) {
         this.zptype = 0;
         this.requstzp(0, 1, 3);
       }
@@ -371,7 +339,7 @@ export default {
         this.requstzp(1, 1, 3);
       }
     },
-        requstzp(type, page, limit) {
+    requstzp(type, page, limit) {
       this.$axios
         .post("/index/api/jobList", { type: type, page: page, limit: limit })
         .then(res => {

@@ -14,12 +14,14 @@
           请选择支付方式
         </p>
         <ul class="paylist">
-          <li class="tobank" @click="tobank">
-            <p>银联支付</p>
-            <img src="../assets/shop/yl.png" alt />
+          <li class="tobank">
+            <a :href="httpUrl+`/index/unionpay/dopay?orderId=`+orderid">
+              <p>银联支付</p>
+              <img src="../assets/shop/yl.png" alt />
+            </a>
           </li>
           <li class="towx" @click="towx">
-            <p>微信支付</p>
+            <p  @click="towx">微信支付</p>
             <img src="../assets/shop/wx.png" alt />
           </li>
           <li class="tozfb">
@@ -70,7 +72,8 @@ export default {
       money: null,
       orderid: "",
       imgurl: "",
-      isshowwx: false
+      isshowwx: false,
+      inwx: false
     };
   },
   created() {
@@ -97,18 +100,52 @@ export default {
     tobank() {
       this.ispay = true;
     },
+
     towx() {
       // this.isshowwx = true;
-      // this.fullscreenLoading = true;
-      this.$axios
-        .post("/index/Wxpay/dopay", {
-          order_id: this.orderid
-        })
-        .then(res => {
-          // this.imgurl = res.data.data;
-          // this.fullscreenLoading = false;
-          console.log(res);
+
+      var ua = window.navigator.userAgent.toLowerCase();
+      if (ua.match(/MicroMessenger/i) == "micromessenger") {
+        this.inwx = true;
+        this.$toast.loading({
+          message: "加载中...",
+          forbidClick: true
         });
+        //return true
+        // this.isAndroid();
+        this.$axios
+          .post("/index/Wxpay/dopay", {
+            order_id: this.orderid
+          })
+          .then(res => {
+            // this.imgurl = res.data.data;
+
+            console.log(res);
+
+            alert(res.data.data);
+            // windows.location.href = res.data.data;
+            this.$router.push({ path: res.data.data });
+          });
+      } else {
+        this.inwx = false;
+        this.$toast.loading({
+          message: "加载中...",
+          forbidClick: true
+        });
+        this.$axios
+          .post("/index/Wxpay/h5dopay", {
+            order_id: this.orderid
+          })
+          .then(res => {
+            // this.imgurl = res.data.data;
+
+            console.log(res);
+            alert(res.data.data);
+            window.location.href = res.data.data;
+          });
+        // return false;
+      }
+      console.log(this.inwx);
     },
     toshop() {
       this.ispay = false;
@@ -166,6 +203,12 @@ export default {
         margin-bottom: 76px;
         display: flex;
         justify-content: space-between;
+        a {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: space-between;
+        }
         p {
           align-self: center;
           color: #999999;

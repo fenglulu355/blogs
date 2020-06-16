@@ -4,7 +4,13 @@
     <div class="productbox">
       <tabBar :tabinfo="tabtitle" :tabnav="tabnav" @change="tonav" :curi="curindex"></tabBar>
       <div class="content">
-        <curinfo :curinfo="curinfo" :morecur="morecur" @change="tocurinfo" @set="curset"></curinfo>
+        <curinfo
+          :curinfo="curinfo"
+          :curlist="curlist"
+          :morecur="morecur"
+          @change="tocurinfo"
+          @set="curset"
+        ></curinfo>
         <ul class="goodslist">
           <li class="goodsli" v-for="(item, index) in goodsinfo" :key="index">
             <div
@@ -16,6 +22,7 @@
             }"
             ></div>
             <p class="name">{{item.article_title}}</p>
+        
           </li>
         </ul>
       </div>
@@ -46,15 +53,16 @@ export default {
       currentPage: 1, // 当前页码
       count: 300, // 总记录数,
       curindex: 0,
-      curinfoindex: 0,
-      tabtitle: { a: "产品", b: "中心" },
+      // curinfoindex: 0,
+      tabtitle: { a: "智慧", b: "中心" },
       tabnav: [],
       classid: "",
       curinfo: [],
-      arr: [],
+      // arr: [],
       keyword: [],
       goodsinfo: [],
-      morecur: []
+      morecur: [],
+      curlist: []
     };
   },
   created() {
@@ -71,7 +79,7 @@ export default {
     requst(classid) {
       this.$axios.post("/index/api/productClass").then(res => {
         this.curinfo = res.data.data;
-
+  this.curlist = res.data.data.slice(0, 3);
         console.log(this.curinfo, "a");
         // let tavnav = JSON.stringify(this.tabnav);
         // sessionStorage.setItem("tabnav", tavnav);

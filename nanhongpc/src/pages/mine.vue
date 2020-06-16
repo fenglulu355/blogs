@@ -25,8 +25,8 @@
         </div>
         <div class="names">
           <p class="name">
-            <span v-if="userinfo.user_name">{{userinfo.user_name}}</span>
-            <span v-else>{{userinfo.user_nickname}}</span>
+            <span v-if="userinfo.user_nickname">{{userinfo.user_nickname}}</span>
+            <span v-else>{{userinfo.user_name}}</span>
             <img src="../assets/mine/mine.png" alt />
           </p>
           <p class="integ">
@@ -34,8 +34,9 @@
             <span>{{userinfo.points}}</span>
           </p>
         </div>
-        <div class="tocoupon">
+        <div class="tocoupon" @click="tocoupon">
           <img src="../assets/mine/banner.png" alt />
+          <p>去领券》</p>
         </div>
       </div>
       <ul class="minelist">
@@ -46,7 +47,9 @@
           :class="curmineli ==index?'selmine':''"
           @click="tonav(index,item)"
         >
-          <img :src="item.icon" alt />
+          <img :src="item.iconb" v-if="curmineli ==index" alt />
+          <img :src="item.icon" v-else alt />
+
           <span>{{item.name}}</span>
         </li>
       </ul>
@@ -64,12 +67,42 @@ export default {
     return {
       curmineli: null,
       mineli: [
-        { icon: require("../assets/mine/info.png"), name: "个人信息", tag: 0 },
-        { icon: require("../assets/mine/order.png"), name: "我的订单", tag: 0 },
-        { icon: require("../assets/mine/dress.png"), name: "我的地址", tag: 1 },
-        { icon: require("../assets/mine/yh.png"), name: "我的优惠", tag: 2 },
-        { icon: require("../assets/mine/jf.png"), name: "我的积分", tag: 3 },
-        { icon: require("../assets/mine/mm.png"), name: "修改密码", tag: 4 }
+        {
+          icon: require("../assets/mine/infoh.png"),
+          iconb: require("../assets/mine/infob.png"),
+          name: "个人信息",
+          tag: 0
+        },
+        {
+          icon: require("../assets/mine/orderh.png"),
+          iconb: require("../assets/mine/orderb.png"),
+          name: "我的订单",
+          tag: 0
+        },
+        {
+          icon: require("../assets/mine/dressg.png"),
+          iconb: require("../assets/mine/dressb.png"),
+          name: "我的地址",
+          tag: 1
+        },
+        {
+          icon: require("../assets/mine/yhh.png"),
+          iconb: require("../assets/mine/yhb.png"),
+          name: "我的优惠",
+          tag: 2
+        },
+        {
+          icon: require("../assets/mine/jfh.png"),
+          iconb: require("../assets/mine/jfb.png"),
+          name: "我的积分",
+          tag: 3
+        },
+        {
+          icon: require("../assets/mine/mmh.png"),
+          iconb: require("../assets/mine/mmb.png"),
+          name: "修改密码",
+          tag: 4
+        }
       ],
       userinfo: []
     };
@@ -82,6 +115,9 @@ export default {
   },
   methods: {
     ...mapMutations(["setpoints"]),
+    tocoupon() {
+      this.$router.push({ path: "/minecenter", query: { tag: 3 } });
+    },
     requst() {
       this.$axios
         .post("/index/user/userInfo", { userId: this.userid })
@@ -162,6 +198,19 @@ export default {
           span {
             color: rgba(34, 129, 199, 1);
           }
+        }
+      }
+      .tocoupon {
+        // background: blueviolet;
+        position: relative;
+        p {
+          cursor: pointer;
+          font-size: 24px;
+          color: white;
+          font-weight: bold;
+          position: absolute;
+          top: 40px;
+          right: 5px;
         }
       }
     }

@@ -25,7 +25,8 @@ input, button, textarea { outline: none; border: none;}
 .clearFix:after { content: ''; display: block; height: 0; visibility: hidden; clear: both; }
 
 /* 弹性布局 */
-.flex-row-col-cen { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; }
+.flex-row-col-cen { display: flex; justify-content: center; 
+    align-items: center; flex-wrap: wrap; }
 
 
 

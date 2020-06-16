@@ -37,12 +37,8 @@
             <div class="pics">
               <div class="mainpicbox">
                 <div
-                  class="mainpic"
-                  :style="{backgroundImage: 'url('+baseurl+`/public/`+ item.image_url+ ')',
-                backgroundSize:'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition:'center'
-                }"
+                  class="mainpic lazypic"
+                  v-lazy:background-image="baseurl+`/public/`+item.image_url"
                 ></div>
               </div>
               <div class="infos clearFix">
@@ -126,6 +122,7 @@ export default {
     changecaseindex(index, item) {
       this.caseindex = index;
       // 重新获取当前被选择的
+      this.currentPage = 0;
       this.curitem = item;
       this.requstcase(item.class_id, 1, 9, this.keyword);
     },
@@ -154,7 +151,8 @@ export default {
   .topbox {
     box-sizing: border-box;
     padding-bottom: 35px;
-    text-align: center;  .icon {
+    text-align: center;
+    .icon {
       img {
         width: 50px;
       }

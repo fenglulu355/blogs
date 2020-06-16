@@ -53,7 +53,7 @@ export default {
       currentPage: 1, // 当前页码
       count: 1, // 总记录数,
       curindex: 0,
-      curinfoindex: 0,
+
       tabtitle: { a: "成功", b: "案例" },
       tabnav: ["工程项目", "家装项目"],
       goodsinfo: []

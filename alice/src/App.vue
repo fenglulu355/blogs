@@ -3,9 +3,6 @@
     <navagation></navagation>
     <router-view />
     <footers></footers>
- 
- 
-
   </div>
 </template>
 
@@ -49,5 +46,10 @@ export default {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+.lazypic {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 </style>

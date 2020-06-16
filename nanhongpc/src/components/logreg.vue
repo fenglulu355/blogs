@@ -18,18 +18,19 @@
         <input type="password" id="logpsw" placeholder="输入密码" v-model="password" />
         <img class="clear" @click="clearpsw" src="../assets/navgation/log-x.png" alt />
       </div>
-      <p class="forget" @click="topaw">忘记密码</p>
+
       <p class="login" @click="loging">登录</p>
       <div class="other">
-        <img class="icon" src="../assets/navgation/log-qq.png" alt />
+        <p class="forget" @click="topaw">忘记密码</p>
+        <!-- <img class="icon" src="../assets/navgation/log-qq.png" alt />
         <span class="text">QQ</span>
         <span class="text sx">|</span>
         <img class="icon" src="../assets/navgation/log-wx.png" alt />
-        <span class="text">微信</span>
-        <span class="toreg" @click="toreg">
+        <span class="text">微信</span>-->
+        <p class="toreg" @click="toreg">
           立即注册
           <img class="icon" src="../assets/navgation/log-r.png" alt />
-        </span>
+        </p>
       </div>
     </div>
     <!-- 注册 -->
@@ -358,7 +359,7 @@ export default {
 
   .box {
     width: 410px;
-    height: 399px;
+    // height: 399px;
     background: white;
     box-sizing: border-box;
     margin: 300px auto;
@@ -407,16 +408,14 @@ export default {
     }
     .forget {
       cursor: pointer;
-      text-align: right;
       font-size: 12px;
       font-weight: 400;
       color: rgba(102, 102, 102, 1);
       box-sizing: border-box;
-      padding-top: 23px;
     }
     .login {
       box-sizing: border-box;
-      margin-top: 23px;
+      margin-top: 33px;
       cursor: pointer;
       width: 301px;
       height: 35px;
@@ -427,23 +426,14 @@ export default {
     }
     .other {
       width: 300px;
-      position: absolute;
-      left: 50px;
-      bottom: 40px;
-      .text {
-        cursor: pointer;
-        font-size: 14px;
-        color: rgba(102, 102, 102, 1);
-      }
-      .sx {
-        margin: 0 10px;
-      }
+      box-sizing: border-box;
+      padding-top: 30px;
+      display: flex;
+      justify-content: space-between;
       .toreg {
         cursor: pointer;
         color: rgba(182, 29, 29, 1);
         font-size: 14px;
-        position: relative;
-        left: 95px;
       }
       .icon {
         cursor: pointer;
@@ -468,7 +458,7 @@ export default {
     }
   }
   .register {
-    height: 338px;
+    // height: 338px;
     .telbox,
     .codebox {
       display: flex;

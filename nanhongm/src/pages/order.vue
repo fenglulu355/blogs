@@ -144,10 +144,10 @@ export default {
         numData: 0
       },
       activeNames: ["1", "2"],
-      curridio: "1",
-      dressridio: "1",
-      radio: null,
-      rintegral: 0,
+      // curridio: "1",
+      // dressridio: "1",
+      // radio: null,
+
       numData: 0,
       dressinfo: [],
       isedit: false,
@@ -163,7 +163,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["orderlists", "userid"]),
+    ...mapState(["userid"]),
     allprice() {
       return this.goodsinfo.reduce(
         (previousValue, item) =>
@@ -283,7 +283,7 @@ export default {
                   this.$router.push({
                     path: "/payment",
                     query: {
-                       ordernum: res.data.data.order_num,
+                      ordernum: res.data.data.order_num,
                       orderid: res.data.data.order_id,
                       price: this.totalPrice
                     }

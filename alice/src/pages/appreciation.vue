@@ -37,12 +37,8 @@
             <div class="pics">
               <div class="mainpicbox" v-if="item">
                 <div
-                  class="mainpic"
-                  :style="{backgroundImage: 'url(' +baseurl+`/public/`+ item.image_url+ ')',
-                backgroundSize:'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition:'center'
-                }"
+                  class="mainpic lazypic"
+                  v-lazy:background-image="baseurl+`/public/`+item.image_url"
                 ></div>
                 <img src="../assets/appreciation/02.png" alt />
               </div>
@@ -179,6 +175,7 @@ export default {
     changecaseindex(index, item) {
       this.caseindex = index;
       this.curitem = item;
+      this.currentPage=0
       this.requstvideo(this.curitem.class_id, 1, 6, this.keyword);
     },
     getList(page) {

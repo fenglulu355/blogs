@@ -2,11 +2,21 @@
   <div class="mine">
     <div class="minebox">
       <p class="title">
-        <img  src="../assets/shop/return.png" alt /> 个人中心
+        <img src="../assets/shop/return.png" alt /> 个人中心
       </p>
       <div class="info">
         <div class="head">
           <div
+            v-if="userinfo.user_image"
+            class="mainpic"
+            :style="{backgroundImage: 'url(' + httpUrl+userinfo.user_image+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+          ></div>
+          <div
+            v-else
             class="mainpic"
             :style="{backgroundImage: 'url(' + require('../assets/about/1-4.png')+ ')',
              backgroundSize:'cover',
@@ -17,8 +27,8 @@
         </div>
         <div class="names">
           <p class="name">
-            <span v-if="userinfo.user_name">{{userinfo.user_name}}</span>
-            <span v-else>{{userinfo.user_nickname}}</span>
+           <span v-if="userinfo.user_nickname">{{userinfo.user_nickname}}</span>
+            <span v-else>{{userinfo.user_name}}</span>
             <img src="../assets/mine/mine.png" alt />
           </p>
           <p class="integ">
@@ -27,7 +37,9 @@
           </p>
         </div>
         <div class="tocoupon">
-          <img src="../assets/mine/banner.png" alt />
+          <router-link :to="{path: '/minecenter', query: {tag: 3 }}">
+            <img src="../assets/mine/banner.png" alt />
+          </router-link>
         </div>
       </div>
       <ul class="minelist">
@@ -38,7 +50,9 @@
           :class="curmineli ==index?'selmine':''"
           @click="tonav(index,item)"
         >
-          <img :src="item.icon" alt />
+       <img :src="item.iconb" v-if="curmineli ==index" alt />
+          <img :src="item.icon" v-else alt />
+
           <span>{{item.name}}</span>
         </li>
       </ul>
@@ -56,14 +70,44 @@ export default {
     return {
       userinfo: [],
       curmineli: null,
-      mineli: [
-        { icon: require("../assets/mine/info.png"), name: "个人信息", tag: 0 },
-        { icon: require("../assets/mine/order.png"), name: "我的订单", tag: 0 },
-        { icon: require("../assets/mine/dress.png"), name: "我的地址", tag: 1 },
-        { icon: require("../assets/mine/yh.png"), name: "我的优惠", tag: 2 },
-        { icon: require("../assets/mine/jf.png"), name: "我的积分", tag: 3 },
-        { icon: require("../assets/mine/mm.png"), name: "修改密码", tag: 4 }
-      ]
+    mineli: [
+        {
+          icon: require("../assets/mine/infoh.png"),
+          iconb: require("../assets/mine/infob.png"),
+          name: "个人信息",
+          tag: 0
+        },
+        {
+          icon: require("../assets/mine/orderh.png"),
+          iconb: require("../assets/mine/orderb.png"),
+          name: "我的订单",
+          tag: 0
+        },
+        {
+          icon: require("../assets/mine/dressg.png"),
+          iconb: require("../assets/mine/dressb.png"),
+          name: "我的地址",
+          tag: 1
+        },
+        {
+          icon: require("../assets/mine/yhh.png"),
+          iconb: require("../assets/mine/yhb.png"),
+          name: "我的优惠",
+          tag: 2
+        },
+        {
+          icon: require("../assets/mine/jfh.png"),
+          iconb: require("../assets/mine/jfb.png"),
+          name: "我的积分",
+          tag: 3
+        },
+        {
+          icon: require("../assets/mine/mmh.png"),
+          iconb: require("../assets/mine/mmb.png"),
+          name: "修改密码",
+          tag: 4
+        }
+      ],
     };
   },
   computed: {

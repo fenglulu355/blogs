@@ -48,11 +48,6 @@
                     <p class="color">
                       <span>规格：{{items.oe_format_name}}</span>
                     </p>
-                    <p
-                      class="toeva"
-                      v-if="item.order_state==4 && item.isCommtent==0"
-                      @click="toeva(index,item,items)"
-                    >去评价</p>
                   </div>
                 </div>
               </div>
@@ -67,7 +62,11 @@
                   <p class="wl" @click="openlog(index,item)" v-if="item.order_state==3">物流明细</p>
                   <p class="returngoods" v-if="item.order_state !=0">退货/退款</p>
                   <p class="torecive" v-if="item.order_state==3" @click="toreceived(index,item)">去收货</p>
-
+                  <p
+                    class="toeva"
+                    v-if="item.order_state==4 && item.isCommtent==0"
+                    @click="toeva(index,item)"
+                  >去评价</p>
                   <p class="topay" @click="topay(index,item)" v-if="item.order_state == 0">去付款</p>
                 </div>
               </div>
@@ -109,7 +108,7 @@ export default {
   data() {
     return {
       islogistics: false,
-      closea: "true",
+      // closea: "true",
       isevaluate: false,
       integ: 0, //积分
       isinteg: false,
@@ -316,8 +315,8 @@ export default {
       });
     },
     // 去评价
-    toeva(index, item, items) {
-      this.goodsinfo = items;
+    toeva(index, item) {
+      this.goodsinfo = item;
       this.goodsinfo.eva = [
         { title: "好评", num: 3 },
         { title: "中评", num: 2 },
@@ -325,7 +324,7 @@ export default {
       ];
       this.goodsinfo.oderid = item.order_id;
       this.isevaluate = true;
-      console.log(items);
+      console.log(item);
     },
     // 点击收货
     toreceived(index, item) {

@@ -71,6 +71,7 @@
 .detail .main .bot {
   display: flex;
   justify-content: flex-start;
+  height: 100rpx;
 }
 .detail .main .bot .addcar {
   width: 280rpx;
@@ -83,13 +84,21 @@
 .detail .main .bot .count {
   background: orange;
   width: 200rpx;
+  height: 100%;
   margin-left: 20rpx;
   display: flex;
   justify-content: flex-start;
+  text-align: center;
 }
 .detail .main .bot .count .but {
-  width: 33%;
+  align-self: center;
+  width: 30%;
 }
 .detail .main .bot .count .num {
-  width: 33%;
+  align-self: center;
+  width: 40%;
+  line-height: 100rpx;
+  border: 1px solid white;
+  border-top: none;
+  border-bottom: none;
 }
