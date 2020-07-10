@@ -219,7 +219,8 @@
             <p>获取验证码</p>
           </section>
           <section>
-            <input type="password" placeholder="请输入新密码" @blur="regnpsw(npsw)" v-model="npsw" />
+            <input type="password" placeholder="请输入新密码"
+             @blur="regpsw(npsw)" v-model="npsw" />
           </section>
           <section>
             <input type="password" @blur="regnpsw(qrpsw)" placeholder="请再次输入新密码" v-model="qrpsw" />

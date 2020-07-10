@@ -130,19 +130,23 @@ export default {
     },
     // 判断是否支付成功
     overwxpay() {
+      this.$message({
+              message: "正在验证是否支付成功，请稍后！",
+              type: "success"
+            });
       this.$axios
         .post("/index/zpay/checkOrder", {
           orderId: this.orderid,
           userId: this.userid
         })
         .then(res => {
-          console.log(res.data.code);
+          console.log(res.data);
           // 还未支付
           if (res.data.code == 0) {
             this.iswxcg = false;
             this.overwxpays = "支付失败，可联系客服";
             // 支付成功
-          } else if (res.data.code == 1) {
+          } else if (res.data.code == 200) {
             this.iswxcg = true;
             this.overwxpays = "支付成功，即将跳转。。。";
             this.$message({

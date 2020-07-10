@@ -61,7 +61,7 @@ export default {
       clientHeight: "",
       height: "",
       // 分页
-      pageSize: 8, // 每页显示20条数据
+      pageSize: 6, // 每页显示20条数据
       currentPage: 1, // 当前页码
       count: 1, // 总记录数,
       caseinfo: {
@@ -148,7 +148,7 @@ export default {
 
     casechangenav(item, index) {
       // console.log(item, index);
-
+      this.currentPage = 1;
       // 请求数据
       this.requstvideo(item.class_id, 1, 8, this.keyword);
     },

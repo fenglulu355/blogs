@@ -119,7 +119,8 @@
             <img src="../assets/home/serv-tle.png" alt />
             <span class="sel">服务热线</span>
             <span class="sx">|</span>
-            <span class="tel">{{telnum}}</span>
+            <span class="tel" v-if="telnum">{{telnum}}</span>
+                 <span class="tel" v-else>02883477031</span>
           </div>
           <p class="tozx">立即咨询</p>
           <!-- <a
@@ -314,8 +315,7 @@ export default {
     setTimeout(() => {
       this.requst();
     }, 0);
-    this.requstteam();
-    this.requstcooper();
+
     this.move();
     this.telnum = sessionStorage.getItem("tel");
   },
@@ -348,6 +348,8 @@ export default {
         // console.log(this.getProductClass);
         // 默认请求第一个分类的数据
         this.requstcase(this.getProductClass[0].child[0].class_id, 1, 8);
+        this.requstteam();
+        this.requstcooper();
       });
     },
     // 请求案例
@@ -437,6 +439,9 @@ export default {
       this.$router.push({ path: "/about", query: { curindex: 2 } });
       document.body.scrollTop = document.documentElement.scrollTop = 300;
     }
+  },
+  destroyed() {
+    this.stopmove();
   },
   components: { carousel }
 };

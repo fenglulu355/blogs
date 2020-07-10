@@ -59,9 +59,7 @@ export default {
         this.infos = res.data.data;
         this.previd = res.data.data.prov;
         this.nextid = res.data.data.next;
-        console.log(this.infos, "requst");
-        console.log(this.previd, "previd");
-        console.log(this.nextid, "nextid");
+      
         this.requstprev();
         this.requstnext();
       });
@@ -71,7 +69,7 @@ export default {
       this.$axios
         .post("/index/api/getNewsShow", { id: this.previd })
         .then(res => {
-          console.log(res, "requstprev");
+          // console.log(res, "requstprev");
           this.prevtitle = res.data.data.article_title;
         });
     },

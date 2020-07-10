@@ -1,7 +1,7 @@
 <template>
-  <div id="app" v-if="isAlive">
-    <navagation></navagation>
-    <router-view />
+  <div id="app" >
+    <navagation v-if="isAlive"></navagation>
+    <router-view v-if="isAlive" />
     <footers></footers>
   </div>
 </template>

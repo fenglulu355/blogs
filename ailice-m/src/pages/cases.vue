@@ -98,6 +98,7 @@ export default {
         });
     },
     casechangenav(item, index) {
+      this.currentPage = 1;
       // console.log(item, index);
       // 请求数据
       this.requstcase(item.class_id, 1, 6, this.keyword);

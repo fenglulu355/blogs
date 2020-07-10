@@ -21,13 +21,7 @@ Vue.prototype.httpUrl = httpUrl;
 // Axios.defaults.baseURL = "http://www.cdswcmy.com/";
 Axios.defaults.baseURL = "http://www.alcgarden.com/";
 Axios.defaults.headers["Content-type"] = "application/json";
-import VueLazyLoad from 'vue-lazyload'
-Vue.use(VueLazyLoad, {
-  preLoad: 1.3,
-  // error: './static/error.png',
-  // loading: './static/loading.png',
-  attempt: 1
-})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

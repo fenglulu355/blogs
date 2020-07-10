@@ -37,8 +37,12 @@
             <div class="pics">
               <div class="mainpicbox" v-if="item">
                 <div
-                  class="mainpic lazypic"
-                  v-lazy:background-image="baseurl+`/public/`+item.image_url"
+                  class="mainpic"
+                  :style="{backgroundImage: 'url(' +baseurl+`/public/`+ item.image_url+ ')',
+                backgroundSize:'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition:'center'
+                }"
                 ></div>
                 <img src="../assets/appreciation/02.png" alt />
               </div>
@@ -63,9 +67,7 @@
     <!-- paly -->
     <div class="videobox" :style="{'height':clientHeight+`px`}" v-show="isvedio">
       <div class="main" :style="{'height':height+`px`}" v-if="isreload">
-        <p
-          class="toptitle"
-        >所在位置：首页 > 视频赏析 > {{videos.class_name}} > {{videos.article_title}}</p>
+        <p class="toptitle">所在位置：首页 > 视频赏析 > {{videos.class_name}} > {{videos.article_title}}</p>
         <img src="../assets/appreciation/close.png" alt class="close" @click="closevideo" />
         <p class="title">{{videos.article_title}}</p>
         <div class="video" v-if="palyvideos.image_url">
@@ -80,7 +82,7 @@
           >
             <img @click="plays" src="../assets/appreciation/02.png" alt />
           </div>
-          <video ref="video" controls v-show="play" ></video>
+          <video ref="video" controls v-show="play"></video>
         </div>
 
         <p class="prev-next">
@@ -173,9 +175,9 @@ export default {
         });
     },
     changecaseindex(index, item) {
+      this.currentPage = 1;
       this.caseindex = index;
       this.curitem = item;
-      this.currentPage=0
       this.requstvideo(this.curitem.class_id, 1, 6, this.keyword);
     },
     getList(page) {
@@ -204,15 +206,15 @@ export default {
     // 请求视频详情
     requstvideodetail(id) {
       this.$axios.post("/index/api/videoShow", { id: id }).then(res => {
-     
         this.videos = res.data.data;
         this.previd = res.data.data.prov;
         this.nextid = res.data.data.next;
         this.requstprev();
         this.requstnext();
-          //  this.reload();
-          // :src="baseurl+`/public/`+videos.video_url"
-        this.$refs.video.src =this.baseurl+`/public/`+ res.data.data.video_url
+        //  this.reload();
+        // :src="baseurl+`/public/`+videos.video_url"
+        this.$refs.video.src =
+          this.baseurl + `/public/` + res.data.data.video_url;
         // console.log(res, "videos");
       });
     },

@@ -147,6 +147,7 @@ export default {
     topath(index, item) {
       this.curindex = index;
       this.$router.push({ path: item.path });
+      console.log(window.history.length);
       this.reload();
     }
   },

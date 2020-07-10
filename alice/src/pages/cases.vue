@@ -37,8 +37,12 @@
             <div class="pics">
               <div class="mainpicbox">
                 <div
-                  class="mainpic lazypic"
-                  v-lazy:background-image="baseurl+`/public/`+item.image_url"
+                  class="mainpic"
+                  :style="{backgroundImage: 'url('+baseurl+`/public/`+ item.image_url+ ')',
+                backgroundSize:'cover',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition:'center'
+                }"
                 ></div>
               </div>
               <div class="infos clearFix">
@@ -95,6 +99,8 @@ export default {
     requst(keyword) {
       this.$axios.post("/index/api/getProductClass").then(res => {
         this.getProductClass = res.data.data;
+        // console.log(   this.getProductClass);
+        
         // 获取案例分类名字
         this.caseli = this.getProductClass[0].child;
         // 主要获取默认的第一个classid
@@ -120,9 +126,9 @@ export default {
     },
     // 切换案例
     changecaseindex(index, item) {
+      this.currentPage = 1;
       this.caseindex = index;
       // 重新获取当前被选择的
-      this.currentPage = 0;
       this.curitem = item;
       this.requstcase(item.class_id, 1, 9, this.keyword);
     },

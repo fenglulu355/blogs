@@ -127,7 +127,7 @@ export default {
         this.getProductClass = res.data.data;
         // console.log(this.getProductClass);
         // 主要获取默认的第一个classid
-        this.curitem = this.getProductClass[2];
+        this.curitem = this.getProductClass[6];
         // console.log(this.curitem);
         // 默认请求第一个分类的数据
         this.requstcase(this.curitem.class_id, 1, 9);
