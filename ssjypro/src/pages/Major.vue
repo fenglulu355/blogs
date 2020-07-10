@@ -133,7 +133,7 @@ export default {
         qs.stringify(informationid)
       )
       .then(resp => {
-        console.log(resp)
+        console.log(resp);
         this.information = resp.data.data.data;
       });
     let recruitid = {
@@ -186,14 +186,14 @@ export default {
       //   path: `/majorD/${id}`
       // });
       // window.open(routeUrl.href, "_blank");
-        this.$router.push({ path: `/majorD/${id}` });
+      this.$router.push({ path: `/majorD/${id}` });
     },
     toArticle(id) {
       // let routeUrl = this.$router.resolve({
       //   path: `/majorD/${id}`
       // });
       // window.open(routeUrl.href, "_blank");
-        this.$router.push({ path: `/majorD/${id}` });
+      this.$router.push({ path: `/majorD/${id}` });
     },
     handleScroll() {
       let clientHeight = document.body.clientHeight;

@@ -51,7 +51,7 @@
         <div class="videobg">
           <div
             class="videopic"
-            :style="{backgroundImage: 'url(' + require('../assets/home/homebanner.png')+ ')',
+            :style="{backgroundImage: 'url(' + require('../assets/home/video.jpg')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -163,11 +163,12 @@ export default {
 
 <style lang="less" scoped>
 .b-enter-active {
-  transition: all 0.5s ease-in-out;
+  transition: all 0.8s ease;
 }
 .a-enter-active {
-  transition: all 0.5s ease-in-out;
+  transition: all 0.8s ease;
 }
+
 .a-enter {
   opacity: 0.8;
 }

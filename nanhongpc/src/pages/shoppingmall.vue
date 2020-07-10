@@ -271,6 +271,7 @@ export default {
           width: 288px;
           height: 288px;
           margin: 0 auto;
+          overflow: hidden;
         }
         .goodsinfo {
           height: 150px;
@@ -299,7 +300,11 @@ export default {
           }
         }
         &:hover {
+          transition: all .5s ease;
           border: 1px solid rgba(153, 153, 153, 1);
+          .mainpic{
+            transform: scale(1.1);
+          }
         }
       }
     }

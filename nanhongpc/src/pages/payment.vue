@@ -11,16 +11,19 @@
       <div class="curbox">
         <p class="text">请选择支付方式</p>
         <ul class="paylist">
-          <li class="tobank">
+          <!-- <li class="tobank">
             <a :href="httpUrl+`/index/unionpay/dopay?orderId=`+orderid">
               <img src="../assets/shop/yl.png" alt />
             </a>
-          </li>
+          </li>-->
           <li class="towx" @click="towx">
             <img src="../assets/shop/wx.png" alt />
           </li>
-          <li class="tozfb" @click="tozfb">
-            <img src="../assets/shop/zfb.png" alt />
+          <li class="tozfb">
+            <a 
+            :href="httpUrl+`/index/alipay/doPay?orderId=`+orderid+`&userId=`+userid">
+              <img src="../assets/shop/zfb.png" alt />
+            </a>
           </li>
         </ul>
       </div>
@@ -42,7 +45,7 @@
     </div>
     <div class="wxewm" v-show="isshowwx">
       <div class="infos" v-loading.fullscreen.lock="fullscreenLoading">
-        <img class="closeimg" @click="closewx" src="../assets/navgation/log-x.png" alt />
+        <!-- <img class="closeimg" @click="closewx" src="../assets/navgation/log-x.png" alt /> -->
         <div
           class="mainpic"
           :style="{backgroundImage: 'url(' +imgurl+ ')',
@@ -51,7 +54,7 @@
             backgroundPosition:'center'
             }"
         ></div>
-        <p>微信支付二维码</p>
+        <p class="overwxpay" @click="overwxpay">{{overwxpays}}</p>
       </div>
     </div>
   </div>
@@ -59,6 +62,8 @@
 <script>
 import { mapState } from "vuex";
 export default {
+  inject: ["reload"],
+  name: "payment",
   data() {
     return {
       fullscreenLoading: false,
@@ -67,10 +72,15 @@ export default {
       money: null,
       orderid: "",
       imgurl: "",
-      isshowwx: false
+      isshowwx: false,
+      iswxcg: false,
+      timer: "",
+      overwxpays: "我已支付成功"
     };
   },
   created() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+
     this.ordernum = this.$route.query.ordernum;
     this.money = this.$route.query.price;
     this.orderid = this.$route.query.orderid;
@@ -79,49 +89,88 @@ export default {
     ...mapState(["userid"])
   },
   methods: {
+    // 取消支付
     closewx() {
       this.$confirm("支付还未完成，您确定要取消吗", "提示", {
         cancelButtonText: "继续支付",
         confirmButtonText: "取消支付",
-
         type: "warning"
       })
         .then(() => {
           this.$message.error("取消支付");
           this.isshowwx = false;
+         this.reload()
         })
         .catch(() => {
           return;
         });
     },
+    // 微信支付
     towx() {
       this.isshowwx = true;
       this.fullscreenLoading = true;
       this.$axios
-        .post("/index/Wxpay/createJsBizPackage", {
+        .post("/index/zpay/index", {
           orderId: this.orderid,
           userId: this.userid
         })
         .then(res => {
+          console.log(res, "createJsBizPackage");
           this.imgurl = res.data.data;
           this.fullscreenLoading = false;
-          console.log(res);
+          // this.timer = setInterval(() => {
+          //   this.overwxpay();
+          //   if (this.iswxcg == true) {
+          //     clearInterval(this.timer);
+          //   }
+          // }, 3000);
+          //  else {
+          //   }
         });
     },
-    tozfb() {
-      this.isshowwx = true;
-      this.fullscreenLoading = true;
+    // 判断是否支付成功
+    overwxpay() {
       this.$axios
-        .post("/index/alipay/doPay", {
+        .post("/index/zpay/checkOrder", {
           orderId: this.orderid,
           userId: this.userid
         })
         .then(res => {
-          // this.imgurl = res.data.data;
-          this.fullscreenLoading = false;
-          console.log(res);
+          console.log(res.data.code);
+          // 还未支付
+          if (res.data.code == 0) {
+            this.iswxcg = false;
+            this.overwxpays = "支付失败，可联系客服";
+            // 支付成功
+          } else if (res.data.code == 1) {
+            this.iswxcg = true;
+            this.overwxpays = "支付成功，即将跳转。。。";
+            this.$message({
+              message: "支付成功",
+              type: "success"
+            });
+            setTimeout(() => {
+              this.isshowwx = false;
+              this.$router.push({ path: "/shoppingmall" });
+            }, 500);
+          }
         });
     },
+    // tozfb() {
+    //   this.isshowwx = true;
+    //   this.fullscreenLoading = true;
+    //   this.$axios
+    //     .post("/index/alipay/doPay", {
+    //       orderId: this.orderid,
+    //       userId: this.userid
+    //     })
+    //     .then(res => {
+    //       // this.imgurl = res.data.data;
+    //       this.fullscreenLoading = false;
+    //       console.log(res);
+    //       window.open(res.data);
+    //     });
+    // },
     // 更新状态
     changestate(orderId, userid, oldState, newState) {
       this.$axios
@@ -162,7 +211,7 @@ export default {
   width: 100%;
   background: rgba(245, 245, 245, 1);
   box-sizing: border-box;
-  padding: 47px 0 220px 0;
+  padding: 57px 0 150px 0;
   .paybox {
     width: 1200px;
     margin: 0 auto;
@@ -179,7 +228,7 @@ export default {
     padding: 39px 63px 0px 63px;
     margin-top: 20px;
     width: 1200px;
-    height: 312px;
+    height: 412px;
     background: rgba(255, 255, 255, 1);
     box-shadow: 0px 0px 18px 0px rgba(228, 228, 228, 0.63);
     .text {
@@ -191,11 +240,14 @@ export default {
     }
     .paylist {
       box-sizing: border-box;
-      padding-top: 63px;
+      padding: 63px;
+      display: flex;
+      justify-content: space-around;
+
       li {
         cursor: pointer;
-        display: inline-block;
-        margin-right: 30px;
+        // display: inline-block;
+        // margin-right: 80px;
       }
     }
   }
@@ -226,7 +278,16 @@ export default {
         margin: 20px auto;
       }
       p {
+        margin: 0 auto;
+        cursor: pointer;
+        background: #2482c8;
+        color: white;
+        width: 200px;
+
         text-align: center;
+        line-height: 30px;
+
+        height: 30px;
       }
     }
   }

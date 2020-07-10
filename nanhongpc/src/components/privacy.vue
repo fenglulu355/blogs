@@ -21,11 +21,15 @@ export default {
 <style lang="less" scoped>
 .content {
   width: 1200px;
+  box-sizing: border-box;
+  padding: 40px 40px;
   margin: 40px auto;
 }
 .pritext {
   white-space: pre-wrap;
   line-height: 30px;
+  height: 650px;
+  overflow-y: scroll;
 }
 .title {
   text-align: center;

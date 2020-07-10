@@ -43,7 +43,7 @@
           <ul class="mui-table-view">
             <li
               class="mui-table-view-cell"
-              v-for="item in report"
+              v-for="item in H"
               :key="item.id"
               @click="toArticle(item.id)"
             >

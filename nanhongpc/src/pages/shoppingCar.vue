@@ -70,6 +70,7 @@ export default {
     };
   },
   created() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
     this.requst();
   },
   computed: {

@@ -1,0 +1,11 @@
+class Util {
+    constructor() {}
+    static setTitle(id, title) {
+        let el = document.getElementById(id);
+        el.textContent = title;
+    }
+}
+
+module.exports  = {
+    Util
+}

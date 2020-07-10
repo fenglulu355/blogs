@@ -3,7 +3,8 @@
     <div class="contact">
       <div class="contact-top">
         <ul>
-          <li v-for="item in list" :key="item.id" @click="toUrl">{{item.title}}</li>
+          <li v-for="item in list" 
+          :key="item.id" @click="toUrl">{{item.title}}</li>
         </ul>
       </div>
       <div class="contact-bottom">

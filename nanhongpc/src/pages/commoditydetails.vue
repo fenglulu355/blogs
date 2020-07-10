@@ -77,21 +77,6 @@
             </div>
           </div>
         </div>
-        <!-- <div class="typebox select">
-          <p class="text">规格</p>
-          <div class="selection">
-            <section
-              class="section"
-              v-for="(item, index) in goodsinfo.type"
-              :key="index"
-              :class="type==index?'cur':''"
-              @click="curtype(index)"
-            >
-              <span class="span"></span>
-              <span class="type">{{item}}</span>
-            </section>
-          </div>
-        </div>-->
         <p
           class="style bot"
         >-------------------------------------------------------------------------------</p>
@@ -125,11 +110,6 @@
             <div class="showpic">
               <el-checkbox v-model="checked" @change="pic">有图</el-checkbox>
             </div>
-            <!-- 用户登陆后判断订单里是否有此商品，有就评价，没有就提示没有购买请先购买再评价 -->
-            <!-- <div class="writing" @click="toeva()">
-              <img src="../assets/shop/pj.png" alt />
-              <span>写评价</span>
-            </div>-->
           </div>
           <ul class="evalist">
             <li class="evali" v-for="(item, index) in filter" :key="index">
@@ -154,18 +134,13 @@
                 ></div>
               </div>
               <div class="evali-right">
-                <p class="name" v-if="item.user.user_name">{{item.user.user_name}}</p>
-                <p class="name" v-else>{{item.user.user_nickname}}</p>
+                <p class="name" v-if="item.user.user_nickname">{{item.user.user_nickname}}</p>
+                <p class="name" v-else>{{item.user.user_name}}</p>
                 <p class="time">{{item.created_time}}</p>
                 <p class="cont" v-if="item.content==''">默认评价</p>
                 <p v-else class="cont" v-html="item.content"></p>
-                <div class="pics" v-if="item.image_url">
-                  <div
-                    class="slide"
-                    v-for="(items, index) in item.image_url"
-                  
-                    :key="index"
-                  >
+                <div class="pics" v-if="item.image_url[0]!=''">
+                  <div class="slide" v-for="(items, index) in item.image_url" :key="index">
                     <!-- <el-image  :fit="fit" :src="httpUrl+ items" :preview-src-list="previewpic"></el-image> -->
                     <!-- <img class="showpic" :src="httpUrl+ items" alt /> -->
                     <div
@@ -270,37 +245,42 @@ export default {
             return nums.star == 3;
           });
           this.filter = a;
-          console.log(nums, "a");
+          console.log(this.filter, "a");
         });
     },
     tocar() {
-      let userid = JSON.parse(sessionStorage.getItem("vuex")).userid,
-        goodsid = this.goodsinfo.goods_info.goods_id,
-        fids = this.fids.join(",");
-      console.log(fids);
+      if (this.fids.length == 0) {
+        this.$message.error("您未选择商品属性！");
+      } else {
+        let userid = JSON.parse(sessionStorage.getItem("vuex")).userid,
+          goodsid = this.goodsinfo.goods_info.goods_id,
+          fids = this.fids.join(",");
+        console.log(fids);
 
-      this.$axios
-        .post("/index/shop/addShoppingCart", {
-          userId: userid,
-          gid: goodsid,
-          num: 1,
-          fids: fids
-        })
-        .then(res => {
-          // console.log(res);
-          if (res.data.code == 200) {
-            this.$message({
-              message: "加入购物车成功",
-              type: "success"
-            });
-            setTimeout(() => {
-              // 跳转至购物车
-              this.$router.push({ path: "/shoppingcar" });
-            }, 500);
-          } else {
-            this.$message.error("添加失败");
-          }
-        });
+        this.$axios
+          .post("/index/shop/addShoppingCart", {
+            userId: userid,
+            gid: goodsid,
+            num: 1,
+            fids: fids
+          })
+          .then(res => {
+            // console.log(res);
+            if (res.data.code == 200) {
+              this.$message({
+                message: "加入购物车成功",
+                type: "success"
+              });
+              setTimeout(() => {
+                // 跳转至购物车
+                this.$router.push({ path: "/shoppingcar" });
+              }, 500);
+            } else {
+              this.$message.error("添加失败");
+            }
+          });
+      }
+
       // console.log(userid, this.goodsinfo, "userid");
     },
     previewimg(items) {
@@ -341,6 +321,7 @@ export default {
     },
     change(e) {
       let nums = this.eva;
+      this.checked=false
       let res = nums.filter(nums => {
         return nums.star == e;
       });
@@ -350,7 +331,7 @@ export default {
     pic() {
       let nums = this.eva;
       let res = nums.filter(nums => {
-        return nums.image_url.length != 0;
+        return nums.image_url[0] != '';
       });
       this.filter = res;
     }

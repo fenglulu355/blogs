@@ -21,7 +21,7 @@
                   <p class="title">{{item.title}}</p>
                   <p class="time">{{item.created_time}}</p>
                   <p class="intro">{{item.desc}}</p>
-                  <p class="more">查看详情+</p>
+                  <p class="more" @click="todetail(item)">查看详情+</p>
                 </div>
               </div>
             </el-carousel-item>
@@ -41,7 +41,7 @@
               <p class="title">{{item.title}}</p>
               <p class="time">{{item.created_time}}</p>
               <p class="intro">{{item.desc}}</p>
-              <p class="more">查看详情+</p>
+              <p class="more" @click="todetail(item)">查看详情+</p>
             </div>
           </li>
         </ul>
@@ -125,7 +125,7 @@ export default {
           this.lb = res.data.data.data.splice(0, 3);
           this.newsinfo = res.data.data.data.splice(4, 7);
           this.count = res.data.data.total;
-          // console.log(res.data, "rrr");、
+          // console.log( this.lb, "rrr");
         });
     },
     getList(page) {
@@ -140,6 +140,13 @@ export default {
       this.curindex = index;
       this.curid = index;
       this.requst(index, 1, 8);
+    },
+    todetail(item) {
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.$router.push({
+        path: "/detail",
+        query: { id: item.id, kind: "news" }
+      });
     }
   },
   components: { banner, tabBar, moPagination }

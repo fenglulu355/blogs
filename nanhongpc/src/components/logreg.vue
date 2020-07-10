@@ -66,6 +66,15 @@
         <input placeholder="输入验证码" id="regcode" v-model="code" @blur="regcode(code)" />
         <p @click="sendCode" class="code" :class="cancode ? 'cantchoose':''">{{codetime}}</p>
       </div>
+      <div class="intbox checkbox">
+        <el-checkbox v-model="checked"></el-checkbox>
+        <span class="text">我已阅读并同意</span>
+        <span
+          class="texts"
+          @click="read"
+          :class="checked==true||iscur==true?'ischeckbox':''"
+        >《四川南宏机电服务协议》</span>
+      </div>
       <p class="login" @click="reging">注册</p>
     </div>
     <!-- 忘记密码 -->
@@ -107,15 +116,26 @@
       </div>
       <p class="login" @click="changepsw">确定</p>
     </div>
+    <div class="policy-box" v-if="ispol">
+      <div class="pol-item pol-pri">
+        <img @click="ispol=false" src="../assets/navgation/log-x.png" alt />
+        <policy></policy>
+        <p class="goon" @click="goon">同意并继续</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import policy from "../components/policy";
 import { mapState, mapActions, mapMutations } from "vuex";
 export default {
   name: "logreg",
   data() {
     return {
+      ispol: false,
+      checked: false,
+      iscur: false,
       islog: true,
       isreg: false,
       ispsw: false,
@@ -132,6 +152,7 @@ export default {
   computed: {
     ...mapState(["logreg", "islogin", "topath"])
   },
+  components: { policy },
   methods: {
     ...mapMutations(["setuserid"]),
     ...mapActions(["getlogin", "getlogreg", "getuserid"]),
@@ -177,7 +198,7 @@ export default {
     },
     // 注册ing
     reging() {
-      if (this.code == "" || this.tel == "") {
+      if (this.code == "" || this.tel == "" || this.checked == false) {
         this.$message.error("请完善信息");
       } else {
         console.log(this.tel, this.code, "erwr");
@@ -202,11 +223,22 @@ export default {
               this.$router.push({ path: this.topath });
               // 掩藏登录框
               this.getlogreg(false);
+              this.$forceUpdate()
             } else if (res.data.code == 0) {
               this.$message.error("该手机已注册");
             }
           });
       }
+    },
+    read() {
+      this.iscur = true;
+      this.ispol = true;
+    },
+    goon() {
+      this.checked = true;
+      setTimeout(() => {
+        this.ispol = false;
+      }, 200);
     },
     // 忘记密码
     topaw() {
@@ -258,7 +290,7 @@ export default {
           let timer = setInterval(() => {
             this.codetime--;
             if (this.codetime <= 0) {
-              this.codetime = "点击发送";
+              this.codetime = "获取验证码";
               this.cancode = false;
               clearInterval(timer);
             }
@@ -275,7 +307,6 @@ export default {
             })
             .then(res => {
               console.log(res, "code");
-
               // 判断手机是否注册
               if (res.data.code == 0) {
                 this.$message.error({
@@ -305,14 +336,15 @@ export default {
       }
     },
     regpsw(psw) {
-      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
+      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
       if (!regpsw.test(psw)) {
-        this.$message.error("请输入至少6位数以上包含数字、字母、字符串的密码");
+        this.$message.error("请输入至少6位数以上包含数字、字母的密码");
         setTimeout(() => {
           this.password = "";
         }, 200);
       } else {
         this.password = psw;
+        console.log(this.password);
       }
     },
     regnpsw(confirmPsw) {
@@ -484,6 +516,22 @@ export default {
         color: rgba(51, 51, 51, 1);
       }
     }
+    .checkbox {
+      border: none;
+      span {
+        font-size: 13px;
+      }
+      .text {
+        box-sizing: border-box;
+        padding-left: 20px;
+      }
+      .texts {
+        cursor: pointer;
+      }
+      .ischeckbox {
+        color: #2482c8;
+      }
+    }
   }
   .getpsw {
     .codebox {
@@ -501,6 +549,43 @@ export default {
       background: rgba(228, 228, 228, 1);
       font-size: 14px;
       color: rgba(51, 51, 51, 1);
+    }
+  }
+  .policy-box {
+    width: 100%;
+    height: 3000px;
+    position: fixed;
+    top: 0;
+    z-index: 11111;
+    background: rgba(0, 0, 0, 0.5);
+
+    .pol-pri {
+      width: 1200px;
+      margin: 0px auto;
+      background: white;
+      position: relative;
+      img {
+        cursor: pointer;
+        position: absolute;
+        right: 30px;
+        top: 30px;
+      }
+    }
+    .goon {
+      cursor: pointer;
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: 200px;
+      height: 30px;
+      line-height: 30px;
+      background: #2482c8;
+      color: white;
+      &:active {
+        box-shadow: 0px 0px 15px #2482c8;
+      }
     }
   }
 }

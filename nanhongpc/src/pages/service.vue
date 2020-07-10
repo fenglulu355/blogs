@@ -108,7 +108,6 @@
               <p class="time">{{item.created_time}}</p>
               <p class="intro">
                 {{item.content}}
-             
                 <!-- <span>简介：{{item.intro}}</span>
                 <span>小区：{{item.xq}}</span>
                 <span>房间类型：{{item.home}}</span>-->
@@ -198,6 +197,9 @@ export default {
     } else {
       idx == 3 ? (this.curindex = 4) : (this.curindex = Number(idx));
     }
+    if (idx == 4) {
+      this.curindex = 3;
+    }
   },
   mounted() {
     document.body.scrollTop = document.documentElement.scrollTop = 600;
@@ -228,8 +230,6 @@ export default {
       this.$axios
         .post("/index/api/azlcList", { page: page, limit: limit })
         .then(res => {
-          console.log(res.data.data);
-
           this.insli = res.data.data.data;
           this.counts = res.data.data.total;
         });
@@ -247,7 +247,6 @@ export default {
       this.requstazlc(page, 3);
     },
     toservde(item) {
-      console.log(item);
       let id = item.id;
       this.$router.push({
         path: "/detail",
@@ -274,7 +273,6 @@ export default {
   .servisebox {
     width: 100%;
     border-top: 1px solid rgba(153, 153, 153, 0.3);
-    // border-bottom: 1px solid rgba(153, 153, 153, 0.3);
     box-sizing: border-box;
     padding: 60px 0 100px 0;
     .serv {
@@ -452,11 +450,14 @@ export default {
             .title,
             .time,
             .intro {
+              transition: color 0.4s ease;
               color: rgba(36, 130, 200, 1);
             }
             .more {
+              transition: color 0.4s ease;
               border: 1px solid rgba(62, 145, 223, 1);
-              color: rgba(62, 145, 223, 1);
+              background: rgba(62, 145, 223, 1);
+              color: white;
             }
           }
         }
@@ -514,9 +515,6 @@ export default {
         section {
           line-height: 35px;
           font-size: 16px;
-          // css保留空格和换行符
-          // white-space: pre-wrap;
-          // css保留换行符
           white-space: pre-line;
         }
       }

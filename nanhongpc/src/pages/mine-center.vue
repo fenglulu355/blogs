@@ -101,7 +101,7 @@
                       class="dress"
                     >{{item.address_province}}{{item.address_city}}{{item.address_area}}{{item.address_info}}</p>
                     <p class="edit" @click="edit(item)">编辑</p>
-                    <p class="delds" @click="deldress">删除</p>
+                    <p class="delds" @click="deldress(item)">删除</p>
                   </div>
                 </div>
               </el-radio>
@@ -212,15 +212,14 @@
         <div class="pswbox" v-show="selmcli==4">
           <p class="pswtitle">修改密码</p>
           <section>
-            <input type="text"
-             readonly :placeholder="minezh" v-model="minezh" />
-          </section> 
+            <input type="text" readonly :placeholder="minezh" v-model="minezh" />
+          </section>
           <section class="code">
             <input type="text" placeholder="暂时不输入验证码" disabled v-model="code" />
             <p>获取验证码</p>
           </section>
           <section>
-            <input type="password" placeholder="请输入新密码" @blur="regnpsw(npsw)"  v-model="npsw" />
+            <input type="password" placeholder="请输入新密码" @blur="regnpsw(npsw)" v-model="npsw" />
           </section>
           <section>
             <input type="password" @blur="regnpsw(qrpsw)" placeholder="请再次输入新密码" v-model="qrpsw" />
@@ -252,7 +251,7 @@ export default {
       isedit: false,
       selmcli: 0,
       sexradio: "1",
-      radio: "1",
+      radio: 0,
       input: "",
       detaildress: "", //详细地址
       consignee: "", //收货人姓名
@@ -383,31 +382,7 @@ export default {
         this.$message.error("对不起！您的积分不足，不能兑换！");
       }
     },
-    savedress() {
-      console.log(this.address);
-      this.$axios
-        .post("/index/user/addaddress", {
-          userId: this.userid,
-          address_name: this.address.name,
-          address_phone: this.address.tel,
-          address_province: this.address.province,
-          address_city: this.address.city,
-          address_area: this.address.county,
-          address_info: this.address.dress
-        })
-        .then(res => {
-          console.log(res);
-          if (res.data.code == 200) {
-            this.$message({
-              message: "添加成功",
-              type: "success"
-            });
-          } else {
-            this.$message.error("添加失败");
-          }
-          this.reload();
-        });
-    },
+
     //   上传头像
     beforeAvatarUpload(file) {
       // console.log(file);
@@ -480,8 +455,6 @@ export default {
     },
     // 修改地址
     edit(item) {
-      console.log(item);
-      console.log(this.address);
       setTimeout(() => {
         this.isedit = true;
         this.edititem = item;
@@ -489,28 +462,33 @@ export default {
     },
     close(e, info) {
       this.isedit = e;
-      // 修改地址
-      this.$axios
-        .post("/index/user/editaddress", {
-          aid: this.curdressid,
-          userId: this.userid,
-          address_name: info.name,
-          address_phone: info.tel,
-          address_province: info.province,
-          address_city: info.city,
-          address_area: info.county,
-          address_info: info.dress
-        })
-        .then(res => {
-          // console.log(res);
-          this.reload();
-        });
+      if (info) {
+        // 修改地址
+        this.$axios
+          .post("/index/user/editaddress", {
+            aid: this.curdressid,
+            userId: this.userid,
+            address_name: info.name,
+            address_phone: info.tel,
+            address_province: info.province,
+            address_city: info.city,
+            address_area: info.county,
+            address_info: info.dress
+          })
+          .then(res => {
+            this.reload();
+          });
+      } else {
+        this.$message.error("取消修改");
+      }
       console.log(info, "wwww");
     },
-    deldress() {
+    deldress(item) {
+      console.log(item);
+
       console.log(this.curdressid);
       this.$axios
-        .post("/index/user/delAddress", { aid: this.curdressid })
+        .post("/index/user/delAddress", { aid: item.address_id })
         .then(res => {
           if (res.data.data.code == 1) {
             this.$message({
@@ -523,6 +501,39 @@ export default {
           this.reload();
           console.log(res);
         });
+    },
+    savedress() {
+      console.log(this.address);
+      if (
+        this.address.name == "" ||
+        this.address.tel == "" ||
+        this.address.dress == ""
+      ) {
+        this.$message.error("请完善信息");
+      } else {
+        this.$axios
+          .post("/index/user/addaddress", {
+            userId: this.userid,
+            address_name: this.address.name,
+            address_phone: this.address.tel,
+            address_province: this.address.province,
+            address_city: this.address.city,
+            address_area: this.address.county,
+            address_info: this.address.dress
+          })
+          .then(res => {
+            console.log(res);
+            if (res.data.code == 200) {
+              this.$message({
+                message: "添加成功",
+                type: "success"
+              });
+            } else {
+              this.$message.error("添加失败");
+            }
+            this.reload();
+          });
+      }
     },
     changecurdress(item) {
       console.log(item);
@@ -569,17 +580,17 @@ export default {
       if (!regPhone.test(tel)) {
         this.$message.error("手机号码格式错误");
         setTimeout(() => {
-          this.tel = "";
+          this.address.tel = "";
         }, 200);
       } else {
-        this.tel = tel;
-        console.log(this.tel);
+        this.address.tel = tel;
+        console.log(this.address.tel);
       }
     },
     regpsw(psw) {
-      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
+      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
       if (!regpsw.test(psw)) {
-        this.$message.error("请输入至少6位数以上包含数字、字母、字符串的密码");
+        this.$message.error("请输入至少6位数以上包含数字、字母的密码");
         setTimeout(() => {
           this.npsw = "";
         }, 200);

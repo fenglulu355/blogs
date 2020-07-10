@@ -46,8 +46,8 @@ Vue.use(BaiduMap, {
 Vue.prototype.$axios = Axios
 
 Vue.prototype.httpUrl = httpUrl.httpUrl;
-Axios.defaults.baseURL = "http://nhjd.public.5151fw.com/";
-// Axios.defaults.baseURL = "http://nhjd.com/";
+// Axios.defaults.baseURL = "http://nhjd.public.5151fw.com/";
+Axios.defaults.baseURL = "http://www.scnhjd.com/";
 Axios.defaults.headers["Content-type"] = "application/json";
 
 Vue.use(Vuex)

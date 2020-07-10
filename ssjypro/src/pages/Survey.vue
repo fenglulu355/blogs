@@ -35,10 +35,7 @@
     <mt-tab-container v-model="seselected">
       <mt-tab-container-item id="1">
         <div class="survey-teachers">
-          <!-- <div class="survey-teachers-top">
-                    <span></span>
-                    <p>{{this.survey.name}}</p>
-          </div>-->
+        
           <div class="survey-teachers-bottom" v-html="this.survey.content"></div>
         </div>
       </mt-tab-container-item>

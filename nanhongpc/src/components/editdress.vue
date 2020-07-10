@@ -1,6 +1,7 @@
 <template>
   <div class="editdress">
     <div class="editbox">
+      <img class="close" @click="closed" src="../assets/navgation/log-x.png" alt />
       <section class="ds">
         <span class="text">地址信息：</span>
         <v-distpicker
@@ -12,12 +13,7 @@
       </section>
       <section>
         <span class="text">详细地址：</span>
-        <input
-          class="dds"
-          type="text"
-          :placeholder="edititem.address_info"
-          v-model="address.dress"
-        />
+        <input class="dds" type="text" :placeholder="edititem.address_info" v-model="address.dress" />
       </section>
       <section>
         <span class="text">收货人姓名：</span>
@@ -33,7 +29,7 @@
         <span class="border">中国大陆 +86</span>
         <input
           class="telipt"
-          @blur="regphone(edititem.address_phone)"
+          @blur="regphone(address.tel)"
           maxlength="11"
           type="text"
           :placeholder="edititem.address_phone"
@@ -84,16 +80,24 @@ export default {
       this.address.city = data.city.value;
       this.address.county = data.area.value;
     },
+    closed() {
+      this.$emit("close", false);
+    },
     send() {
-      if (
-        this.address.name == "" ||
-        this.address.tel == "" ||
-        this.address.dress == ""
-      ) {
-        this.$message.error("请完善信息");
-      } else {
-        this.$emit("close", false, this.address);
-      }
+      setTimeout(() => {
+        if (
+          this.address.name == "" ||
+          this.address.tel == "" ||
+          this.address.dress == ""
+        ) {
+          this.$message.error("请完善信息");
+          console.log(this.address, "1");
+        } else {
+          console.log(this.address, "2");
+         this.$emit("close", false, this.address);
+        }
+      }, 200);
+
       //
     },
     // 正则判断手机号
@@ -102,11 +106,11 @@ export default {
       if (!regPhone.test(tel)) {
         this.$message.error("手机号码格式错误");
         setTimeout(() => {
-          this.tel = "";
+          this.address.tel = "";
         }, 200);
       } else {
-        this.tel = tel;
-        console.log(this.tel);
+        this.address.tel = tel;
+        console.log(this.address.tel);
       }
     }
   },
@@ -129,6 +133,13 @@ export default {
     margin: 130px auto;
     box-sizing: border-box;
     padding: 70px 50px;
+    position: relative;
+    .close {
+      position: absolute;
+      right: 50px;
+      top: 50px;
+      cursor: pointer;
+    }
     input {
       box-sizing: border-box;
       border: 1px solid rgba(204, 204, 204, 1);

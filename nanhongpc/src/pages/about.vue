@@ -366,7 +366,6 @@ export default {
   },
   created() {
     this.requst();
-
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {
       this.curindex = 0;
@@ -379,12 +378,25 @@ export default {
       if (idx == 2) {
         this.curindex = 4;
       }
+      if (idx == 3) {
+        this.curindex = 2;
+      }
       if (idx == 4) {
         this.curindex = 1;
       }
       if (idx == 5) {
         this.curindex = 7;
         this.requstzp(1, 1, 3);
+        // console.log(7);
+      }
+      if (idx == 6) {
+        this.curindex = 5;
+
+        // console.log(7);
+      }
+      if (idx == 7) {
+        this.curindex = 8;
+
         // console.log(7);
       }
       if (idx == 8) {
@@ -795,6 +807,7 @@ export default {
         border-bottom: 1px solid rgba(204, 204, 204, 1);
         display: flex;
         justify-content: flex-start;
+
         .mainpic {
           margin-top: 30px;
           width: 343px;
@@ -817,9 +830,9 @@ export default {
             font-weight: bold;
             color: rgba(51, 51, 51, 1);
             line-height: 45px;
-            &:hover {
-              color: rgba(36, 130, 200, 1);
-            }
+            // &:hover {
+            //   color: rgba(36, 130, 200, 1);
+            // }
           }
           .time {
             font-size: 14px;
@@ -848,10 +861,23 @@ export default {
             color: rgba(153, 153, 153, 1);
             line-height: 31px;
             margin-top: 30px;
-            &:hover {
-              border: 1px solid rgba(62, 145, 223, 1);
-              color: rgba(62, 145, 223, 1);
-            }
+            // &:hover {
+            //   border: 1px solid rgba(62, 145, 223, 1);
+            //   color: rgba(62, 145, 223, 1);
+            // }
+          }
+        }
+        &:hover {
+          .title, .intro {
+            transition: color 0.2s ease;
+            color: rgba(36, 130, 200, 1);
+          }
+
+          .more {
+            transition: color 0.2s ease;
+            border: 1px solid rgba(36, 130, 200, 1);
+            background: rgba(36, 130, 200, 1);
+            color: white;
           }
         }
       }

@@ -215,6 +215,10 @@ export default {
       } else if (index == 2) {
         this.$router.push({ path: "/shopshow" });
         sessionStorage.setItem("mnavindex", 1);
+      } else if (index == 0 || index == 1 || index == 3) {
+        window.open(
+          "http://wpa.qq.com/msgrd?v=3&uin=2073376722&site=qq&menu=yes"
+        );
       }
     },
     tonav(e) {

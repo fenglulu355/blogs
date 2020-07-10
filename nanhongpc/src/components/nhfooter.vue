@@ -85,7 +85,9 @@
       <div class="footer-center">
         <ul class="fc-list">
           <li class="fc-li" v-for="(item, index) in navlist" :key="index">
-            <p class="title">{{item.name}}</p>
+            <p class="title">
+              <router-link :to="item.path">{{item.name}}</router-link>
+            </p>
             <ul class="lists">
               <li class="mli" v-for="(items, i) in item.lname" :key="i" @click="topath(item,items)">
                 <p :to="{path:item.path}">{{items.text}}</p>
@@ -106,7 +108,9 @@
               <img class="telimg" src="../assets/footer/tels.png" alt /> 0830-0267-6452
             </span>
             <span class="kf">
-              <img src="../assets/footer/info.png" alt />在线客服
+              <a href="http://wpa.qq.com/msgrd?v=3&uin=2073376722&site=qq&menu=yes"
+               target="_blank" > <img src="../assets/footer/info.png" alt />在线客服</a>
+             
             </span>
             <span class="time">周一至周日</span>
             <span class="time">08:30-18:30</span>
@@ -125,8 +129,8 @@
           <span class="text" @click="toprolicy">用户协议</span>
           <span class="style">|</span>
           <span class="text" @click="qustion">安全问题反馈</span>
-          <!-- <span class="style">|</span>
-          <span class="text" @click="tostatemap">站点地图</span> -->
+          <span class="style">|</span>
+          <span class="text" @click="tostatemap">站点地图</span>
         </p>
         <div class="fb-bot">
           <div class="copyright">{{webinfo.website_copyright}}</div>
@@ -137,15 +141,31 @@
         </div>
       </div>
     </div>
+    <div class="policy-box" v-if="ispol">
+      <div class="pol-item pol-pri">
+        <img @click="ispol=false" src="../assets/navgation/log-x.png" alt />
+        <policy></policy>
+      </div>
+    </div>
+    <div class="policy-box" v-if="ispri">
+      <div class="pri-item pol-pri">
+        <img @click="ispri=false" src="../assets/navgation/log-x.png" alt />
+        <privacy></privacy>
+      </div>
+    </div>
   </div>
 </template>
 <script>
 import { mapMutations } from "vuex";
+import policy from "../components/policy";
+import privacy from "../components/privacy";
 export default {
   name: "nhfooter",
   inject: ["reload"],
   data() {
     return {
+      ispol: false,
+      ispri: false,
       isqustion: false,
       curindex: 0,
       topli: [
@@ -217,6 +237,7 @@ export default {
       this.curindex = 0;
     }
   },
+  components: { policy, privacy },
   methods: {
     ...mapMutations(["setispri"]),
     requst() {
@@ -237,13 +258,15 @@ export default {
       this.reload();
     },
     toprivacy() {
-      this.$router.push({ path: "/privacy" });
+      this.ispri = true;
+      // this.$router.push({ path: "/privacy" });
     },
     tostatemap() {
       this.$router.push({ path: "/statemap" });
     },
     toprolicy() {
-      this.$router.push({ path: "/policy" });
+      this.ispol = true;
+      // this.$router.push({ path: "/policy" });
     },
     qustion() {
       this.isqustion = true;
@@ -256,7 +279,27 @@ export default {
 .nhfooter {
   width: 100%;
   box-sizing: border-box;
-  padding-top: 50px;
+  padding: 50px 0 20px 0px;
+  .policy-box {
+    width: 100%;
+    height: 3000px;
+    position: fixed;
+    top: 0;
+    z-index: 11111;
+    background: rgba(0, 0, 0, 0.5);
+    .pol-pri {
+      width: 1200px;
+      margin: 0px auto;
+      background: white;
+      position: relative;
+      img {
+        cursor: pointer;
+        position: absolute;
+        right: 30px;
+        top: 30px;
+      }
+    }
+  }
   .content {
     width: 100%;
     .footertop {
@@ -290,7 +333,10 @@ export default {
         line-height: 35px;
         text-align: center;
         .title {
-          font-size: 18px;
+          a {
+            font-size: 18px;
+            color: #333333;
+          }
         }
         .lists {
           cursor: pointer;
@@ -307,6 +353,7 @@ export default {
         padding: 50px 0 0px 0;
         display: flex;
         justify-content: space-between;
+        font-size: 15px;
         .fc-b-left {
           align-self: center;
         }
@@ -346,8 +393,9 @@ export default {
     }
     .footer-bot {
       width: 100%;
-      border-top: 2px solid rgba(0, 0, 0, 0.2);
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
       box-sizing: border-box;
+      background-color: #f9f9f9;
       // padding-bottom: 20px;
       .fb-top {
         width: 1200px;
@@ -357,6 +405,7 @@ export default {
           cursor: pointer;
           box-sizing: border-box;
           padding: 0 5px;
+          font-size: 15px;
         }
       }
       .fb-bot {
@@ -369,6 +418,7 @@ export default {
           box-sizing: border-box;
           width: 500px;
           padding: 10px 0;
+          font-size: 12px;
         }
         .fb-right {
           img {
@@ -378,16 +428,7 @@ export default {
       }
     }
   }
-  .qustion {
-    position: fixed;
-    z-index: 111;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-  }
-  // .footmain {
+
   //   // background: pink;
   //   display: grid;
   //   grid-template-columns: 18% 63% 1fr;

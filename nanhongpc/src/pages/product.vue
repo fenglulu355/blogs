@@ -116,7 +116,7 @@ export default {
           this.goodsinfo = res.data.data.data;
           this.count = res.data.data.total;
 
-          console.log(this.count, this.goodsinfo, "this.keyword");
+          // console.log(this.count, this.goodsinfo, "this.keyword");
         });
     }, // 大分类列表搜索
     tonav(index, item) {
@@ -159,7 +159,7 @@ export default {
       });
     },
     topro(item, index) {
-      console.log(item);
+      // console.log(item);
       this.$router.push({
         path: "/prodetails",
         query: { classid: item.class_id, id: item.article_id }

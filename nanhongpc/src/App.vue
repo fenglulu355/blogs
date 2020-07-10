@@ -121,6 +121,13 @@ export default {
 .shoppingmall .el-input {
   width: 100% !important;
 }
+.distpicker-address-wrapper select:focus{
+outline: none;
+}
+.distpicker-address-wrapper option:focus{
+outline: none;
+}
+
 </style>
 
 

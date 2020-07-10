@@ -19,7 +19,7 @@ Vue.use(ElementUI);
 Vue.prototype.$axios = Axios
 Vue.prototype.httpUrl = httpUrl;
 // Axios.defaults.baseURL = "http://www.cdswcmy.com/";
-Axios.defaults.baseURL = "http://als.public.5151fw.com/";
+Axios.defaults.baseURL = "http://www.alcgarden.com/";
 Axios.defaults.headers["Content-type"] = "application/json";
 import VueLazyLoad from 'vue-lazyload'
 Vue.use(VueLazyLoad, {

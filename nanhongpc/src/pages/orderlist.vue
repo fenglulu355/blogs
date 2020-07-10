@@ -345,6 +345,7 @@ export default {
 .orderlist {
   background: rgba(245, 245, 245, 1);
   width: 100%;
+  min-height: 500px;
   box-sizing: border-box;
   padding: 77px 0 82px 0;
   .ordercont {

@@ -206,6 +206,7 @@ export default {
     }
   },
   created() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
     this.requstaddress(this.userid);
     this.requstcar(this.userid);
     this.requstyhq();
