@@ -41,7 +41,7 @@
         </p>
       </div>
     </div>
-    <p class="copyright">{{infos.foot_content}}</p>
+    <!-- <p class="copyright">{{infos.foot_content}}</p> -->
   </div>
 </template>
 <script>

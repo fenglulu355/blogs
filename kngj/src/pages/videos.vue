@@ -7,7 +7,7 @@
       <li class="videoli" v-for="(item, index) in videoli" :key="index">
         <p v-show="playing!=index" class="text">视频</p>
         <img v-show="playing!=index" @click="showvideo(item,index)" src="../assets/播放.png" alt />
-        <video v-if="playing==index" ref="video" controls src=""></video>
+        <video v-if="playing==index" ref="video" controls :src='item.video_url'></video>
         <p class="close" v-if="playing==index" @click="playing=null">X</p>
       </li>
     </ul>
@@ -22,14 +22,19 @@ export default {
   data() {
     return {
       playing: null,
-      videoli: [
-        { icon: require("../assets/banner.png") },
-        { icon: require("../assets/banner.png") },
-        { icon: require("../assets/banner.png") }
-      ]
+      videoli: []
     };
   },
+  created() {
+    this.requst();
+  },
   methods: {
+    requst() {
+      this.$axios.post("/index/api/getQyvideo").then(res => {
+        console.log(res);
+        this.videoli = res.data.data;
+      });
+    },
     showvideo(item, index) {
       this.playing = index;
     }

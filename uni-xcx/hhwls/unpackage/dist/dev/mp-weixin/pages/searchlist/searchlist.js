@@ -207,7 +207,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     requst: function requst(number) {var _this = this;
       uni.request({
-        url: 'http://hhwl.com/wxapp/login/getHh',
+        url: 'http://hhwl.public.5151fw.com/wxapp/login/getHh',
         method: 'POST',
         data: { number: number, type: 1 },
         success: function success(res) {
@@ -236,8 +236,9 @@ __webpack_require__.r(__webpack_exports__);
 
       } else {
         uni.request({
-          url: 'http://hhwl.com/wxapp/login/getHh',
+          url: 'http://hhwl.public.5151fw.com/wxapp/login/getHh',
           method: 'POST',
+          header: { 'content-type': 'application/x-www-form-urlencoded' },
           data: { number: this.numbers, type: 1 },
           success: function success(res) {
             if (res.data.data.result == 1) {

@@ -17,7 +17,7 @@
 					</view>
 				</view>
 				<view class="s-li-center">
-					<image class="img" src="../../static/切换.png" mode=""></image>
+					<image class="img" src="../../static/change.png" mode=""></image>
 					<view class="border">
 					</view>
 				</view>
@@ -83,7 +83,7 @@
 			},
 			requst(number){
 				uni.request({
-					url: 'http://hhwl.com/wxapp/login/getHh',
+					url: 'http://hhwl.public.5151fw.com/wxapp/login/getHh',
 					method: 'POST',
 					data: {number:number,type:1},
 					success: res => {
@@ -112,8 +112,9 @@
 			})
 		}else{
 			uni.request({
-				url: 'http://hhwl.com/wxapp/login/getHh',
+				url: 'http://hhwl.public.5151fw.com/wxapp/login/getHh',
 				method: 'POST',
+				 header: {'content-type': 'application/x-www-form-urlencoded'},
 				data: {number:this.numbers,type:1},
 				success: res => {
 					if(res.data.data.result==1){

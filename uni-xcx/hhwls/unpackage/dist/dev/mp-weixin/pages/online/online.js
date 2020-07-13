@@ -208,7 +208,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     requst: function requst(number) {var _this = this;
       uni.request({
-        url: 'http://hhwl.com/wxapp/login/getHh',
+        url: 'http://hhwl.public.5151fw.com/wxapp/login/getHh',
         method: 'POST',
         data: { number: number, type: 1 },
         success: function success(res) {

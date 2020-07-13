@@ -70,32 +70,40 @@
 					    icon: "none"
 					})
 				}else{
-					
+					// uni.navigateTo({
+					// 	url:`../searchlist/searchlist?number=`+this.number
+					// })
+					console.log(1);
 					uni.request({
-						url: 'http://hhwl.com/wxapp/login/getHh',
+						url: 'http://hhwl.public.5151fw.com/wxapp/login/getHh',
 						method: 'POST',
+						 header: {'content-type': 'application/x-www-form-urlencoded'},
 						data: {number:this.number,type:1},
 						success: res => {
 							console.log(res)
-							if(res.data.data.result==1){
-								uni.showToast({
-									title:res.data.data.msg,
-									icon: "none"
-								})
-							}else if(res.data.data.result==0){
-								uni.showLoading({
-									title:'跳转中....'
-								})
-								setTimeout(function() {
-								  uni.hideLoading()
-								}, 10);
-								uni.navigateTo({
-									url:`../searchlist/searchlist?number=`+this.number
-								})
-							}
+							// if(res.data.data.result==1){
+							// 	uni.showToast({
+							// 		title:res.data.data.msg,
+							// 		icon: "none"
+							// 	})
+							// }else if(res.data.data.result==0){
+							// 	uni.showLoading({
+							// 		title:'跳转中....'
+							// 	})
+							// 	setTimeout(function() { 
+							// 	  uni.hideLoading()
+							// 	}, 10);
+							// 	uni.navigateTo({
+							// 		url:`../searchlist/searchlist?number=`+this.number
+							// 	})
+							// }
 						},
-						fail: () => {},
-						complete: () => {}
+						fail: (res) => {
+							console.log(res,'fail');
+						},
+						complete: (res) => {
+							console.log(res,'complete');
+						},
 					});
 				}
 				
