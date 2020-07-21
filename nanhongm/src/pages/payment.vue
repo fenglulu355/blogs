@@ -10,18 +10,18 @@
       </div>
       <div class="curbox">
         <p class="text">
-          <img src="../assets/shop/return.png" alt />
+          <img @click="back" src="../assets/shop/return.png" alt />
           请选择支付方式
         </p>
         <ul class="paylist">
-          <li class="tobank">
+          <!-- <li class="tobank">
             <a :href="httpUrl+`/index/unionpay/dopay?orderId=`+orderid">
               <p>银联支付</p>
               <img src="../assets/shop/yl.png" alt />
             </a>
-          </li>
-          <li class="towx" @click="towx">
-            <p  @click="towx">微信支付</p>
+          </li>-->
+          <li class="towx" @click="showtc">
+            <p @click="showtc">微信支付</p>
             <img src="../assets/shop/wx.png" alt />
           </li>
           <li class="tozfb">
@@ -30,6 +30,11 @@
           </li>
         </ul>
       </div>
+    </div>
+    <div class="tck" v-if="istc">
+      <p>
+        <a @click="getopid">点击打开微信支付</a>
+      </p>
     </div>
     <div class="payoff" v-show="ispay">
       <div class="payoffbox">
@@ -64,24 +69,92 @@
   </div>
 </template>
 <script>
+import wx from "weixin-js-sdk";
 export default {
   data() {
     return {
+      istc: false,
       ispay: false,
       ordernum: null,
       money: null,
       orderid: "",
       imgurl: "",
       isshowwx: false,
-      inwx: false
+      inwx: false,
+      wxres: "",
+      code: "",
+      state: ""
     };
   },
   created() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
     this.ordernum = this.$route.query.ordernum;
     this.money = this.$route.query.price;
     this.orderid = this.$route.query.orderid;
   },
+  mounted() {
+     console.log(wx)
+  },
   methods: {
+    requestopid(code) {
+      this.$axios.post("/index/zpay/payOne", { code: code }).then(res => {
+        console.log(res, "a");
+      });
+    },
+    getopid() {
+      this.code = sessionStorage.getItem("code");
+      // this.code = this.getUrlCode().ordernum;
+      if (this.code == "undefined") {
+        window.location.href = "https://www.scnhjd.com/index/zpay/getWxCode";
+      } else {
+        //  window.location.href='http://www.scnhjd.com/index/zpay/payOne'
+          this.requestopid(this.code);
+      }
+      console.log(this.code);
+    
+    },
+    showtc() {
+      this.istc = true;
+    },
+    getUrlCode() {
+      var url = location.search;
+      var theRequest = new Object();
+      if (url.indexOf("?") != -1) {
+        var str = url.substr(1);
+        var strs = str.split("&");
+        for (var i = 0; i < strs.length; i++) {
+          theRequest[strs[i].split("=")[0]] = strs[i].split("=")[1];
+        }
+      }
+      return theRequest;
+    },
+    // UrlCode(url) {
+    //   // 截取url中的code方法  这里的判断只是针对于我自己的项目 你要用只是借鉴  不懂就去百度
+    //   // var url = location.search;  //获取url
+    //   var urls = url;
+    //   let a = urls.indexOf("="),
+    //     b = urls.indexOf("&"),
+    //     c = urls.indexOf("state=");
+    //   this.code = urls.slice(a + 1, b);
+    //   // this.code = this.$router.query.code
+    //   this.state = urls.slice(c + 6, c + 7);
+    //   console.log(this.code, this.state);
+    //   this.$axios.get("index/zpay/payOne", { code: this.code }).then(res => {
+    //     console.log(res, "a");
+    //   });
+    // },
+    back() {
+      this.$dialog
+        .confirm({
+          title: "提示",
+          message: "支付未完成确认离开吗"
+        })
+        .then(() => {
+          this.$router.push({ path: "/orderlist" });
+        })
+        .catch(() => {});
+      //
+    },
     closewx() {
       this.$confirm("支付还未完成，您确定要取消吗", "提示", {
         cancelButtonText: "继续支付",
@@ -100,47 +173,66 @@ export default {
     tobank() {
       this.ispay = true;
     },
-
     towx() {
       // this.isshowwx = true;
-
+      console.log(this.orderid);
       var ua = window.navigator.userAgent.toLowerCase();
+      console.log(ua);
+      // 微信内置浏览器
       if (ua.match(/MicroMessenger/i) == "micromessenger") {
         this.inwx = true;
         this.$toast.loading({
           message: "加载中...",
           forbidClick: true
         });
-        //return true
-        // this.isAndroid();
-        this.$axios
-          .post("/index/Wxpay/dopay", {
-            order_id: this.orderid
-          })
-          .then(res => {
-            // this.imgurl = res.data.data;
+        console.log(this.orderid);
+        // var ua = navigator.userAgent,
+        //   app = navigator.appVersion;
+        // var isAndroid = ua.indexOf("Android") > -1 || ua.indexOf("Linux") > -1;
+        // var isIOS = !!ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+        // let url = encodeURIComponent(
+        //   "http://www.scnhjd.com/mindex.html#/payment?ordernum=5940230856212&orderid=94&price=1.06"
+        // );
+        // console.log(url);
 
-            console.log(res);
+        // if (isIOS) {
 
-            alert(res.data.data);
-            // windows.location.href = res.data.data;
-            this.$router.push({ path: res.data.data });
-          });
+        // } else {
+        //   window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxce4edfb791aa82f1&redirect_uri=http://www.scnhjd.com/mindex.html#/payment?ordernum=5940230856212&orderid=94&price=1.06&response_type=code&scope=snsapi_base&state=1#wechat_redirect`;
+        // }
+        // window.location.href =
+        //   `https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxce4edfb791aa82f1&redirect_uri=` +
+        //   url +
+        //   `+&response_type=code&scope=snsapi_base&state=1#wechat_redirect`;
+
+        // this.$axios
+        //   .post("/index/Zpay/dopay", {
+        //     order_id: this.orderid
+        //   })
+        //   .then(res => {
+        //     // this.imgurl = res.data.data;
+        //     this.wxres = res.data.data;
+        //     console.log(res);
+
+        //     // windows.location.href = res.data.data;
+        //     // this.$router.push({ path: res.data.data });
+        //   });
       } else {
+        // h5浏览器
         this.inwx = false;
         this.$toast.loading({
           message: "加载中...",
           forbidClick: true
         });
+
         this.$axios
           .post("/index/Wxpay/h5dopay", {
             order_id: this.orderid
           })
           .then(res => {
             // this.imgurl = res.data.data;
-
             console.log(res);
-            alert(res.data.data);
+            this.wxres = res.data.data;
             window.location.href = res.data.data;
           });
         // return false;
@@ -164,6 +256,18 @@ export default {
   background: rgba(245, 245, 245, 1);
   box-sizing: border-box;
   padding: 50px 25px;
+  .tck {
+    width: 100%;
+    height: 150px;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0px 0px 18px 0px rgba(228, 228, 228, 0.63);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+    line-height: 150px;
+    z-index: 222;
+  }
   .paybox {
     width: 100%;
     color: rgba(51, 51, 51, 1);

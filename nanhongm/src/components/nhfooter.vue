@@ -85,12 +85,19 @@ export default {
     } else {
       this.curindex = 0;
     }
+    this.requst()
   },
   methods: {
     tonav(index) {
       this.curindex = index;
       sessionStorage.setItem("navindex", index);
       this.reload();
+    },
+    requst(){
+    this.$axios.post('/index/api/home').then(res=>{
+      // console.log(res);
+      
+    })
     }
   }
 };

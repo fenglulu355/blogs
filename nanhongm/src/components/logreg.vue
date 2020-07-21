@@ -237,7 +237,7 @@ export default {
           let timer = setInterval(() => {
             this.codetime--;
             if (this.codetime <= 0) {
-              this.codetime = "点击发送";
+              this.codetime = "获取验证码";
               this.cancode = false;
               clearInterval(timer);
             }
@@ -246,7 +246,7 @@ export default {
           let code = this.rand("0000", "9999");
           this.getcode = code;
           console.log(code, "code");
-          this.$dialog({message:"验证码为" + this.getcode});
+          this.$dialog({ message: "验证码为" + this.getcode });
           this.$axios
             .post("/index/login/sendPhoneCode", {
               phone: this.tel,
@@ -278,7 +278,7 @@ export default {
       }
     },
     regpsw(psw) {
-      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,.\/]).{6,}$/;
+      let regpsw = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
       if (!regpsw.test(psw)) {
         this.$toast.fail("请输入至少6位数以上包含数字、字母、字符串的密码");
         setTimeout(() => {
@@ -330,13 +330,13 @@ export default {
   z-index: 111;
   background: white;
   box-sizing: border-box;
-  padding: 200px 90px 0 90px;
+  padding: 100px 90px 0 90px;
   .box {
     background: white;
     width: 100%;
     margin: 0 auto;
     position: relative;
-    padding-top: 20px;
+    padding-top: 200px;
     .toclose {
       position: absolute;
       right: 0;

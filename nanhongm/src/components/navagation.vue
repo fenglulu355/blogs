@@ -4,7 +4,9 @@
     <div class="webbox" v-if="isbanshow">
       <div class="navs">
         <div class="logo">
-          <img class="mainpic" src="../assets/nav/toplogo.png" alt />
+          <router-link to="/">
+            <img class="mainpic" src="../assets/nav/toplogo.png" alt />
+          </router-link>
         </div>
         <!-- 官网 -->
 
@@ -86,7 +88,9 @@
     <div class="shopbox" v-else>
       <div class="navs">
         <div class="logo">
-          <img class="mainpic" src="../assets/nav/toplogo.png" alt />
+          <router-link to="/">
+            <img class="mainpic" src="../assets/nav/toplogo.png" alt />
+          </router-link>
         </div>
         <!-- 商城 -->
         <div class="homebanner">
@@ -106,7 +110,7 @@
             <div
               @click="tomine"
               class="mainpic dh"
-              :style="{backgroundImage: 'url(' + require('../assets/nav/dh.png')+ ')',
+              :style="{backgroundImage: 'url(' + require('../assets/nav/menu.png')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -304,7 +308,7 @@ export default {
         width: 50%;
         position: relative;
         .mainpic {
-          width: 44px;
+          width: 40px;
           height: 40px;
           position: absolute;
           left: 0;
@@ -329,10 +333,10 @@ export default {
           width: 43px;
           height: 37px;
         }
-        .dh {
-          width: 37px;
-          height: 39px;
-        }
+        // .dh {
+        //   width: 45px;
+        //   height: 39px;
+        // }
         p {
           font-size: 20px;
           color: rgba(91, 91, 91, 1);
@@ -368,7 +372,7 @@ export default {
     }
   }
   .swiper {
-    background: pink;
+    // background: pink;
     width: 100%;
     height: 440px;
     .my-swiper {

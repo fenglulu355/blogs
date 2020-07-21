@@ -85,7 +85,7 @@
                 <div
                   v-else
                   class="mainpic"
-                  :style="{backgroundImage: 'url(' + item.user.wx_headimg+ ')',
+                  :style="{backgroundImage: 'url(' +httpUrl+  item.user.user_image+ ')',
                 backgroundSize:'cover',
                 backgroundRepeat: 'no-repeat',
                 backgroundPosition:'center'
@@ -135,7 +135,6 @@ export default {
     return {
       styleindex: 0,
 
- 
       color: [],
       type: 0,
       detevas: false,
@@ -158,6 +157,7 @@ export default {
     }
   },
   created() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
     this.class_id = this.$route.query.class_id;
     this.requst(this.class_id);
   },
@@ -181,32 +181,36 @@ export default {
             ]);
             this.color.push([]);
           }
-          console.log(this.fids, " this.fids");
         });
     },
     tocar() {
-      let userid = JSON.parse(sessionStorage.getItem("vuex")).userid,
-        goodsid = this.goodsinfo.goods_info.goods_id,
-        fids = this.fids.join(",");
-      this.$axios
-        .post("/index/shop/addShoppingCart", {
-          userId: userid,
-          gid: goodsid,
-          num: 1,
-          fids: fids
-        })
-        .then(res => {
-          // console.log(res);
-          if (res.data.code == 200) {
-            this.$toast.success("加入购物车成功");
-            setTimeout(() => {
-              // 跳转至购物车
-              this.$router.push({ path: "/shoppingcar" });
-            }, 500);
-          } else {
-            this.$toast.fail("添加失败");
-          }
-        });
+      console.log(this.fids);
+      if (this.fids.length == 0) {
+        this.$toast.fail("您未选择商品属性！");
+      } else {
+        let userid = JSON.parse(sessionStorage.getItem("vuex")).userid,
+          goodsid = this.goodsinfo.goods_info.goods_id,
+          fids = this.fids.join(",");
+        this.$axios
+          .post("/index/shop/addShoppingCart", {
+            userId: userid,
+            gid: goodsid,
+            num: 1,
+            fids: fids
+          })
+          .then(res => {
+            // console.log(res);
+            if (res.data.code == 200) {
+              this.$toast.success("加入购物车成功");
+              setTimeout(() => {
+                // 跳转至购物车
+                this.$router.push({ path: "/shoppingcar" });
+              }, 500);
+            } else {
+              this.$toast.fail("添加失败");
+            }
+          });
+      }
     },
     // open
     isstyle(index) {
@@ -224,6 +228,8 @@ export default {
       let id = items.format_name;
       this.fids[index] = id;
       this.color[index] = indexs;
+      console.log(this.fids);
+      
       this.$forceUpdate();
     },
     deteva(e) {

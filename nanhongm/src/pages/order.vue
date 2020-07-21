@@ -2,7 +2,7 @@
   <div class="order">
     <!-- 头部 -->
     <p class="toptitle">
-      <img src="../assets/shop/return.png" alt />提交订单
+      <img @click="back" src="../assets/shop/return.png" alt />提交订单
     </p>
     <!-- 地址 -->
     <div class="receve selbox">
@@ -176,6 +176,7 @@ export default {
     }
   },
   created() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
     this.height = document.documentElement.clientHeight;
     console.log(this.height);
 
@@ -185,6 +186,9 @@ export default {
     this.requstaddress(this.userid);
   },
   methods: {
+    back() {
+      this.$router.back(-1);
+    },
     toadddress() {
       this.$router.push({ path: "/minecenter", query: { tag: 1 } });
     },

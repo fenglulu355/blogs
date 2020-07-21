@@ -15,6 +15,11 @@
 		<view class="text">
 			康定  色达  雅江  即将开通敬请期待
 		</view>
+		<view class="tomore"> 
+			<view class="gywm">
+				关于我们 
+			</view>
+		</view>
 		<view class="footer">
 			<image class="img" src="../../static/logo.png" mode=""></image>
 		</view>
@@ -180,7 +185,7 @@
 }
 .home .footer{
 	box-sizing: border-box;
-	padding-top: 390rpx;
+	padding-top: 300rpx;
 	text-align: center;
 }
 .home .footer .img{

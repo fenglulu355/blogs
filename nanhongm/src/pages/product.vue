@@ -22,7 +22,6 @@
             }"
             ></div>
             <p class="name">{{item.article_title}}</p>
-        
           </li>
         </ul>
       </div>
@@ -53,12 +52,10 @@ export default {
       currentPage: 1, // 当前页码
       count: 300, // 总记录数,
       curindex: 0,
-      // curinfoindex: 0,
       tabtitle: { a: "智慧", b: "中心" },
       tabnav: [],
       classid: "",
       curinfo: [],
-      // arr: [],
       keyword: [],
       goodsinfo: [],
       morecur: [],
@@ -79,10 +76,7 @@ export default {
     requst(classid) {
       this.$axios.post("/index/api/productClass").then(res => {
         this.curinfo = res.data.data;
-  this.curlist = res.data.data.slice(0, 3);
-        console.log(this.curinfo, "a");
-        // let tavnav = JSON.stringify(this.tabnav);
-        // sessionStorage.setItem("tabnav", tavnav);
+        this.curlist = res.data.data.slice(0, 3);
         if (this.classid) {
           this.requstclass(this.classid);
           this.requstlist("", this.classid, 1, 6);

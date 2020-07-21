@@ -32,7 +32,8 @@
         <div class="videobg">
           <div
             class="videopic"
-            :style="{backgroundImage: 'url(' + require('../assets/home/homebanner.png')+ ')',
+            :style="{backgroundImage: 'url(' +
+             require('../assets/home/video.jpg')+ ')',
              backgroundSize:'cover',
             backgroundRepeat: 'no-repeat',
             backgroundPosition:'center'
@@ -138,13 +139,6 @@ export default {
         path: "/detail",
         query: { id: item.id, kind: "news" }
       });
-    },
-    mouseenter(index) {
-      this.hoverindex = index;
-      console.log(2);
-    },
-    mousemove() {
-      console.log(1);
     }
   }
 };

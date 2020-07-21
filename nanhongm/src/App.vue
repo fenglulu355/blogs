@@ -26,7 +26,26 @@ export default {
   computed: {
     ...mapState(["isbanshow"])
   },
+  mounted() {
+    console.log(location.search);
+    this.code = this.getUrlCode().code;
+    console.log(this.code);
+    sessionStorage.setItem("code", this.code);
+    
+  },
   methods: {
+    getUrlCode() {
+      var url = location.search;
+      var theRequest = new Object();
+      if (url.indexOf("?") != -1) {
+        var str = url.substr(1);
+        var strs = str.split("&");
+        for (var i = 0; i < strs.length; i++) {
+          theRequest[strs[i].split("=")[0]] = strs[i].split("=")[1];
+        }
+      }
+      return theRequest;
+    },
     reload() {
       let self = this;
       self.isAlive = false;

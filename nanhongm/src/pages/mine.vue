@@ -27,7 +27,7 @@
         </div>
         <div class="names">
           <p class="name">
-           <span v-if="userinfo.user_nickname">{{userinfo.user_nickname}}</span>
+            <span v-if="userinfo.user_nickname">{{userinfo.user_nickname}}</span>
             <span v-else>{{userinfo.user_name}}</span>
             <img src="../assets/mine/mine.png" alt />
           </p>
@@ -50,7 +50,7 @@
           :class="curmineli ==index?'selmine':''"
           @click="tonav(index,item)"
         >
-       <img :src="item.iconb" v-if="curmineli ==index" alt />
+          <img :src="item.iconb" v-if="curmineli ==index" alt />
           <img :src="item.icon" v-else alt />
 
           <span>{{item.name}}</span>
@@ -70,7 +70,7 @@ export default {
     return {
       userinfo: [],
       curmineli: null,
-    mineli: [
+      mineli: [
         {
           icon: require("../assets/mine/infoh.png"),
           iconb: require("../assets/mine/infob.png"),
@@ -107,7 +107,7 @@ export default {
           name: "修改密码",
           tag: 4
         }
-      ],
+      ]
     };
   },
   computed: {

@@ -28,9 +28,9 @@
             ></div>
             <p class="name">{{item.goods_name}}</p>
             <p class="price">
-              <span class="oprice">{{item.platform_price}}</span>
+              <span class="oprice">￥{{item.platform_price}}</span>
               /
-              <span>{{item.goods_price}}</span>
+              <span>￥{{item.goods_price}}</span>
             </p>
           </li>
         </ul>
@@ -79,6 +79,7 @@ export default {
     };
   },
   created() {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
     this.requst();
     let idx = sessionStorage.getItem("mnavindex");
     if (!idx) {

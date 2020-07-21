@@ -5,7 +5,10 @@
       <!-- 行业新闻 -->
       <div class="hynews nbox">
         <ul class="newslist">
-          <li class="newsli" v-for="(item, index) in newsinfo" :key="index">
+          <li class="newsli"
+           v-for="(item, index) in newsinfo"
+            :key="index"
+            @click="tonews(index,item)">
             <div
               class="mainpic"
               :style="{backgroundImage: 'url('+httpUrl+item.image_url + ')',
@@ -85,6 +88,13 @@ export default {
       this.curindex = index;
       this.curid = index;
       this.requst(index, 1, 8);
+    },
+    tonews(index, item) {
+      document.body.scrollTop = document.documentElement.scrollTop = 0;
+      this.$router.push({
+        path: "/detail",
+        query: { id: item.id, kind: "news" }
+      });
     }
   },
   components: { tabBar, moPagination }

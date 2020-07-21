@@ -703,3 +703,9 @@ export default {
   }
 }
 </style>
+<style lang="less">
+.ueditor_baidumap{
+  width: 100%;
+}
+  
+</style>

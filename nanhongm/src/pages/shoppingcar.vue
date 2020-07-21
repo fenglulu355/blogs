@@ -2,7 +2,7 @@
   <div class="shoppingcar">
     <div class="carbox" v-show="goodsinfo[0]">
       <p class="title">
-        <img src="../assets/shop/return.png" alt />
+        <img @click="back" src="../assets/shop/return.png" alt />
         <span>购物车</span>
       </p>
       <ul class="goodslist">
@@ -75,6 +75,7 @@ export default {
     };
   },
   created() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
     this.requst();
   },
   computed: {
@@ -87,6 +88,9 @@ export default {
     }
   },
   methods: {
+    back(){
+      this.$router.back(-1)
+    },
     requst() {
       let userid = JSON.parse(sessionStorage.getItem("vuex")).userid;
       this.$axios
