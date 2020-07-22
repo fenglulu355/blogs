@@ -25,16 +25,26 @@
             <img src="../assets/shop/wx.png" alt />
           </li>
           <li class="tozfb">
-            <p>支付宝支付</p>
-            <img src="../assets/shop/zfb.png" alt />
+            <!-- <a :href="httpUrl+`/index/alipay/doWapPay?orderId=`+orderid+`&userId=`+userid">
+              <p>支付宝支付</p>
+              <img src="../assets/shop/zfb.png" alt />
+            </a>-->
+            <p @click="showzfb">支付宝支付</p>
+            <img @click="showzfb" src="../assets/shop/zfb.png" alt />
           </li>
         </ul>
       </div>
     </div>
     <div class="tck" v-if="istc">
       <p>
-        <a @click="getopid">点击打开微信支付</a>
+        <a @click="getopid">点击跳转至微信支付</a>
       </p>
+    </div>
+    <div class="tck" v-if="iszfb">
+      <p>
+        <button @click="gotozfb">点击跳转至支付宝支付...</button>
+      </p>
+      <!-- <div ref="html"></div> -->
     </div>
     <div class="payoff" v-show="ispay">
       <div class="payoffbox">
@@ -70,9 +80,12 @@
 </template>
 <script>
 import wx from "weixin-js-sdk";
+import { mapState } from "vuex";
 export default {
   data() {
     return {
+      html: "",
+      iszfb: false,
       istc: false,
       ispay: false,
       ordernum: null,
@@ -83,7 +96,9 @@ export default {
       inwx: false,
       wxres: "",
       code: "",
-      state: ""
+      state: "",
+      openids: "",
+      zfbres: ""
     };
   },
   created() {
@@ -92,29 +107,180 @@ export default {
     this.money = this.$route.query.price;
     this.orderid = this.$route.query.orderid;
   },
+  computed: {
+    ...mapState(["userid"])
+  },
   mounted() {
-     console.log(wx)
+    this.code = sessionStorage.getItem("code");
+    console.log(this.code);
+    this.isinwx();
   },
   methods: {
+    // 判断是否在微信
+    isinwx() {
+      var ua = window.navigator.userAgent.toLowerCase();
+      console.log(ua, "ua");
+      if (ua.match(/MicroMessenger/i) == "micromessenger") {
+        this.inwx = true;
+        if (this.code != "undefined") {
+          this.requestopid(this.code);
+        }
+      } else {
+        // h5浏览器
+        this.inwx = false;
+      }
+      console.log(this.inwx);
+    },
+    // 不在微信浏览器的调用
+    nowx() {
+      this.$toast.loading({
+        message: "正在调起支付请稍候...",
+        forbidClick: true
+      });
+      setTimeout(() => {
+        this.$axios
+          .post("/index/Wxpay/h5dopay", {
+            order_id: this.orderid
+          })
+          .then(res => {
+            // this.imgurl = res.data.data;
+            console.log(res);
+            this.wxres = res.data.data;
+            window.location.href = res.data.data;
+          });
+      }, 200);
+    },
     requestopid(code) {
       this.$axios.post("/index/zpay/payOne", { code: code }).then(res => {
         console.log(res, "a");
+        if (res.data.msg == "获取成功") {
+          this.openids = res.data.data;
+          let orderid = sessionStorage.getItem("orderid");
+          this.sendopenid(orderid, this.openids);
+        } else if (res.data.msg == "code无效") {
+          console.log("无效");
+          this.$toast.loading({
+            message: "重新加载中请稍等...",
+            forbidClick: true
+          });
+          setTimeout(() => {
+            window.location.href =
+              "https://www.scnhjd.com/index/zpay/getWxCode";
+          }, 200);
+        }
       });
+
+      // 微信内置浏览器
+    },
+    sendopenid(orderid, openid) {
+      console.log("sendopenid", orderid);
+      this.$axios
+        .post("index/zpay/dopay", {
+          openid: openid,
+          order_id: orderid
+        })
+        .then(res => {
+          console.log(res, "res");
+
+          if (res.data.msg == "成功") {
+            console.log(
+              JSON.stringify(typeof WeixinJSBridge),
+              "typeof WeixinJSBridge"
+            );
+            if (typeof WeixinJSBridge === "undefined") {
+              if (document.addEventListener) {
+                document.addEventListener(
+                  "WeixinJSBridgeReady",
+                  this.onBridgeReady,
+                  false
+                );
+              } else if (document.attachEvent) {
+                document.attachEvent("WeixinJSBridgeReady", this.onBridgeReady);
+                document.attachEvent(
+                  "onWeixinJSBridgeReady",
+                  this.onBridgeReady
+                );
+              }
+            } else {
+              this.onBridgeReady(res.data.data);
+            }
+
+            // wx.config({
+            //   debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            //   appId: res.data.data.appId, // 必填，公众号的唯一标识
+            //   timestamp: res.data.data.timeStamp, // 必填，生成签名的时间戳
+            //   nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
+            //   signature: res.data.data.paySign, // 必填，签名
+            //   jsApiList: ["chooseWXPay"] // 必填，需要使用的JS接口列表
+            // });
+            // wx.ready(function() {
+            //   console.log("ready");
+            //   // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
+            //   wx.chooseWXPay({
+            //     debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+            //     appId: res.data.data.appId, // 必填，公众号的唯一标识
+            //     timestamp: res.data.data.timeStamp, // 必填，生成签名的时间戳
+            //     nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
+            //     package: res.data.data.package, // 必填，签名
+            //     signType: res.data.data.signType, // 必填，签名
+            //     paySign: res.data.data.paySign, // 必填，签名
+            //     success: function(res) {
+            //       // 支付成功后的回调函数
+            //       console.log(res);
+            //     },
+            //     fail: function(res) {
+            //       console.log("支付失败");
+            //     },
+            //     complete: function(res) {
+            //       console.log(res, "complete");
+            //     }
+            //   });
+            // });
+          }
+        });
     },
     getopid() {
-      this.code = sessionStorage.getItem("code");
-      // this.code = this.getUrlCode().ordernum;
-      if (this.code == "undefined") {
-        window.location.href = "https://www.scnhjd.com/index/zpay/getWxCode";
+      if (this.inwx == false) {
+        this.nowx();
       } else {
-        //  window.location.href='http://www.scnhjd.com/index/zpay/payOne'
+        this.code = sessionStorage.getItem("code");
+        // this.code = this.getUrlCode().ordernum;
+        if (this.code == "undefined") {
+          window.location.href = "https://www.scnhjd.com/index/zpay/getWxCode";
+        } else {
+          //  window.location.href='http://www.scnhjd.com/index/zpay/payOne'
           this.requestopid(this.code);
+        }
+        console.log(this.code);
       }
-      console.log(this.code);
-    
+    },
+
+    onBridgeReady(params) {
+      var that = this;
+      WeixinJSBridge.invoke(
+        "getBrandWCPayRequest",
+        {
+          appId: params.appId, //公众号名称，由商户传入
+          timeStamp: params.timeStamp, //支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+          nonceStr: params.nonceStr, //支付签名随机串，不长于 32 位
+          package: params.package, //统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+          signType: "MD5", //签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+          paySign: params.paySign //支付签名
+        },
+        function(res) {
+          if (res.err_msg === "get_brand_wcpay_request:ok") {
+            alert("支付成功！");
+            that.$router.push({ path: "/myOrder" });
+          } else if (res.err_msg === "get_brand_wcpay_request:fail") {
+            alert("支付失败！");
+          }
+        }
+      );
     },
     showtc() {
       this.istc = true;
+      this.iszfb = false;
+      console.log(this.orderid);
     },
     getUrlCode() {
       var url = location.search;
@@ -128,21 +294,59 @@ export default {
       }
       return theRequest;
     },
-    // UrlCode(url) {
-    //   // 截取url中的code方法  这里的判断只是针对于我自己的项目 你要用只是借鉴  不懂就去百度
-    //   // var url = location.search;  //获取url
-    //   var urls = url;
-    //   let a = urls.indexOf("="),
-    //     b = urls.indexOf("&"),
-    //     c = urls.indexOf("state=");
-    //   this.code = urls.slice(a + 1, b);
-    //   // this.code = this.$router.query.code
-    //   this.state = urls.slice(c + 6, c + 7);
-    //   console.log(this.code, this.state);
-    //   this.$axios.get("index/zpay/payOne", { code: this.code }).then(res => {
-    //     console.log(res, "a");
-    //   });
-    // },
+    showzfb() {
+      this.istc = false;
+      // this.iszfb = true;
+      this.tozfb();
+    },
+    tozfb() {
+      // this.$toast.loading({
+      //   message: "正在调起支付请稍候...",
+      //   forbidClick: true
+      // });
+      setTimeout(() => {
+        this.$axios
+          .post("/index/alipay/doWapPay", {
+            orderId: this.orderid,
+            userId: this.userid
+          })
+          .then(res => {
+            // this.imgurl = res.data.data;
+            console.log(res);
+            const div = document.createElement("div");
+            div.innerHTML = res.data;
+            document.body.appendChild(div);
+            document.forms.alipaysubmit.submit();
+            // this.$refs.html.innerHTML = res.data;
+            // document.forms[0].submit();
+            // this.$nextTick(() => {
+            //   document.forms[0].submit(); //渲染支付宝支付页面
+            // });
+          });
+      }, 200);
+    },
+    gotozfb() {
+      const form = this.zfbres.form;
+      const div = document.createElement("div");
+      div.innerHTML = form; //此处form就是后台返回接收到的数据
+      document.body.appendChild(div);
+      document.forms[0].submit();
+    },
+    UrlCode(url) {
+      // 截取url中的code方法  这里的判断只是针对于我自己的项目 你要用只是借鉴  不懂就去百度
+      // var url = location.search;  //获取url
+      var urls = url;
+      let a = urls.indexOf("="),
+        b = urls.indexOf("&"),
+        c = urls.indexOf("state=");
+      this.code = urls.slice(a + 1, b);
+      // this.code = this.$router.query.code
+      this.state = urls.slice(c + 6, c + 7);
+      console.log(this.code, this.state);
+      this.$axios.get("index/zpay/payOne", { code: this.code }).then(res => {
+        console.log(res, "a");
+      });
+    },
     back() {
       this.$dialog
         .confirm({
@@ -258,15 +462,24 @@ export default {
   padding: 50px 25px;
   .tck {
     width: 100%;
-    height: 150px;
-    background: rgba(0, 0, 0, 0.5);
+    height: 250px;
+    background: rgba(0, 0, 0, 0.9);
     box-shadow: 0px 0px 18px 0px rgba(228, 228, 228, 0.63);
     position: fixed;
     bottom: 0;
     left: 0;
     text-align: center;
-    line-height: 150px;
+    line-height: 250px;
     z-index: 222;
+    a {
+      color: white;
+      font-size: 35px;
+    }
+    button {
+      background: rgba(0, 0, 0, 0);
+      color: white;
+      font-size: 35px;
+    }
   }
   .paybox {
     width: 100%;

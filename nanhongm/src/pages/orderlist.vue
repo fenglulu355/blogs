@@ -305,6 +305,7 @@ export default {
     // 去付款
     topay(index, item) {
       console.log(item);
+        sessionStorage.setItem("orderid", item.order_id);
       this.$router.push({
         path: "/payment",
         query: {

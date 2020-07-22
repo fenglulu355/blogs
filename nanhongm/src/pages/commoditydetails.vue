@@ -219,8 +219,6 @@ export default {
     swiper(index, item) {
       this.shopshowinfo = item;
     },
-    toprev() {},
-    tonext() {},
     curtype(index) {
       this.type = index;
     },

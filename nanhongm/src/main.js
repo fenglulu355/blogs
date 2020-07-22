@@ -69,6 +69,9 @@ router.beforeEach((to, from, next) => {
   console.log(to, 'to');
   console.log(from, 'from');
   // console.log(next, 'next');
+  if (from.name == 'payment') {
+    window.location.href = `https://www.scnhjd.com/mindex.html#` + to.fullPath
+  }
   // 控制banner的走马灯显示
   if (to.meta.iconshow) {
     store.state.isbanshow = false

@@ -118,9 +118,6 @@ export default {
       }
       this.$forceUpdate();
 
-      // console.log(this.keyword, "bbbbbbb");
-      // console.log(this.curitemindex[index], "this.curitemindex[index]");
-      // console.log(this.arr, "aaarrrrrr");
     },
     encodeArray2D(obj) {
       var array = [];

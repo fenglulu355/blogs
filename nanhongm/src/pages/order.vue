@@ -282,6 +282,7 @@ export default {
               console.log(res);
               if (res.data.code == 1) {
                 this.$toast.success("提交成功!");
+                sessionStorage.setItem("orderid", res.data.data.order_id);
                 console.log(res.data.data.order_num);
                 setTimeout(() => {
                   this.$router.push({
