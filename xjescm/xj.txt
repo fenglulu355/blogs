@@ -1,0 +1,37 @@
+//显示指定行数
+overflow: hidden ;
+display: -webkit-box ;
+-webkit-line-clamp: 2 ;
+-webkit-box-orient: vertical ;
+word-break: break-all ;
+
+// css保留空格和换行符
+white-space: pre-wrap;
+// css保留换行符
+white-space: pre-line;
+
+//mianpic
+ <div
+            class="mainpic"
+            :style="{backgroundImage: 'url(' + require('../assets/home/homebanner.png')+ ')',
+             backgroundSize:'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition:'center'
+            }"
+></div>
+
+//路由跳转
+跳转并传值：this.$router.push({path:'index',query:{id:'123'}});  // 带查询参数，变成/index?id=123
+取值：this.$route.query.id ;
+<router-link :to="{path: 'apple', query: {color: 'red' }}"> to apple</router-link
+//返回初始位置
+ document.body.scrollTop = document.documentElement.scrollTop=0
+存对象
+   let arrs = [];
+        for (let i = 0; i < this.tabnav.length; i++) {
+          let obj = {
+            name: this.tabnav[i].class_name,
+            id: this.tabnav[i].class_id
+          };
+          arrs.push(obj);
+        }
